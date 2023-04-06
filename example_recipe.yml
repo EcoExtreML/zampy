@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: 2023 lsmdata authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+download:
+  folder: /home/bart/Data/lsmdata/test/
+  years: [1980, 2020]
+  bbox: [3, 50, 6, 54]
+
+  datasets:
+    era5-land:
+      frequency: hourly
+      variables:
+        - air_temperature  # will map to 2m_temperature...
+          - height_m: 2  # optional extra argument
+        - dewpoint_temperature
+          - height_m: 2
+
+convert:
+  standard: ALMA
+  flavor: PLUMBER2  # More specified than ALMA.
+  folder: /home/bart/Data/lsmdata/output/
+
+  additional_variables:  # Possible future addition
+    saturation_vapor_pressure:
+      unit: kPa
+      input_variables: [air_temperature]
+      equation: 0.61089 * exp(17.27 * (air_temperature + 273.15)/(air_temperature + 510.45))  # Tetens equation
