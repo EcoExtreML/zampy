@@ -20,6 +20,7 @@ convert:
   standard: ALMA
   flavor: PLUMBER2  # More specified than ALMA.
   folder: /home/bart/Data/lsmdata/output/
+  frequency: 1H  # outputs at 1 hour frequency. Pandas-like freq-keyword.
 
   additional_variables:  # Possible future addition
     saturation_vapor_pressure:
