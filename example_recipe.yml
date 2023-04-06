@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2023 lsmdata authors
-#
-# SPDX-License-Identifier: Apache-2.0
-
 download:
   folder: /home/bart/Data/lsmdata/test/
   years: [1980, 2020]
