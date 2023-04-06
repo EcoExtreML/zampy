@@ -1,0 +1,154 @@
+[build-system]
+requires = ["hatchling>=1.8.0", "hatch-vcs", "hatch-fancy-pypi-readme"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/lsmdata/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github", "/.mypy_cache", "/.pytest_cache", "/.githooks",
+  "sonar-project.properties"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lsmdata"]
+
+[tool.hatch.publish.index]
+disable = true  # Requires confirmation when publishing to pypi.
+
+[project]
+name = "lsmdata"
+description = "python package for getting Land Surface Model input data."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.8, <3.11"
+authors = [
+  {email = "b.schilperoort@esciencecenter.nl"},
+  {name = "Bart Schilperoort, Yang Liu, Fakhereh Alidoost"}
+]
+maintainers = [
+  {name = "Bart Schilperoort", email = "b.schilperoort@esciencecenter.nl"},
+  {name = "Yang Liu", email = "y.liu@esciencecenter.nl"},
+  {name = "Fakhereh Alidoost", email = "f.alidoost@esciencecenter.nl"},
+]
+keywords = [
+  "data",
+]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+]
+dependencies = [
+  "netcdf4",
+  "numpy",
+  "pandas",
+  "matplotlib",
+  "xarray",
+  "scikit-learn",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+  "bump2version",
+  "hatch",
+  "ruff",
+  "isort",
+  "black",
+  "mypy",
+  "pytest",
+  "pytest-cov",
+]
+
+[tool.hatch.envs.default]
+features = ["dev"]
+
+[tool.hatch.envs.default.scripts]
+lint = [
+  "ruff check .",
+  "mypy .",
+  "isort --check-only --diff .",
+  "black --check --diff .",
+]
+format = ["isort .", "black .", "lint",]
+test = ["pytest ./lilio/ ./tests/ --doctest-modules",]
+coverage = [
+  "pytest --cov --cov-report term --cov-report xml --junitxml=xunit-result.xml tests/",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310']
+include = '\.pyi?$'
+
+[tool.ruff]
+select = [
+  "E",  # pycodestyle
+  "F",  # pyflakes
+  "B",  # flake8-bugbear
+  "D",  # pydocstyle
+  "C90",  # mccabe complexity
+  "I",  # isort
+  "N",  # PEP8-naming
+  "UP",  # pyupgrade (upgrade syntax to current syntax)
+  "PLE",  # Pylint error https://github.com/charliermarsh/ruff#error-ple
+  "PLR",  # Pylint refactor (e.g. too-many-arguments)
+  "PLW",  # Pylint warning (useless-else-on-loop)
+]
+extend-select = [
+  "D401",  # First line should be in imperative mood
+  "D400",  # First line should end in a period.
+  "D404",  # First word of the docstring should not be 'This'
+  "TID252",  # No relative imports (not pep8 compliant)
+]
+ignore = [
+  "PLR2004",  # magic value used in comparsion (i.e. `if ndays == 28: month_is_feb`).
+]
+line-length = 88
+exclude = ["docs", "build"]
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+target-version = "py38"
+
+[tool.ruff.per-file-ignores]
+"tests/**" = ["D"]
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+[tool.ruff.isort]
+known-first-party = ["lsmdata"]
+force-single-line = true
+lines-after-imports = 2
+no-lines-before = ["future","standard-library","third-party","first-party","local-folder"]
+
+[tool.coverage.run]
+branch = true
+source = ["src/lsmdata"]
+command_line = "-m pytest"
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "@overload",
+  "if TYPE_CHECKING:",
+  "if typing.TYPE_CHECKING:"
+]
