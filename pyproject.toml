@@ -48,12 +48,13 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
 ]
 dependencies = [
+  "requests",
   "netcdf4",
   "numpy",
   "pandas",
   "matplotlib",
   "xarray",
-  "scikit-learn",
+  "tqdm",
 ]
 dynamic = ["version"]
 
@@ -62,9 +63,10 @@ dev = [
   "bump2version",
   "hatch",
   "ruff",
-  "isort",
   "black",
   "mypy",
+  "types-requests", # type stubs for request lib
+  "types-urllib3", # type stubs for url lib
   "pytest",
   "pytest-cov",
 ]
@@ -74,13 +76,12 @@ features = ["dev"]
 
 [tool.hatch.envs.default.scripts]
 lint = [
-  "ruff check .",
-  "mypy .",
-  "isort --check-only --diff .",
-  "black --check --diff .",
+  "ruff check src/ tests/",
+  "mypy src/",
+  "black --check --diff src/ tests/",
 ]
-format = ["isort .", "black .", "lint",]
-test = ["pytest ./lilio/ ./tests/ --doctest-modules",]
+format = ["black src/ tests/", "ruff check src/ tests/ --fix", "lint",]
+test = ["pytest ./src/zampy/ ./tests/ --doctest-modules",]
 coverage = [
   "pytest --cov --cov-report term --cov-report xml --junitxml=xunit-result.xml tests/",
 ]
@@ -90,6 +91,7 @@ testpaths = ["tests"]
 
 [tool.mypy]
 ignore_missing_imports = true
+disallow_untyped_defs = true
 
 [tool.black]
 line-length = 88
