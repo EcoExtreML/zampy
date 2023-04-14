@@ -1,8 +1,8 @@
 """Outline of the dataset protocol."""
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
 from typing import List
+from typing import Protocol
 from typing import Tuple
 import numpy as np
 import xarray as xr

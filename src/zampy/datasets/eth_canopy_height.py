@@ -56,10 +56,8 @@ class EthCanopyHeight(Dataset):
 
         download_folder.mkdir(parents=True, exist_ok=True)
         for fname in tqdm(
-            download_files,
-            desc="Downloading canopy height files",
-            unit="files"
-            ):
+            download_files, desc="Downloading canopy height files", unit="files"
+        ):
             file = requests.get(self.data_url + fname)
             (download_folder / fname).open(mode="wb").write(file.content)
         return True
@@ -70,12 +68,8 @@ def get_filenames(bounds: SpatialBounds) -> List[str]:
     step = 3
 
     locs = np.meshgrid(
-        np.arange(
-            start=bounds.south, stop=bounds.north + step, step=step
-        ),
-        np.arange(
-            start=bounds.west, stop=bounds.east + step, step=step
-        ),
+        np.arange(start=bounds.south, stop=bounds.north + step, step=step),
+        np.arange(start=bounds.west, stop=bounds.east + step, step=step),
     )
     lats = locs[0].flatten()
     lons = locs[1].flatten()
