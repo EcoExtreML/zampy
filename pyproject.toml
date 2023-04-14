@@ -3,7 +3,7 @@ requires = ["hatchling>=1.8.0", "hatch-vcs", "hatch-fancy-pypi-readme"]
 build-backend = "hatchling.build"
 
 [tool.hatch.version]
-path = "src/lsmdata/__init__.py"
+path = "src/zampy/__init__.py"
 
 [tool.hatch.build.targets.sdist]
 exclude = [
@@ -12,13 +12,13 @@ exclude = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/lsmdata"]
+packages = ["src/zampy"]
 
 [tool.hatch.publish.index]
 disable = true  # Requires confirmation when publishing to pypi.
 
 [project]
-name = "lsmdata"
+name = "zampy"
 description = "python package for getting Land Surface Model input data."
 readme = "README.md"
 license = "Apache-2.0"
@@ -135,14 +135,14 @@ convention = "google"
 max-complexity = 10
 
 [tool.ruff.isort]
-known-first-party = ["lsmdata"]
+known-first-party = ["zampy"]
 force-single-line = true
 lines-after-imports = 2
 no-lines-before = ["future","standard-library","third-party","first-party","local-folder"]
 
 [tool.coverage.run]
 branch = true
-source = ["src/lsmdata"]
+source = ["src/zampy"]
 command_line = "-m pytest"
 
 [tool.coverage.report]

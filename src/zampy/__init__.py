@@ -1,4 +1,4 @@
-"""lsmdata."""
+"""zampy."""
 
 __author__ = "Bart Schilperoort"
 __email__ = "b.schilperoort@esciencecenter.nl"

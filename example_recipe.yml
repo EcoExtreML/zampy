@@ -1,5 +1,5 @@
 download:
-  folder: /home/bart/Data/lsmdata/test/
+  folder: /home/bart/Data/zampy/test/
   years: [1980, 2020]
   bbox: [3, 50, 6, 54]
 
@@ -15,7 +15,7 @@ download:
 convert:
   standard: ALMA
   flavor: PLUMBER2  # More specified than ALMA.
-  folder: /home/bart/Data/lsmdata/output/
+  folder: /home/bart/Data/zampy/output/
   frequency: 1H  # outputs at 1 hour frequency. Pandas-like freq-keyword.
   resolution: 0.01  # output resolution in degrees.
 
@@ -24,3 +24,25 @@ convert:
       unit: kPa
       input_variables: [air_temperature]
       equation: 0.61089 * exp(17.27 * (air_temperature + 273.15)/(air_temperature + 510.45))  # Tetens equation
+
+
+collections:
+  stemmus_scope_NL:
+    years: [1980, 2020]
+    area: [3, 50, 6, 54]
+  
+    dataset: era5-land
+      frequency: hourly
+      variables:
+        - air_temperature
+
+    dataset: CAMS
+      years: [2004, 2020]
+      variables:
+        - co2
+    dataset: dummy_data
+      years: [1980, 2003]
+      variables:
+        co2:
+          unit: ppm
+          value: 350
