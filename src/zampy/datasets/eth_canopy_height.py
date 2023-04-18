@@ -4,8 +4,7 @@ from pathlib import Path
 from typing import List
 from typing import Tuple
 import numpy as np
-import requests
-from tqdm import tqdm
+from zampy.datasets import utils
 from .dataset_protocol import Dataset
 from .dataset_protocol import SpatialBounds
 from .dataset_protocol import Variable
@@ -26,8 +25,8 @@ class EthCanopyHeight(Dataset):
     crs = "EPSG:4326"
 
     variables = (
-        Variable(name="LAI", unit="-"),
-        Variable(name="LAI_SD", unit="-"),
+        Variable(name="h_canopy", unit="m"),
+        Variable(name="h_canopy_SD", unit="m"),
     )
 
     license = "cc-by-4.0"
@@ -43,28 +42,58 @@ class EthCanopyHeight(Dataset):
 
     data_url = "https://share.phys.ethz.ch/~pf/nlangdata/ETH_GlobalCanopyHeight_10m_2020_version1/3deg_cogs/"
 
-    def download(
+    def download(  # noqa: PLR0913
         self,
         download_dir: Path,
         spatial_bounds: SpatialBounds,
         temporal_bounds: Tuple[np.datetime64, np.datetime64],
         variables: List[Variable],
+        overwrite: bool = False,
     ) -> bool:
         """Download the ETH tiles to the download directory."""
+        if not all(var in self.variables for var in variables):
+            raise ValueError(
+                f"Input variable and/or units does not match the {self.name} dataset."
+            )
+
         download_folder = download_dir / self.name
-        download_files = get_filenames(spatial_bounds)
+        download_files = []
+        if self.variables[0] in variables:
+            download_files += get_filenames(spatial_bounds)
+        if self.variables[1] in variables:
+            download_files += get_filenames(spatial_bounds, sd_file=True)
 
         download_folder.mkdir(parents=True, exist_ok=True)
-        for fname in tqdm(
-            download_files, desc="Downloading canopy height files", unit="files"
-        ):
-            file = requests.get(self.data_url + fname)
-            (download_folder / fname).open(mode="wb").write(file.content)
+        for fname in download_files:
+            utils.download_url(
+                url=self.data_url + fname,
+                fpath=download_folder / fname,
+                overwrite=overwrite,
+            )
         return True
+    
+    def raw_load(
+        self,
+        download_dir: Path,
+        spatial_bounds: SpatialBounds,
+        temporal_bounds: Tuple[np.datetime64, np.datetime64],
+        variables: List[Variable],
+    ):
+        pass
 
 
-def get_filenames(bounds: SpatialBounds) -> List[str]:
-    """Get all valid ETH canopy height dataset filenames within given spatial bounds."""
+def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> List[str]:
+    """Get all valid ETH canopy height dataset filenames within given spatial bounds.
+
+    Args:
+        bounds: Spatial bounds to be used to determine which tiles need to be
+            downloaded.
+        sd_file: If the SD (standard deviation) files should be returned, or the actual
+            height values.
+
+    Returns:
+        List of filenames (not checked for validity).
+    """
     step = 3
 
     locs = np.meshgrid(
@@ -85,12 +114,13 @@ def get_filenames(bounds: SpatialBounds) -> List[str]:
         latstr = f"N{latstr}" if lat_ >= 0 else f"S{latstr}"
         lonstr = f"E{lonstr}" if lon_ >= 0 else f"W{lonstr}"
 
-        fnames[i] = f"ETH_GlobalCanopyHeight_10m_2020_{latstr}{lonstr}_Map.tif"
+        sd_str = "_SD" if sd_file else ""
+        fnames[i] = f"ETH_GlobalCanopyHeight_10m_2020_{latstr}{lonstr}_Map{sd_str}.tif"
     return get_valid_filenames(fnames)
 
 
 def get_valid_filenames(filenames: List[str]) -> List[str]:
-    """Remove the invalid filenames from the list of tile names."""
+    """Returns a new list with only the valid filenames."""
     valid_name_file = (
         Path(__file__).parent / "assets" / "h_canopy_filenames_compressed.txt.gz"
     )
@@ -100,6 +130,6 @@ def get_valid_filenames(filenames: List[str]) -> List[str]:
 
     valid_names = []
     for fname in filenames:
-        if fname in valid_filenames:
+        if fname.replace("_SD","") in valid_filenames:
             valid_names.append(fname)
     return valid_names
