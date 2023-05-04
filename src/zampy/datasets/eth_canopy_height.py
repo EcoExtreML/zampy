@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import List
 from typing import Tuple
 import numpy as np
+import xarray as xr
+from zampy.datasets import converter
 from zampy.datasets import utils
 from .dataset_protocol import Dataset
 from .dataset_protocol import SpatialBounds
@@ -28,6 +30,8 @@ class EthCanopyHeight(Dataset):
         Variable(name="h_canopy", unit="m"),
         Variable(name="h_canopy_SD", unit="m"),
     )
+
+    download_files: list
 
     license = "cc-by-4.0"
     bib = """
@@ -57,14 +61,14 @@ class EthCanopyHeight(Dataset):
             )
 
         download_folder = download_dir / self.name
-        download_files = []
+        self.download_files = []
         if self.variables[0] in variables:
-            download_files += get_filenames(spatial_bounds)
+            self.download_files += get_filenames(spatial_bounds)
         if self.variables[1] in variables:
-            download_files += get_filenames(spatial_bounds, sd_file=True)
+            self.download_files += get_filenames(spatial_bounds, sd_file=True)
 
         download_folder.mkdir(parents=True, exist_ok=True)
-        for fname in download_files:
+        for fname in self.download_files:
             utils.download_url(
                 url=self.data_url + fname,
                 fpath=download_folder / fname,
@@ -80,6 +84,22 @@ class EthCanopyHeight(Dataset):
         variables: List[Variable],
     ):
         pass
+
+    def convert(self,
+               download_dir: Path,
+               convention: str="ALMA"):
+        """Format dataset following the given convention."""
+        # questions:
+        # - is there site selection?
+        # - do we combine files or keep files site-based?
+        #   （code in pystemmusscope process data site-by-site)
+        preprocess_folder = download_dir / self.name / "preprocess_data"
+        preprocess_folder.mkdir(parents=True, exist_ok=True)
+        for fname in self.download_files:
+            data = xr.open_dataarray(download_dir / self.name / fname,
+                                     engine="rasterio")
+            converter.eth_canopy_height(data, fname, preprocess_folder, convention)
+        print(f"Dataset conversion following {convention} convention is complet!")
 
 
 def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> List[str]:

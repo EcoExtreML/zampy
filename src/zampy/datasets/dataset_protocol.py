@@ -58,3 +58,7 @@ class Dataset(Protocol):
     def load(self) -> xr.Dataset:
         """Get the dataset as an xarray Dataset."""
         ...
+
+    def convert(self) -> xr.Dataset:
+        """Format the dataset to follow specific conventions."""
+        ...
