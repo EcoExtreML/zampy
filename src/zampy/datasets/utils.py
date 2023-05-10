@@ -2,13 +2,17 @@
 import urllib.request
 from pathlib import Path
 from typing import Optional
+from typing import Union
 import requests
 from tqdm import tqdm
 
 
 class TqdmUpdate(tqdm):
     """Wrap a tqdm progress bar to be updateable by urllib.request.urlretrieve."""
-    def update_to(self, b: int = 1, bsize: int = 1, tsize: Optional[int] = None):
+
+    def update_to(
+        self, b: int = 1, bsize: int = 1, tsize: Optional[int] = None
+    ) -> Union[bool, None]:
         """Update the progress bar.
 
         Args:
@@ -31,7 +35,7 @@ def download_url(url: str, fpath: Path, overwrite: bool) -> None:
     """
     if get_file_size(fpath) != get_url_size(url) or overwrite:
         with TqdmUpdate(
-            unit='B', unit_scale=True, miniters=1, desc=url.split('/')[-1]
+            unit="B", unit_scale=True, miniters=1, desc=url.split("/")[-1]
         ) as t:
             urllib.request.urlretrieve(url, filename=fpath, reporthook=t.update_to)
     else:
