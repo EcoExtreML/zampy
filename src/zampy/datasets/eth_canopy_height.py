@@ -24,9 +24,13 @@ class EthCanopyHeight(Dataset):
     bounds = SpatialBounds(90, 180, -90, -180)
     crs = "EPSG:4326"
 
-    variables = (
+    raw_variables = (
         Variable(name="h_canopy", unit="m"),
         Variable(name="h_canopy_SD", unit="m"),
+    )
+    standard_variables = (
+        Variable(name="canopy-height", unit="m"),
+        Variable(name="canopy-height-standard-deviation", unit="m")
     )
 
     license = "cc-by-4.0"
@@ -71,7 +75,7 @@ class EthCanopyHeight(Dataset):
                 overwrite=overwrite,
             )
         return True
-    
+
     def raw_load(
         self,
         download_dir: Path,

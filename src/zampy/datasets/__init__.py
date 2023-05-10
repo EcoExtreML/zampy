@@ -4,3 +4,4 @@ from .eth_canopy_height import EthCanopyHeight
 
 
 __all__ = ["Dataset", "EthCanopyHeight"]
+]

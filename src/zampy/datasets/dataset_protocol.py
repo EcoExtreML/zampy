@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import List
 from typing import Protocol
 from typing import Tuple
+from typing import Optional
 import numpy as np
 import xarray as xr
 
@@ -14,6 +15,7 @@ class Variable:
 
     name: str
     unit: str
+    description: Optional[str]
 
 
 @dataclass
@@ -36,6 +38,8 @@ class Dataset(Protocol):
     crs: str
     license: str
     bib: str
+    raw_variables: Tuple[Variable]
+    standard_variables: Tuple[Variable]
 
     def __init__(self) -> None:
         """Init."""
