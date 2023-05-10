@@ -55,6 +55,10 @@ dependencies = [
   "matplotlib",
   "xarray",
   "tqdm",
+  "dask[diagnostics]",
+  "pint",
+  "cf_xarray",  # required to auto-pint CF compliant datasets.
+  "pint-xarray",
 ]
 dynamic = ["version"]
 
