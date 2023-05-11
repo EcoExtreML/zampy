@@ -1,6 +1,9 @@
 """Outline of the dataset protocol."""
+import json
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 from typing import List
 from typing import Optional
 from typing import Protocol
@@ -9,12 +12,15 @@ import numpy as np
 import xarray as xr
 
 
+FNAME_PROPERTIES = "properties.json"
+
+
 @dataclass
 class Variable:
     """zampy variable."""
 
     name: str
-    unit: str
+    unit: Any  # pint unit. typing has issues with pint 0.21
     desc: Optional[str] = ""
 
 
@@ -71,9 +77,10 @@ class Dataset(Protocol):
         """
         ...
 
-    def preprocess(
+    def preprocess(  # noqa: PLR0913
         self,
         download_dir: Path,
+        preprocessed_dir: Path,
         spatial_bounds: SpatialBounds,
         time_bounds: TimeBounds,
         variable_names: List[str],
@@ -84,3 +91,75 @@ class Dataset(Protocol):
     def load(self) -> xr.Dataset:
         """Get the dataset as an xarray Dataset."""
         ...
+
+
+def write_properties_file(
+    dataset_folder: Path,
+    spatial_bounds: SpatialBounds,
+    time_bounds: TimeBounds,
+    variable_names: List[str],
+) -> None:
+    """Write the (serialized) spatial and time bounds to a json file.
+
+    Args:
+        dataset_folder: Path to the dataset folder (download/preprocessing).
+        spatial_bounds: Spatial bounds of the data.
+        time_bounds: Time bounds of the data.
+        variable_names: The (standard) variable names of the data.
+    """
+    # Data to be written
+    json_dict = {
+        "start_time": str(time_bounds.start),
+        "end_time": str(time_bounds.end),
+        "north": spatial_bounds.north,
+        "east": spatial_bounds.east,
+        "south": spatial_bounds.south,
+        "west": spatial_bounds.west,
+        "variable_names": variable_names,
+    }
+
+    json_object = json.dumps(json_dict, indent=4)
+
+    with (dataset_folder / FNAME_PROPERTIES).open(mode="w", encoding="utf-8") as file:
+        file.write(json_object)
+
+
+def read_properties_file(
+    dataset_folder: Path,
+) -> Tuple[SpatialBounds, TimeBounds, List[str]]:
+    """Load the serialized spatial and time bounds from the json file.
+
+    Args:
+        dataset_folder: Path to the dataset folder (download/preprocessing).
+
+    Returns:
+        Tuple[SpatialBounds, TimeBounds]: The spatial and time bounds of the data.
+    """
+    with (dataset_folder / FNAME_PROPERTIES).open(mode="r", encoding="utf-8") as file:
+        json_dict = json.load(file)
+
+    return (
+        SpatialBounds(
+            json_dict["north"],
+            json_dict["east"],
+            json_dict["south"],
+            json_dict["west"],
+        ),
+        TimeBounds(start=json_dict["start_time"], end=json_dict["end_time"]),
+        json_dict["variable_names"],
+    )
+
+
+def copy_properties_file(
+    source_folder: Path,
+    target_folder: Path,
+) -> None:
+    """Copy the properties file from one folder to another.
+
+    To be used when, for example, the downloaded data has been ingested.
+
+    Args:
+        source_folder: Source folder containing the properties file.
+        target_folder: Destination folder where the file should be copied to.
+    """
+    shutil.copy(source_folder / FNAME_PROPERTIES, target_folder / FNAME_PROPERTIES)

@@ -54,6 +54,7 @@ dependencies = [
   "pandas",
   "matplotlib",
   "xarray",
+  "rioxarray",  # required for TIFF files
   "tqdm",
   "dask[diagnostics]",
   "pint",
