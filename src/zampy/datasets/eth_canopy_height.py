@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import List
 import numpy as np
 import xarray as xr
-from dask.delayed import Delayed
 from zampy.datasets import utils
 from zampy.datasets import validation
 from zampy.datasets.dataset_protocol import Dataset
@@ -90,10 +89,11 @@ class EthCanopyHeight(Dataset):
 
         return True
 
-    def ingest(  # noqa: PLR0913
+    def ingest(
         self,
         download_dir: Path,
         ingest_dir: Path,
+        overwrite: bool = False,
     ) -> bool:
         """Convert the downloaded data to the CF-like Zampy convention."""
         download_folder = download_dir / self.name
@@ -112,11 +112,34 @@ class EthCanopyHeight(Dataset):
                 ingest_folder,
                 file=file,
                 sd_file=sd_file,
+                overwrite=overwrite,
             )
 
         copy_properties_file(download_folder, ingest_folder)
 
         return True
+
+    def load(
+        self,
+        ingest_dir: Path,
+        time_bounds: TimeBounds,
+        spatial_bounds: SpatialBounds,
+        variable_names: List[str],
+    ) -> xr.Dataset:
+        """Get the dataset as an xarray Dataset."""
+        files: List[Path] = []
+        if self.variable_names[0] in variable_names:
+            files += (ingest_dir / self.name).glob("*Map.nc")
+        if self.variable_names[1] in variable_names:
+            files += (ingest_dir / self.name).glob("*Map_SD.nc")
+
+        ds = xr.open_mfdataset(files, chunks={"latitude": 6000, "longitude": 6000})
+        ds = ds.sel(
+            latitude=slice(spatial_bounds.south, spatial_bounds.north),
+            longitude=slice(spatial_bounds.west, spatial_bounds.east),
+            time=slice(time_bounds.start, time_bounds.end),
+        )
+        return ds
 
 
 def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> List[str]:
@@ -176,20 +199,26 @@ def convert_tiff_to_netcdf(
     ingest_folder: Path,
     file: Path,
     sd_file: bool = False,
-) -> Delayed:
+    overwrite: bool = False,
+) -> None:
     """Convert the downloaded tiff files to standard CF/Zampy netCDF files.
 
     Args:
         ingest_folder: Folder where the files have to be written to.
         file: Path to the ETH canopy height tiff file.
         sd_file: If the file contains the standard deviation values.
+        overwrite: Overwrite all existing files. If False, file that already exist will
+            be skipped.
     """
-    ds = parse_tiff_file(file, sd_file)
-    return ds.to_netcdf(
-        path=ingest_folder / file.with_suffix(".nc").name,
-        encoding=ds.encoding,
-        compute=False,
-    )
+    ncfile = ingest_folder / file.with_suffix(".nc").name
+    if ncfile.exists() and not overwrite:
+        print(f"File '{ncfile.name}' already exists, skipping...")
+    else:
+        ds = parse_tiff_file(file, sd_file)
+        ds.to_netcdf(
+            path=ncfile,
+            encoding=ds.encoding,
+        )
 
 
 def parse_tiff_file(file: Path, sd_file: bool = False) -> xr.Dataset:
@@ -208,6 +237,8 @@ def parse_tiff_file(file: Path, sd_file: bool = False) -> xr.Dataset:
     da = da.isel(band=0)  # get rid of band dim
     da = da.drop_vars(["band", "spatial_ref"])  # drop unnecessary coords
     ds = da.to_dataset()
+    ds = ds.assign_coords({"time": np.datetime64("2020-07-01")})  # halfway in the year
+    ds = ds.expand_dims("time")
     ds = ds.rename(
         {
             "band_data": "canopy-height-standard-deviation"
@@ -221,12 +252,13 @@ def parse_tiff_file(file: Path, sd_file: bool = False) -> xr.Dataset:
     # All eth variables & coords already follow the CF/Zampy convention
     for variable in ds.variables:
         variable_name = str(variable)  # Cast to string to please mypy.
-        ds[variable_name].attrs["units"] = str(
-            VARIABLE_REFERENCE_LOOKUP[variable_name].unit
-        )
-        ds[variable_name].attrs["description"] = VARIABLE_REFERENCE_LOOKUP[
-            variable_name
-        ].desc
+        if variable_name != "time":  # TODO: Check how to write time attrs...
+            ds[variable_name].attrs["units"] = str(
+                VARIABLE_REFERENCE_LOOKUP[variable_name].unit
+            )
+            ds[variable_name].attrs["description"] = VARIABLE_REFERENCE_LOOKUP[
+                variable_name
+            ].desc
 
     # TODO: add dataset attributes.
     ds.encoding = {
