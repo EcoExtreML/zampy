@@ -1,6 +1,7 @@
 """Outline of the dataset protocol."""
 import json
 import shutil
+from abc import abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -62,6 +63,7 @@ class Dataset(Protocol):
         """Init."""
         ...
 
+    @abstractmethod
     def download(  # noqa: PLR0913
         self,
         download_dir: Path,
@@ -77,18 +79,24 @@ class Dataset(Protocol):
         """
         ...
 
-    def preprocess(  # noqa: PLR0913
+    @abstractmethod
+    def ingest(
         self,
         download_dir: Path,
-        preprocessed_dir: Path,
-        spatial_bounds: SpatialBounds,
-        time_bounds: TimeBounds,
-        variable_names: List[str],
+        ingest_dir: Path,
+        overwrite: bool = False,
     ) -> bool:
         """Preprocess the downloaded data to the CF-like Zampy convention."""
         ...
 
-    def load(self) -> xr.Dataset:
+    @abstractmethod
+    def load(
+        self,
+        ingest_dir: Path,
+        time_bounds: TimeBounds,
+        spatial_bounds: SpatialBounds,
+        variable_names: List[str],
+    ) -> xr.Dataset:
         """Get the dataset as an xarray Dataset."""
         ...
 
