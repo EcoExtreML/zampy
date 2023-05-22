@@ -20,10 +20,11 @@ VALID_NAME_FILE = (
     Path(__file__).parent / "assets" / "h_canopy_filenames_compressed.txt.gz"
 )
 
+## Ignore missing class/method docstrings: they are implemented in the Dataset class.
+# ruff: noqa: D102
 
-class EthCanopyHeight(Dataset):
-    """The ETH canopy height dataset."""
 
+class EthCanopyHeight(Dataset):  # noqa: D101
     name = "eth-canopy-height"
     time_bounds = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-12-31"))
     spatial_bounds = SpatialBounds(90, 180, -90, -180)
@@ -36,7 +37,7 @@ class EthCanopyHeight(Dataset):
     variable_names = ("canopy-height", "canopy-height-standard-deviation")
     variables = (
         VARIABLE_REFERENCE_LOOKUP[var] for var in variable_names
-    )  #  type: ignore
+    )  # type: ignore
 
     license = "cc-by-4.0"
     bib = """
@@ -59,7 +60,6 @@ class EthCanopyHeight(Dataset):
         variable_names: List[str],
         overwrite: bool = False,
     ) -> bool:
-        """Download the ETH tiles to the download directory."""
         validation.validate_download_request(
             self,
             download_dir,
@@ -95,7 +95,6 @@ class EthCanopyHeight(Dataset):
         ingest_dir: Path,
         overwrite: bool = False,
     ) -> bool:
-        """Convert the downloaded data to the CF-like Zampy convention."""
         download_folder = download_dir / self.name
         ingest_folder = ingest_dir / self.name
         ingest_folder.mkdir(parents=True, exist_ok=True)
@@ -126,7 +125,6 @@ class EthCanopyHeight(Dataset):
         spatial_bounds: SpatialBounds,
         variable_names: List[str],
     ) -> xr.Dataset:
-        """Get the dataset as an xarray Dataset."""
         files: List[Path] = []
         if self.variable_names[0] in variable_names:
             files += (ingest_dir / self.name).glob("*Map.nc")

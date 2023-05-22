@@ -47,7 +47,13 @@ class TimeBounds:
 
 
 class Dataset(Protocol):
-    """Dataset."""
+    """Zampy Dataset.
+
+    Methods:
+        download: Download data from this dataset.
+        ingest: Convert the raw data to a CF-compliant format.
+        load: Load the data into an xarray Dataset.
+    """
 
     name: str
     time_bounds: TimeBounds
@@ -74,6 +80,14 @@ class Dataset(Protocol):
     ) -> bool:
         """Download the data.
 
+        Args:
+            download_dir: Path to the Zampy download directory.
+            time_bounds: The start and end time of the data that should be loaded.
+            spatial_bounds: The lat/lon bounding box for which the data should be
+                loaded.
+            variable_names: Which variables should be loaded.
+            overwrite: Overwrite existing files instead of skipping them.
+
         Returns:
             Download success
         """
@@ -86,7 +100,16 @@ class Dataset(Protocol):
         ingest_dir: Path,
         overwrite: bool = False,
     ) -> bool:
-        """Preprocess the downloaded data to the CF-like Zampy convention."""
+        """Convert the downloaded data to the CF-like Zampy convention.
+
+        Args:
+            download_dir: Path to the Zampy download directory.
+            ingest_dir: Path to the Zampy ingest directory.
+            overwrite: Overwrite existing files instead of skipping them.
+
+        Returns:
+            Ingest succes.
+        """
         ...
 
     @abstractmethod
@@ -97,7 +120,18 @@ class Dataset(Protocol):
         spatial_bounds: SpatialBounds,
         variable_names: List[str],
     ) -> xr.Dataset:
-        """Get the dataset as an xarray Dataset."""
+        """Get the dataset as an xarray Dataset.
+
+        Args:
+            ingest_dir: Path to the Zampy ingest directory.
+            time_bounds: The start and end time of the data that should be loaded.
+            spatial_bounds: The lat/lon bounding box for which the data should be
+                loaded.
+            variable_names: Which variables should be loaded.
+
+        Returns:
+            The desired data loaded as an xarray Dataset.
+        """
         ...
 
 
