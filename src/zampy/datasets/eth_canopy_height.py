@@ -155,8 +155,8 @@ def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> List[str]:
     step = 3
 
     locs = np.meshgrid(
-        np.arange(start=bounds.south, stop=bounds.north + step, step=step),
-        np.arange(start=bounds.west, stop=bounds.east + step, step=step),
+        np.arange(start=bounds.south, stop=bounds.north, step=step),
+        np.arange(start=bounds.west, stop=bounds.east, step=step),
     )
     lats = locs[0].flatten()
     lons = locs[1].flatten()
