@@ -39,12 +39,12 @@ class SpatialBounds:
         if self.south > self.north:
             raise ValueError(
                 "Value of southern bound is greater than norther bound."
-                "Please check the spatial bounds input."
+                "\nPlease check the spatial bounds input."
             )
         if self.west > self.east:
             raise ValueError(
                 "Value of western bound is greater than east bound."
-                "Please check the spatial bounds input."
+                "\nPlease check the spatial bounds input."
             )
 
 
@@ -60,8 +60,8 @@ class TimeBounds:
 
     def __post_init__(self) -> None:
         """Validate the initialized TimeBounds class."""
-        if self.end > self.start:
-            raise ValueError("Start time should be greater than end time.")
+        if self.end < self.start:
+            raise ValueError("Start time should be smaller than end time.")
 
 
 class Dataset(Protocol):
