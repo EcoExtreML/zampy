@@ -34,6 +34,19 @@ class SpatialBounds:
     south: float
     west: float
 
+    def __post_init__(self) -> None:
+        """Validate the initialized SpatialBounds class."""
+        if self.south > self.north:
+            raise ValueError(
+                "Value of southern bound is greater than norther bound."
+                "Please check the spatial bounds input."
+            )
+        if self.west > self.east:
+            raise ValueError(
+                "Value of western bound is greater than east bound."
+                "Please check the spatial bounds input."
+            )
+
 
 @dataclass
 class TimeBounds:
@@ -44,6 +57,11 @@ class TimeBounds:
 
     start: np.datetime64
     end: np.datetime64
+
+    def __post_init__(self) -> None:
+        """Validate the initialized TimeBounds class."""
+        if self.end > self.start:
+            raise ValueError("Start time should be greater than end time.")
 
 
 class Dataset(Protocol):
