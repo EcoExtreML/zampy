@@ -1,6 +1,7 @@
 """Datasets implementations."""
-from .dataset_protocol import Dataset
-from .eth_canopy_height import EthCanopyHeight
+from zampy.datasets import dataset_protocol
+from zampy.datasets import validation
+from zampy.datasets.eth_canopy_height import EthCanopyHeight
 
 
-__all__ = ["Dataset", "EthCanopyHeight"]
+__all__ = ["dataset_protocol", "validation", "EthCanopyHeight"]
