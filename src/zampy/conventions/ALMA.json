@@ -1,0 +1,22 @@
+{
+    "SWnet": {
+        "standard_name": "Net shortwave radiation",
+        "units": "watt/meter**2",
+        "desc":"Incoming solar radiation less the simulated outgoing shortwave radiation, averaged over a grid cell"
+    },
+    "LWnet": {
+        "standard_name": "Net longwave radiation",
+        "units": "watt/meter**2",
+        "desc":"Incident longwave radiation less the simulated outgoing longwave radiation, averaged over a grid cell"
+    },
+    "Qle": {
+        "standard_name": "Latent heat flux",
+        "units": "watt/meter**2",
+        "desc":"Energy of evaporation, averaged over a grid cell"
+    },
+    "Qh": {
+        "standard_name": "Sensible heat flux",
+        "units": "watt/meter**2",
+        "desc":"Sensible energy, averaged over a grid cell"
+    }
+}
