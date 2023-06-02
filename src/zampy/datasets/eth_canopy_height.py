@@ -146,6 +146,8 @@ class EthCanopyHeight(Dataset):  # noqa: D101
         convert_dir: Path,
         convention: str,
     ) -> xr.Dataset:
+        # check convention
+        converter.check_convention(convention)
         # load files
         ingest_folder = ingest_dir / self.name
         convert_folder = convert_dir / self.name

@@ -10,6 +10,14 @@ CONVENTIONS = {
 }
 
 
+def check_convention(convention):
+    if convention.upper() not in CONVENTIONS:
+        raise ValueError(f"The {convention} convention is not supported."
+                         "Please use another convention.")
+    else:
+        print(f"Start converting data to follow the {convention} convention.")
+
+
 def convert(
         dataset: xr.Dataset,
         fname: str,
