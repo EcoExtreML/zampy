@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import List
 import numpy as np
 import xarray as xr
+from zampy.datasets import converter
 from zampy.datasets import utils
 from zampy.datasets import validation
 from zampy.datasets.dataset_protocol import Dataset
@@ -143,17 +144,26 @@ class EthCanopyHeight(Dataset):  # noqa: D101
         self,
         ingest_dir: Path,
         convert_dir: Path,
-        convention: str="ALMA",
+        convention: str,
     ) -> xr.Dataset:
+        # load files
         ingest_folder = ingest_dir / self.name
         convert_folder = convert_dir / self.name
         convert_folder.mkdir(parents=True, exist_ok=True)
-        # load files
-        #ds = self.load(ingest_dir)
-        # compare variables
-        # convert and save
 
-        print(f"Dataset conversion following {convention} convention is complet!")
+        data_file_pattern = "ETH_GlobalCanopyHeight_10m_2020_*.nc"
+
+        data_files = list(ingest_folder.glob(data_file_pattern))
+
+        # convert variables
+        for file in data_files:
+            ds = xr.open_dataset(file, chunks={"x": 6000, "y": 6000})
+            converter.convert(ds,
+                              fname = file.name,
+                              output_path = convert_folder,
+                              convention = convention)
+
+        print(f"Datasets conversion following {convention} convention are complete!")
 
 
 def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> List[str]:
