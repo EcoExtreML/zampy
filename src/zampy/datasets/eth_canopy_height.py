@@ -159,6 +159,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
 
         # convert variables
         for file in data_files:
+            print(f"Start processing file `{file.name}`.")
             ds = xr.open_dataset(file, chunks={"x": 6000, "y": 6000})
             converter.convert(ds,
                               fname = file.name,

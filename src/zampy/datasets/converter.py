@@ -52,10 +52,11 @@ def convert(dataset: xr.Dataset, fname: str, output_path: Path, convention: str)
                 print(f"Variable '{var}' is not included in '{convention}' convention.")
 
     if if_convert:
-        print(f"Datasets conversion following {convention} convention are complete!")
+        print(f"Conversion of dataset '{fname}' following {convention} "
+              "convention is complete!")
     else:
         print(
             f"All variables already follow the {convention} convention or "
-            f"variables are not included in the {convention} convention.\n"
-            f"No conversion operation was performed."
+            f"not included in the {convention} convention.\n"
+            f"No conversion operation was performed on '{fname}'."
         )
