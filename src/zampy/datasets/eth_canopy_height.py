@@ -145,6 +145,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
         ingest_dir: Path,
         convert_dir: Path,
         convention: str,
+        overwrite: bool = False,
     ) -> xr.Dataset:
         # check convention
         converter.check_convention(convention)
@@ -159,12 +160,18 @@ class EthCanopyHeight(Dataset):  # noqa: D101
 
         # convert variables
         for file in data_files:
-            print(f"Start processing file `{file.name}`.")
-            ds = xr.open_dataset(file, chunks={"x": 6000, "y": 6000})
-            converter.convert(ds,
-                              fname = file.name,
-                              output_path = convert_folder,
-                              convention = convention)
+            # check if the converted file already exists
+            ncfile = convert_folder / file.with_suffix(".nc").name
+            if ncfile.exists() and not overwrite:
+                print(f"The converted file '{ncfile.name}' already exists, skipping...")
+            else:
+                # start conversion process
+                print(f"Start processing file `{file.name}`.")
+                ds = xr.open_dataset(file, chunks={"x": 6000, "y": 6000})
+                converter.convert(ds,
+                                fname = file.name,
+                                output_path = convert_folder,
+                                convention = convention)
 
 
 def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> List[str]:
