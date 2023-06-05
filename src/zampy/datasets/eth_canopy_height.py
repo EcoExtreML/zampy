@@ -165,8 +165,6 @@ class EthCanopyHeight(Dataset):  # noqa: D101
                               output_path = convert_folder,
                               convention = convention)
 
-        print(f"Datasets conversion following {convention} convention are complete!")
-
 
 def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> List[str]:
     """Get all valid ETH canopy height dataset filenames within given spatial bounds.
