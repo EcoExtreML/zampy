@@ -24,8 +24,6 @@ def check_convention(convention):
 
 def convert(dataset: xr.Dataset, fname: str, output_path: Path, convention: str):
     """Convert ETH Canopy Height dataset to follow the specified convention."""
-    # create unit registry
-    ureg = UnitRegistry()
     # checker of conversion
     if_convert = False
     # Load convention file
@@ -39,24 +37,38 @@ def convert(dataset: xr.Dataset, fname: str, output_path: Path, convention: str)
                 var_units = dataset[var].attrs["units"]
                 if var_units != convert_units:
                     if_convert = True
-                    # assign values with old units
-                    var_old = dataset[var].values * ureg(var_units)
-                    # convert to new units
-                    var_convert = var_old.to(ureg(convert_units)).magnitude
-                    # assign converted values to dataset and update units
-                    dataset[var][:] = var_convert
-                    dataset[var].attrs["units"] = convert_units
                     # save converted dataset
-                    dataset.to_netcdf(output_path / fname, format="NETCDF4")
+                    _convert_var(dataset, var, var_units, convert_units).to_netcdf(
+                        output_path / fname, format="NETCDF4"
+                    )
             else:
                 print(f"Variable '{var}' is not included in '{convention}' convention.")
 
     if if_convert:
-        print(f"Conversion of dataset '{fname}' following {convention} "
-              "convention is complete!")
+        print(
+            f"Conversion of dataset '{fname}' following {convention} "
+            "convention is complete!"
+        )
     else:
         print(
             f"All variables already follow the {convention} convention or "
             f"not included in the {convention} convention.\n"
             f"No conversion operation was performed on '{fname}'."
         )
+
+
+def _convert_var(
+    dataset: xr.Dataset, var: str, old_units: str, new_units: str
+) -> xr.Dataset:
+    """Convert variable with given units."""
+    # create unit registry
+    ureg = UnitRegistry()
+    # assign values with old units
+    var_old = dataset[var].values * ureg(old_units)
+    # convert to new units
+    var_convert = var_old.to(ureg(new_units)).magnitude
+    # assign converted values to dataset and update units
+    dataset[var][:] = var_convert
+    dataset[var].attrs["units"] = new_units
+
+    return dataset
