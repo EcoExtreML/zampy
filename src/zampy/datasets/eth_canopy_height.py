@@ -168,10 +168,12 @@ class EthCanopyHeight(Dataset):  # noqa: D101
                 # start conversion process
                 print(f"Start processing file `{file.name}`.")
                 ds = xr.open_dataset(file, chunks={"x": 6000, "y": 6000})
-                converter.convert(ds,
-                                fname = file.name,
-                                output_path = convert_folder,
-                                convention = convention)
+                converter.convert(
+                    ds,
+                    fname=file.name,
+                    output_path=convert_folder,
+                    convention=convention
+                )
 
 
 def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> List[str]:

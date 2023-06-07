@@ -22,7 +22,7 @@ def check_convention(convention):
         print(f"Start converting data to follow the '{convention}' convention.")
 
 
-def convert(dataset: xr.Dataset, fname: str, output_path: Path, convention: str):
+def convert(dataset: xr.Dataset, fname: str, output_path: Path, convention: Union[str, Path]):
     """Convert ETH Canopy Height dataset to follow the specified convention."""
     # checker of conversion
     if_convert = False
