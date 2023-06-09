@@ -1,22 +1,32 @@
 {
-    "SWnet": {
-        "standard_name": "Net shortwave radiation",
-        "units": "watt/meter**2",
-        "desc":"Incoming solar radiation less the simulated outgoing shortwave radiation, averaged over a grid cell"
+    "ALMA": {
+        "latitude_name": "x",
+        "longitude_name": "y",
+        "latitude_format": "(-90,90)",
+        "longitude_format": "(-180,180)"
     },
-    "LWnet": {
-        "standard_name": "Net longwave radiation",
-        "units": "watt/meter**2",
-        "desc":"Incident longwave radiation less the simulated outgoing longwave radiation, averaged over a grid cell"
+    "height_of_vegetation":{
+        "variable": "Hveg",
+        "units": "meter"
     },
-    "Qle": {
-        "standard_name": "Latent heat flux",
+    "net_shortwave_radiation": {
+        "variable": "SWnet",
         "units": "watt/meter**2",
-        "desc":"Energy of evaporation, averaged over a grid cell"
+        "positive_dir": "downward"
     },
-    "Qh": {
-        "standard_name": "Sensible heat flux",
+    "net_longwave_radiation": {
+        "variable": "LWnet",
         "units": "watt/meter**2",
-        "desc":"Sensible energy, averaged over a grid cell"
+        "positive_dir": "downward"
+    },
+    "latent_heat_flux": {
+        "variable": "Qle",
+        "units": "watt/meter**2",
+        "positive_dir": "downward"
+    },
+    "sensible_heat_flux": {
+        "variable": "Qh",
+        "units": "watt/meter**2",
+        "positive_dir": "downward"
     }
 }
