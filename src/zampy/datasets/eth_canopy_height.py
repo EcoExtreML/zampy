@@ -145,16 +145,13 @@ class EthCanopyHeight(Dataset):  # noqa: D101
         ingest_dir: Path,
         convention: str,
     ) -> bool:
-        # check convention
         converter.check_convention(convention)
-        # load files
         ingest_folder = ingest_dir / self.name
 
         data_file_pattern = "ETH_GlobalCanopyHeight_10m_2020_*.nc"
 
         data_files = list(ingest_folder.glob(data_file_pattern))
 
-        # convert variables
         for file in data_files:
             # start conversion process
             print(f"Start processing file `{file.name}`.")

@@ -27,10 +27,8 @@ def check_convention(convention):
 def convert(
     dataset: xr.Dataset, fname: str, convention: Union[str, Path]
 ) -> xr.Dataset:
-    """Convert ETH Canopy Height dataset to follow the specified convention."""
-    # checker of conversion
-    if_convert = False
-    # Load convention file
+    """Convert a loaded dataset to the specified convention."""
+    converted = False
     convention_file = open(Path(CONVENTIONS[convention]), encoding="UTF8")
     convention_dict = json.load(convention_file)
     for var in dataset.data_vars:
@@ -73,7 +71,6 @@ def _convert_var(
     """
     # make a copy to avoid in-place modification
     dataset = dataset.copy()
-    # convert to new units
     dataset[var] = dataset[var].pint.quantify().pint.to(new_units)
     # convert pint arrays back into NumPy arrays
     dataset = dataset.pint.dequantify()
