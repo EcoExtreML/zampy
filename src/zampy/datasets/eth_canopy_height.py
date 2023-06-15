@@ -258,7 +258,7 @@ def parse_tiff_file(file: Path, sd_file: bool = False) -> xr.Dataset:
         CF/Zampy formatted xarray Dataset
     """
     # Open chunked: will be dask array -> file writing can be parallelized.
-    da = xr.open_dataarray(file, engine="rasterio", chunks={"x": 6000, "y": 6000})
+    da = xr.open_dataarray(file, engine="rasterio", chunks={"x": 2000, "y": 2000})
     da = da.sortby(["x", "y"])  # sort the dims ascending
     da = da.isel(band=0)  # get rid of band dim
     da = da.drop_vars(["band", "spatial_ref"])  # drop unnecessary coords
