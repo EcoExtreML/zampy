@@ -132,7 +132,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
         if self.variable_names[1] in variable_names:
             files += (ingest_dir / self.name).glob("*Map_SD.nc")
 
-        ds = xr.open_mfdataset(files, chunks={"latitude": 6000, "longitude": 6000})
+        ds = xr.open_mfdataset(files, chunks={"latitude": 2000, "longitude": 2000})
         ds = ds.sel(
             latitude=slice(spatial_bounds.south, spatial_bounds.north),
             longitude=slice(spatial_bounds.west, spatial_bounds.east),
@@ -155,10 +155,10 @@ class EthCanopyHeight(Dataset):  # noqa: D101
         for file in data_files:
             # start conversion process
             print(f"Start processing file `{file.name}`.")
-            ds = xr.open_dataset(file, chunks={"x": 6000, "y": 6000})
+            ds = xr.open_dataset(file, chunks={"x": 2000, "y": 2000})
             ds = converter.convert(
                 ds,
-                fname=file.name,
+                dataset=EthCanopyHeight(),
                 convention=convention
             )
             # TODO: support derived variables
