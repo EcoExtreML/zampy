@@ -9,6 +9,10 @@
         "variable": "Hveg",
         "units": "meter"
     },
+    "height_of_vegetation_standard_deviation":{
+        "variable": "Hveg_sd",
+        "units": "meter"
+    },    
     "net_shortwave_radiation": {
         "variable": "SWnet",
         "units": "watt/meter**2",

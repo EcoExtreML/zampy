@@ -35,7 +35,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
         Variable(name="h_canopy", unit=unit_registry.meter),
         Variable(name="h_canopy_SD", unit=unit_registry.meter),
     )
-    variable_names = ("canopy-height", "canopy-height-standard-deviation")
+    variable_names = ("height_of_vegetation", "height_of_vegetation_standard_deviation")
     variables = (
         VARIABLE_REFERENCE_LOOKUP[var] for var in variable_names
     )  # type: ignore
@@ -267,9 +267,9 @@ def parse_tiff_file(file: Path, sd_file: bool = False) -> xr.Dataset:
     ds = ds.expand_dims("time")
     ds = ds.rename(
         {
-            "band_data": "canopy-height-standard-deviation"
+            "band_data": "height_of_vegetation_standard_deviation"
             if sd_file
-            else "canopy-height",
+            else "height_of_vegetation",
             "x": "longitude",
             "y": "latitude",
         }
@@ -288,9 +288,9 @@ def parse_tiff_file(file: Path, sd_file: bool = False) -> xr.Dataset:
 
     # TODO: add dataset attributes.
     ds.encoding = {
-        "canopy-height-standard-deviation"
+        "height_of_vegetation_standard_deviation"
         if sd_file
-        else "canopy-height": {
+        else "height_of_vegetation": {
             "zlib": True,
             "complevel": 5,
         }
