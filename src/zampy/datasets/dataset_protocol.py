@@ -156,17 +156,13 @@ class Dataset(Protocol):
     def convert(
         self,
         ingest_dir: Path,
-        convert_dir: Path,
         convention: str,
-        overwrite: bool = False,
     ) -> xr.Dataset:
         """Format variables to follow the desired convention.
 
         Args:
             ingest_dir: Path to the Zampy ingest directory.
-            convert_dir: Path to the Zampy convert directory.
             convention: Conventions for model forcing and outputs.
-            overwrite: Overwrite existing files instead of skipping them.
 
         Returns:
             The formatted data as an xarray Dataset.
