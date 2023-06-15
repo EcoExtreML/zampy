@@ -1,5 +1,6 @@
 """Dataset formatter for different conventions."""
 import json
+import warnings
 from pathlib import Path
 from typing import Union
 import cf_xarray.units  # ruff: noqa: F401
@@ -40,6 +41,7 @@ def convert(
                 converted = True
                 # lazy dask array
                 data = _convert_var(data, var, convert_units)
+            data = data.rename({var: convention_dict[var.lower()]["variable"]})
 
         else:
             print(f"Variable '{var}' is not included in '{convention}' convention.")
