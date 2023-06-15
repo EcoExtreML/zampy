@@ -5,6 +5,7 @@ from typing import Union
 import cf_xarray.units  # ruff: noqa: F401
 import pint_xarray  # ruff: noqa: F401
 import xarray as xr
+from zampy.datasets.dataset_protocol import Dataset
 
 
 CONVENTIONS = {
@@ -25,43 +26,43 @@ def check_convention(convention):
 
 
 def convert(
-    dataset: xr.Dataset, fname: str, convention: Union[str, Path]
+    data: xr.Dataset, dataset: Dataset, convention: Union[str, Path]
 ) -> xr.Dataset:
     """Convert a loaded dataset to the specified convention."""
     converted = False
     convention_file = open(Path(CONVENTIONS[convention]), encoding="UTF8")
     convention_dict = json.load(convention_file)
-    for var in dataset.data_vars:
+    for var in data.data_vars:
         if var.lower() in convention_dict:
             convert_units = convention_dict[var.lower()]["units"]
-            var_units = dataset[var].attrs["units"]
+            var_units = data[var].attrs["units"]
             if var_units != convert_units:
-                if_convert = True
+                converted = True
                 # lazy dask array
-                dataset = _convert_var(dataset, var, convert_units)
+                data = _convert_var(data, var, convert_units)
 
         else:
             print(f"Variable '{var}' is not included in '{convention}' convention.")
 
     convention_file.close()
 
-    if if_convert:
+    if converted:
         print(
-            f"Conversion of dataset '{fname}' following {convention} "
+            f"Conversion of dataset '{dataset.name}' following {convention} "
             "convention is complete!"
         )
     else:
         print(
             f"All variables already follow the {convention} convention or "
             f"not included in the {convention} convention.\n"
-            f"No conversion operation was performed on '{fname}'."
+            f"No conversion operation was performed on '{dataset.name}'."
         )
 
-    return dataset
+    return data
 
 
 def _convert_var(
-    dataset: xr.Dataset, var: str, new_units: str
+    data: xr.Dataset, var: str, new_units: str
 ) -> xr.Dataset:
     """Convert variable with given units.
 
@@ -70,9 +71,11 @@ def _convert_var(
     Note: `cf_xarray.units` is also needed to support units of latitude and longitude.
     """
     # make a copy to avoid in-place modification
-    dataset = dataset.copy()
-    dataset[var] = dataset[var].pint.quantify().pint.to(new_units)
-    # convert pint arrays back into NumPy arrays
-    dataset = dataset.pint.dequantify()
+    data = data.copy()
+    data[var] = data[var].pint.quantify().pint.to(new_units)
+    # convert pint arrays back into NumPy arrays, then the varaible only contains numpy array
+    # with units as xarray attributes (otherwise the variable is a pint array object with unit)
+    # for more details, please check https://xarray.dev/blog/introducing-pint-xarray#dequantifying
+    data = data.pint.dequantify()
 
-    return dataset
+    return data
