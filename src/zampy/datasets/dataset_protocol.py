@@ -152,6 +152,23 @@ class Dataset(Protocol):
         """
         ...
 
+    @abstractmethod
+    def convert(
+        self,
+        ingest_dir: Path,
+        convention: str,
+    ) -> xr.Dataset:
+        """Format variables to follow the desired convention.
+
+        Args:
+            ingest_dir: Path to the Zampy ingest directory.
+            convention: Conventions for model forcing and outputs.
+
+        Returns:
+            The formatted data as an xarray Dataset.
+        """
+        ...
+
 
 def write_properties_file(
     dataset_folder: Path,

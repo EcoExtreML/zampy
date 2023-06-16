@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import List
 import numpy as np
 import xarray as xr
+from zampy.datasets import converter
 from zampy.datasets import utils
 from zampy.datasets import validation
 from zampy.datasets.dataset_protocol import Dataset
@@ -34,7 +35,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
         Variable(name="h_canopy", unit=unit_registry.meter),
         Variable(name="h_canopy_SD", unit=unit_registry.meter),
     )
-    variable_names = ("canopy-height", "canopy-height-standard-deviation")
+    variable_names = ("height_of_vegetation", "height_of_vegetation_standard_deviation")
     variables = (
         VARIABLE_REFERENCE_LOOKUP[var] for var in variable_names
     )  # type: ignore
@@ -131,13 +132,40 @@ class EthCanopyHeight(Dataset):  # noqa: D101
         if self.variable_names[1] in variable_names:
             files += (ingest_dir / self.name).glob("*Map_SD.nc")
 
-        ds = xr.open_mfdataset(files, chunks={"latitude": 6000, "longitude": 6000})
+        ds = xr.open_mfdataset(files, chunks={"latitude": 2000, "longitude": 2000})
         ds = ds.sel(
             latitude=slice(spatial_bounds.south, spatial_bounds.north),
             longitude=slice(spatial_bounds.west, spatial_bounds.east),
             time=slice(time_bounds.start, time_bounds.end),
         )
         return ds
+
+    def convert(
+        self,
+        ingest_dir: Path,
+        convention: str,
+    ) -> bool:
+        converter.check_convention(convention)
+        ingest_folder = ingest_dir / self.name
+
+        data_file_pattern = "ETH_GlobalCanopyHeight_10m_2020_*.nc"
+
+        data_files = list(ingest_folder.glob(data_file_pattern))
+
+        for file in data_files:
+            # start conversion process
+            print(f"Start processing file `{file.name}`.")
+            ds = xr.open_dataset(file, chunks={"x": 2000, "y": 2000})
+            ds = converter.convert(
+                ds,
+                dataset=EthCanopyHeight(),
+                convention=convention
+            )
+            # TODO: support derived variables
+            # TODO: other calculations
+            # call ds.compute()
+
+        return True
 
 
 def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> List[str]:
@@ -230,7 +258,7 @@ def parse_tiff_file(file: Path, sd_file: bool = False) -> xr.Dataset:
         CF/Zampy formatted xarray Dataset
     """
     # Open chunked: will be dask array -> file writing can be parallelized.
-    da = xr.open_dataarray(file, engine="rasterio", chunks={"x": 6000, "y": 6000})
+    da = xr.open_dataarray(file, engine="rasterio", chunks={"x": 2000, "y": 2000})
     da = da.sortby(["x", "y"])  # sort the dims ascending
     da = da.isel(band=0)  # get rid of band dim
     da = da.drop_vars(["band", "spatial_ref"])  # drop unnecessary coords
@@ -239,9 +267,9 @@ def parse_tiff_file(file: Path, sd_file: bool = False) -> xr.Dataset:
     ds = ds.expand_dims("time")
     ds = ds.rename(
         {
-            "band_data": "canopy-height-standard-deviation"
+            "band_data": "height_of_vegetation_standard_deviation"
             if sd_file
-            else "canopy-height",
+            else "height_of_vegetation",
             "x": "longitude",
             "y": "latitude",
         }
@@ -260,9 +288,9 @@ def parse_tiff_file(file: Path, sd_file: bool = False) -> xr.Dataset:
 
     # TODO: add dataset attributes.
     ds.encoding = {
-        "canopy-height-standard-deviation"
+        "height_of_vegetation_standard_deviation"
         if sd_file
-        else "canopy-height": {
+        else "height_of_vegetation": {
             "zlib": True,
             "complevel": 5,
         }

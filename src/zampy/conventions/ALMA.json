@@ -1,0 +1,36 @@
+{
+    "ALMA": {
+        "latitude_name": "x",
+        "longitude_name": "y",
+        "latitude_format": "(-90,90)",
+        "longitude_format": "(-180,180)"
+    },
+    "height_of_vegetation":{
+        "variable": "Hveg",
+        "units": "meter"
+    },
+    "height_of_vegetation_standard_deviation":{
+        "variable": "Hveg_sd",
+        "units": "meter"
+    },    
+    "net_shortwave_radiation": {
+        "variable": "SWnet",
+        "units": "watt/meter**2",
+        "positive_dir": "downward"
+    },
+    "net_longwave_radiation": {
+        "variable": "LWnet",
+        "units": "watt/meter**2",
+        "positive_dir": "downward"
+    },
+    "latent_heat_flux": {
+        "variable": "Qle",
+        "units": "watt/meter**2",
+        "positive_dir": "downward"
+    },
+    "sensible_heat_flux": {
+        "variable": "Qh",
+        "units": "watt/meter**2",
+        "positive_dir": "downward"
+    }
+}
