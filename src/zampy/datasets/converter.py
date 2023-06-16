@@ -77,7 +77,7 @@ def _convert_var(
     # make a copy to avoid in-place modification
     data = data.copy()
     data[var] = data[var].pint.quantify().pint.to(new_units)
-    # convert pint arrays back into NumPy arrays, then the varaible only contains numpy
+    # convert pint arrays back into NumPy arrays, so the variable only contains numpy
     # array with units as xarray attributes (otherwise the variable is a pint array
     # object with unit) for more details, please check
     # https://xarray.dev/blog/introducing-pint-xarray#dequantifying
