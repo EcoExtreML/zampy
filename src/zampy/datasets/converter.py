@@ -14,7 +14,7 @@ CONVENTIONS = {
 }
 
 
-def check_convention(convention):
+def check_convention(convention: str) -> None:
     """Check if the given convention is supported."""
     if convention.upper() not in CONVENTIONS:
         raise ValueError(
@@ -31,9 +31,13 @@ def convert(
 ) -> xr.Dataset:
     """Convert a loaded dataset to the specified convention."""
     converted = False
-    convention_file = open(Path(CONVENTIONS[convention]), encoding="UTF8")
+    if isinstance(convention, str):
+        convention_file = Path(CONVENTIONS[convention]).open(mode="r", encoding="UTF8")
+    else:
+        convention_file = convention.open(mode="r", encoding="UTF8")
+
     convention_dict = json.load(convention_file)
-    for var in data.data_vars:
+    for var in [str(v) for v in data.data_vars]:
         if var.lower() in convention_dict:
             convert_units = convention_dict[var.lower()]["units"]
             var_name = convention_dict[var.lower()]["variable"]
@@ -59,15 +63,14 @@ def convert(
         warnings.warn(
             f"All variables already follow the {convention} convention or "
             f"not included in the {convention} convention.\n"
-            f"No conversion operation was performed on '{dataset.name}'."
+            f"No conversion operation was performed on '{dataset.name}'.",
+            stacklevel=2,
         )
 
     return data
 
 
-def _convert_var(
-    data: xr.Dataset, var: str, new_units: str
-) -> xr.Dataset:
+def _convert_var(data: xr.Dataset, var: str, new_units: str) -> xr.Dataset:
     """Convert variable with given units.
 
     pint-xarray is used here for the unit conversion. It supports xarray and dask.

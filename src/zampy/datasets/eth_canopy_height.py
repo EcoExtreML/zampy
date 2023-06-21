@@ -156,11 +156,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
             # start conversion process
             print(f"Start processing file `{file.name}`.")
             ds = xr.open_dataset(file, chunks={"x": 2000, "y": 2000})
-            ds = converter.convert(
-                ds,
-                dataset=EthCanopyHeight(),
-                convention=convention
-            )
+            ds = converter.convert(ds, dataset=self, convention=convention)
             # TODO: support derived variables
             # TODO: other calculations
             # call ds.compute()

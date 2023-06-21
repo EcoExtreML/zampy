@@ -157,7 +157,7 @@ class Dataset(Protocol):
         self,
         ingest_dir: Path,
         convention: str,
-    ) -> xr.Dataset:
+    ) -> bool:
         """Format variables to follow the desired convention.
 
         Args:
