@@ -3,8 +3,8 @@ import json
 import warnings
 from pathlib import Path
 from typing import Union
-import cf_xarray.units  # ruff: noqa: F401
-import pint_xarray  # ruff: noqa: F401
+import cf_xarray.units  # noqa: F401
+import pint_xarray  # noqa: F401
 import xarray as xr
 from zampy.datasets.dataset_protocol import Dataset
 
