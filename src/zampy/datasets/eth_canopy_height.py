@@ -15,6 +15,7 @@ from zampy.datasets.dataset_protocol import copy_properties_file
 from zampy.datasets.dataset_protocol import write_properties_file
 from zampy.reference.variables import VARIABLE_REFERENCE_LOOKUP
 from zampy.reference.variables import unit_registry
+from zampy.utils import regrid
 
 
 VALID_NAME_FILE = (
@@ -119,11 +120,12 @@ class EthCanopyHeight(Dataset):  # noqa: D101
 
         return True
 
-    def load(
+    def load(  # noqa: PLR0913
         self,
         ingest_dir: Path,
         time_bounds: TimeBounds,
         spatial_bounds: SpatialBounds,
+        resolution: float,
         variable_names: List[str],
     ) -> xr.Dataset:
         files: List[Path] = []
@@ -133,11 +135,8 @@ class EthCanopyHeight(Dataset):  # noqa: D101
             files += (ingest_dir / self.name).glob("*Map_SD.nc")
 
         ds = xr.open_mfdataset(files, chunks={"latitude": 2000, "longitude": 2000})
-        ds = ds.sel(
-            latitude=slice(spatial_bounds.south, spatial_bounds.north),
-            longitude=slice(spatial_bounds.west, spatial_bounds.east),
-            time=slice(time_bounds.start, time_bounds.end),
-        )
+        ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
+        ds = regrid.xesfm_regrid(ds, spatial_bounds, resolution)
         return ds
 
     def convert(
@@ -237,6 +236,13 @@ def convert_tiff_to_netcdf(
         print(f"File '{ncfile.name}' already exists, skipping...")
     else:
         ds = parse_tiff_file(file, sd_file)
+
+        # Coarsen the data to be 1/100 deg resolution instead of 1/12000
+        ds = ds.coarsen({"latitude": 120, "longitude": 120}).mean()  # type: ignore
+        ds = ds.compute()
+        ds = ds.interpolate_na(dim="longitude", limit=1)
+        ds = ds.interpolate_na(dim="latitude", limit=1)
+
         ds.to_netcdf(
             path=ncfile,
             encoding=ds.encoding,
@@ -259,7 +265,9 @@ def parse_tiff_file(file: Path, sd_file: bool = False) -> xr.Dataset:
     da = da.isel(band=0)  # get rid of band dim
     da = da.drop_vars(["band", "spatial_ref"])  # drop unnecessary coords
     ds = da.to_dataset()
-    ds = ds.assign_coords({"time": np.datetime64("2020-07-01")})  # halfway in the year
+    ds = ds.assign_coords(  # halfway in the year
+        {"time": np.datetime64("2020-07-01").astype("datetime64[ns]")}
+    )
     ds = ds.expand_dims("time")
     ds = ds.rename(
         {

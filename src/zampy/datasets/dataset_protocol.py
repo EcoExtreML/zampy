@@ -131,11 +131,12 @@ class Dataset(Protocol):
         ...
 
     @abstractmethod
-    def load(
+    def load(  # noqa: PLR0913
         self,
         ingest_dir: Path,
         time_bounds: TimeBounds,
         spatial_bounds: SpatialBounds,
+        resolution: float,
         variable_names: List[str],
     ) -> xr.Dataset:
         """Get the dataset as an xarray Dataset.
@@ -145,6 +146,8 @@ class Dataset(Protocol):
             time_bounds: The start and end time of the data that should be loaded.
             spatial_bounds: The lat/lon bounding box for which the data should be
                 loaded.
+            resolution: The desired resolution of the loaded data. The ingested data
+                will be regridded to match this resolution.
             variable_names: Which variables should be loaded.
 
         Returns:

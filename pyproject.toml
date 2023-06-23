@@ -74,6 +74,7 @@ dev = [
   "types-urllib3", # type stubs for url lib
   "pytest",
   "pytest-cov",
+  "pre-commit",
 ]
 
 [tool.hatch.envs.default]
