@@ -25,6 +25,11 @@ jobs:
       - uses: mamba-org/setup-micromamba@v1
         with:
           init-shell: bash
+      - name: Micromamba info
+        shell: bash -l {0}
+        run: |
+          which micromamba
+          micromamba info
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
