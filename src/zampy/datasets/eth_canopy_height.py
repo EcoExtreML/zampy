@@ -142,7 +142,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
     def convert(
         self,
         ingest_dir: Path,
-        convention: str,
+        convention: str | Path,
     ) -> bool:
         converter.check_convention(convention)
         ingest_folder = ingest_dir / self.name
