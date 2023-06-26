@@ -1,11 +1,10 @@
+# config (folder, login info etc goes to a ~/.zampy/config file)
 download:
-  folder: /home/bart/Data/zampy/test/
   years: [1980, 2020]
   bbox: [3, 50, 6, 54]
 
   datasets:
-    era5-land:
-      frequency: hourly
+    era5-land-hourly:
       variables:
         - air_temperature  # will map to 2m_temperature...
           - height_m: 2  # optional extra argument
@@ -13,9 +12,7 @@ download:
           - height_m: 2
 
 convert:
-  standard: ALMA
-  flavor: PLUMBER2  # More specified than ALMA.
-  folder: /home/bart/Data/zampy/output/
+  standard: ALMA-PLUMBER2
   frequency: 1H  # outputs at 1 hour frequency. Pandas-like freq-keyword.
   resolution: 0.01  # output resolution in degrees.
 
@@ -32,7 +29,6 @@ collections:
     area: [3, 50, 6, 54]
   
     dataset: era5-land
-      frequency: hourly
       variables:
         - air_temperature
 
