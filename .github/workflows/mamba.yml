@@ -35,5 +35,5 @@ jobs:
         run: pip install .[dev]
         shell: bash -el {0}
       - name: Run pytest
-        run: pytest src/
+        run: pytest
         shell: micromamba-shell {0}

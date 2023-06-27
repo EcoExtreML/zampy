@@ -61,6 +61,7 @@ dependencies = [
   "pint",
   "cf_xarray",  # required to auto-pint CF compliant datasets.
   "pint-xarray",
+  "flox",  # For better groupby methods.
 ]
 dynamic = ["version"]
 
@@ -92,7 +93,7 @@ format = [
   "ruff check src/ tests/ --fix --exit-non-zero-on-fix",
   "lint",
 ]
-test = ["pytest ./src/zampy/ ./tests/ --doctest-modules",]
+test = ["pytest ./src/zampy/ ./tests/ --doctest-modules --ignore-glob='*xesmf*.py'",]
 coverage = [
   "pytest --cov --cov-report term --cov-report xml --junitxml=xunit-result.xml tests/",
 ]
