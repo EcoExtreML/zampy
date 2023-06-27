@@ -14,7 +14,7 @@ CONVENTIONS = {
 }
 
 
-def check_convention(convention: str | Path) -> None:
+def check_convention(convention: Union[str, Path]) -> None:
     """Check if the given convention is supported."""
     if isinstance(convention, str):
         if convention.upper() not in CONVENTIONS:

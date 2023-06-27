@@ -11,7 +11,7 @@ on:
 jobs:
 
   build:
-    name: Build for (${{ matrix.python-version }}, ${{ matrix.os }})
+    name: Micromamba test on (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

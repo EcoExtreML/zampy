@@ -2,6 +2,7 @@
 import gzip
 from pathlib import Path
 from typing import List
+from typing import Union
 import numpy as np
 import xarray as xr
 from zampy.datasets import converter
@@ -143,7 +144,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
     def convert(
         self,
         ingest_dir: Path,
-        convention: str | Path,
+        convention: Union[str, Path],
     ) -> bool:
         converter.check_convention(convention)
         ingest_folder = ingest_dir / self.name
