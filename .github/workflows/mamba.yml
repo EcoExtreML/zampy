@@ -1,0 +1,39 @@
+name: Micromamba
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+jobs:
+
+  build:
+    name: Build for (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-latest']
+        python-version: ['3.10']
+    env:
+      MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
+    steps:
+      - uses: actions/checkout@v3
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: environment.yml
+          cache-environment: true
+          init-shell: bash
+      - name: Micromamba info
+        shell: bash -el {0}
+        run: |
+          micromamba info
+      - name: Install dev dependencies
+        run: pip install .[dev]
+        shell: bash -el {0}
+      - name: Run pytest
+        run: pytest src/
+        shell: micromamba-shell {0}

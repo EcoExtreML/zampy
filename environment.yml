@@ -3,7 +3,7 @@ name: zampy
 channels:
   - conda-forge
 dependencies:
-  - python>=3.8,<3.11
+  - python==3.10
   - xESMF
   - requests
   - netcdf4

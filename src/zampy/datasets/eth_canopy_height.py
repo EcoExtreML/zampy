@@ -136,7 +136,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
 
         ds = xr.open_mfdataset(files, chunks={"latitude": 2000, "longitude": 2000})
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
-        ds = regrid.xesfm_regrid(ds, spatial_bounds, resolution)
+        ds = regrid.regrid_data(ds, spatial_bounds, resolution)
         return ds
 
     def convert(

@@ -92,20 +92,20 @@ format = [
   "ruff check src/ tests/ --fix --exit-non-zero-on-fix",
   "lint",
 ]
-
-[tool.hatch.envs.conda]
-type = "conda"
-python = "3.10"
-command = "micromamba"
-environment-file = "environment.yml"
-extra-dependencies = ["pytest", "pytest-cov"]
-
-[tool.hatch.envs.conda.scripts]
-test = ["python -m pytest ./tests/",]
-doctest = ["python -m pytest ./src/zampy/ --doctest-modules",]
+test = ["pytest ./src/zampy/ ./tests/ --doctest-modules",]
 coverage = [
-  "python -m pytest --cov --cov-report term --cov-report xml --junitxml=xunit-result.xml tests/",
+  "pytest --cov --cov-report term --cov-report xml --junitxml=xunit-result.xml tests/",
 ]
+
+# [tool.hatch.envs.conda]
+# type = "conda"
+# python = "3.10"
+# command = "micromamba"
+# environment-file = "environment.yml"
+# extra-dependencies = ["pytest", "pytest-cov"]
+
+# [tool.hatch.envs.conda.scripts]
+# test = ["pytest ./tests/",]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
