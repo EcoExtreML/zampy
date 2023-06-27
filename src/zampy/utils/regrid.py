@@ -153,9 +153,10 @@ def flox_regrid(
     but can struggle in some areas:
         - There is no weighted averaging performed: areas near the poles will
             incorrectly contribute more to the total average.
-        - Groupby is performed for latitude first, then longitude, this can lead to a
-            bias in case of certain patterns of NaN values, or near the edges of the
-            dataset.
+        - To achieve a conservative regrid-like method, data of a resolution close to
+            the new resolution is first interpolated (to a finer resolution), and then
+            regridded to the intended resolution. This will lead to small
+            inconsistencies with NaN thresholds.
 
     For a more robust method use the xesmf regridding option, however this does require
     installation through conda/mamba, and is not available on Windows.
