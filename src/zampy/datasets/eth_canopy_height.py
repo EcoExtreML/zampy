@@ -126,6 +126,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
         time_bounds: TimeBounds,
         spatial_bounds: SpatialBounds,
         resolution: float,
+        regrid_method: str,
         variable_names: List[str],
     ) -> xr.Dataset:
         files: List[Path] = []
@@ -136,7 +137,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
 
         ds = xr.open_mfdataset(files, chunks={"latitude": 2000, "longitude": 2000})
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
-        ds = regrid.regrid_data(ds, spatial_bounds, resolution)
+        ds = regrid.regrid_data(ds, spatial_bounds, resolution, regrid_method)
         return ds
 
     def convert(
