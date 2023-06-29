@@ -53,6 +53,8 @@ def xesfm_regrid(
         data, ds_grid, method=regrid_method, unmapped_to_nan=True
     )
     return regridder(
+        # Chunks need to span all of the horizontal (lat/lon) dimensions for xesmf:
+        # https://xesmf.readthedocs.io/en/latest/notebooks/Dask.html#Invalid-chunk-sizes-to-avoid
         data.chunk({"latitude": -1, "longitude": -1}),
         keep_attrs=True,
         skipna=True,
