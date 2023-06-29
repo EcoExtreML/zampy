@@ -14,16 +14,23 @@ CONVENTIONS = {
 }
 
 
-def check_convention(convention: str) -> None:
+def check_convention(convention: Union[str, Path]) -> None:
     """Check if the given convention is supported."""
-    if convention.upper() not in CONVENTIONS:
-        raise ValueError(
-            f"The '{convention}' convention is not supported.\n"
-            "Please check the available conventions in the `conventions` "
-            "directory and choose one from there."
-        )
+    if isinstance(convention, str):
+        if convention.upper() not in CONVENTIONS:
+            raise ValueError(
+                f"The '{convention}' convention is not supported.\n"
+                "Please check the available conventions in the `conventions` "
+                "directory and choose one from there."
+            )
+        else:
+            print(f"Starting data conversion to the '{convention}' convention.")
     else:
-        print(f"Start converting data to follow the '{convention}' convention.")
+        if not convention.exists():
+            raise FileNotFoundError(
+                f"Convention file '{convention}' could not be found."
+            )
+        print(f"Starting data conversion to the convention defined in '{convention}'")
 
 
 def convert(
