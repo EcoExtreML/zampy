@@ -24,7 +24,7 @@ def dummy_property_file(dataset_folder):
 
 
 def test_write_properties():
-    """Test """
+    """Test write properties function."""
     with TemporaryDirectory() as temp_dir:
         dataset_folder = Path(temp_dir)
         dummy_property_file(dataset_folder)
@@ -41,3 +41,43 @@ def test_write_properties():
         assert properties["south"] == 51
         assert properties["west"] == 3
         assert properties["variable_names"] == ["Hveg", "SWnet"]
+
+
+def test_read_properties():
+    """Test read properties function."""
+    with TemporaryDirectory() as temp_dir:
+        dataset_folder = Path(temp_dir)
+        dummy_property_file(dataset_folder)
+
+        (
+            spatial_bounds,
+            time_bounds,
+            variable_names,
+        ) = dataset_protocol.read_properties_file(dataset_folder)
+
+            # Verify the returned values
+        assert spatial_bounds.north == 54
+        assert spatial_bounds.east == 6
+        assert spatial_bounds.south == 51
+        assert spatial_bounds.west == 3
+        assert time_bounds.start == "2020-01-01"
+        assert time_bounds.end == "2020-12-31"
+        assert variable_names == ["Hveg", "SWnet"]
+
+
+def test_copy_properties_file():
+    """Test copy properties file function."""
+    # Create temporary directories
+    with TemporaryDirectory() as temp_dir1, TemporaryDirectory() as temp_dir2:
+        source_folder = Path(temp_dir1)
+        target_folder = Path(temp_dir2)
+
+        # Create a properties.json file in the source folder
+        dummy_property_file(source_folder)
+
+        # Call the function
+        dataset_protocol.copy_properties_file(source_folder, target_folder)
+
+        # Verify that the file has been copied
+        target_file_path = target_folder / "properties.json"
+        assert target_file_path.exists()
