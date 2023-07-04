@@ -55,7 +55,7 @@ def test_read_properties():
             variable_names,
         ) = dataset_protocol.read_properties_file(dataset_folder)
 
-            # Verify the returned values
+        # Verify the returned values
         assert spatial_bounds.north == 54
         assert spatial_bounds.east == 6
         assert spatial_bounds.south == 51
