@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import numpy as np
+import pytest
 from zampy.datasets import dataset_protocol
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
@@ -81,3 +82,18 @@ def test_copy_properties_file():
         # Verify that the file has been copied
         target_file_path = target_folder / "properties.json"
         assert target_file_path.exists()
+
+
+def test_invalid_spatial_bounds_north_south():
+    with pytest.raises(ValueError, match="greater than norther bound"):
+        SpatialBounds(51, 6, 54, 3)
+
+
+def test_invalid_spatial_bounds_east_west():
+    with pytest.raises(ValueError, match="greater than east bound"):
+        SpatialBounds(54, 6, 51, 20)
+
+
+def test_invalid_time_bounds():
+    with pytest.raises(ValueError):
+        TimeBounds(np.datetime64("2021-01-01"), np.datetime64("2020-12-31"))
