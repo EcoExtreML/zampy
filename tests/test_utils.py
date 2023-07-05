@@ -1,7 +1,7 @@
 """Unit test for utils functions."""
 
-from pathlib import Path
 import tempfile
+from pathlib import Path
 from unittest.mock import patch
 from zampy.datasets import utils
 
