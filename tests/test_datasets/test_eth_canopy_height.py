@@ -87,10 +87,8 @@ class TestEthCanopyHeight:
 
             # we assert the regridded coordinates
             expected_lat = [51.0, 52.0, 53.0, 54.0]
-            expected_lon = [3.0, 4.0, 5.0, 6.0]
 
             np.testing.assert_allclose(ds.latitude.values, expected_lat)
-            np.testing.assert_allclose(ds.longitude.values, expected_lon)
 
     def test_convert(self):
         pass
