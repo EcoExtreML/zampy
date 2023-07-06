@@ -36,7 +36,16 @@ def check_convention(convention: Union[str, Path]) -> None:
 def convert(
     data: xr.Dataset, dataset: Dataset, convention: Union[str, Path]
 ) -> xr.Dataset:
-    """Convert a loaded dataset to the specified convention."""
+    """Convert a loaded dataset to the specified convention.
+
+    Args:
+        data: Input xarray data.
+        dataset: Zampy dataset instance.
+        convention: Input data exchange convention.
+
+    Return:
+        Input xarray with converted variables following given convention.
+    """
     converted = False
     if isinstance(convention, str):
         convention_file = Path(CONVENTIONS[convention]).open(mode="r", encoding="UTF8")

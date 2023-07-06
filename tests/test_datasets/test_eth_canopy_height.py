@@ -63,14 +63,17 @@ class TestEthCanopyHeight:
         return ds, canopy_height_dataset
 
     def test_ingest(self):
+        """Test ingest function."""
         with TemporaryDirectory() as temp_dir:
             ds, _ = self.ingest_dummy_data(temp_dir)
 
             assert type(ds) == xr.Dataset
 
     def test_load(self):
+        """Test load function."""
         with TemporaryDirectory() as temp_dir:
-            _, canopy_height_dataset = self.ingest_dummy_data(temp_dir)
+            ds, canopy_height_dataset = self.ingest_dummy_data(temp_dir)
+            ds.close()  # make windows happy, otherwise gives PermissionError on CI/CD
 
             times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-12-31"))
             bbox = SpatialBounds(54, 6, 51, 3)
@@ -87,11 +90,20 @@ class TestEthCanopyHeight:
 
             # we assert the regridded coordinates
             expected_lat = [51.0, 52.0, 53.0, 54.0]
+            expected_lon = [3.0, 4.0, 5.0, 6.0]
 
             np.testing.assert_allclose(ds.latitude.values, expected_lat)
+            np.testing.assert_allclose(ds.longitude.values, expected_lon)
 
     def test_convert(self):
-        pass
+        """Test convert function."""
+        with TemporaryDirectory() as temp_dir:
+            _, canopy_height_dataset = self.ingest_dummy_data(temp_dir)
+            canopy_height_dataset.convert(
+                ingest_dir=Path(temp_dir),
+                convention="ALMA"
+            )
+            # TODO: finish this test when the function is complete.
 
 
 def test_get_filenames():
