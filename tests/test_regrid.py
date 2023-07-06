@@ -1,5 +1,6 @@
 """Unit test for regridding."""
 
+import builtins
 from pathlib import Path
 import numpy as np
 import pytest
@@ -9,6 +10,25 @@ from zampy.utils import regrid
 
 
 path_dummy_data = Path(__file__).resolve().parent / "test_data" / "eth-canopy-height"
+
+
+@pytest.fixture
+def always_hide_xesfm(monkeypatch):
+    import_orig = builtins.__import__
+
+    def mocked_import(name, *args, **kwargs):
+        if name == "xesfm":
+            raise ImportError()
+        return import_orig(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", mocked_import)
+
+
+@pytest.mark.usefixtures("always_hide_xesfm")
+def test_assert_xesmf_available_no_xesmf():
+    """Test assert_xesmf_available function with exception case."""
+    with pytest.raises(ImportError, match="Could not import the `xesmf`"):
+        regrid.assert_xesmf_available()
 
 
 @pytest.fixture
