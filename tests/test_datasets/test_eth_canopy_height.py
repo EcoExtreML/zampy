@@ -3,9 +3,8 @@
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
-import numpy as np
-import pytest
 from unittest.mock import patch
+import numpy as np
 import xarray as xr
 from zampy.datasets import eth_canopy_height
 from zampy.datasets.dataset_protocol import SpatialBounds
@@ -47,14 +46,51 @@ class TestEthCanopyHeight:
                 # check property
                 assert json_dict["variable_names"] == variable
 
+    def ingest_dummy_data(self, temp_dir):
+        """Ïngest dummy tif data to nc for other tests."""
+        canopy_height_dataset = eth_canopy_height.EthCanopyHeight()
+        canopy_height_dataset.ingest(
+            download_dir=data_folder, ingest_dir=Path(temp_dir)
+        )
+        ds = xr.load_dataset(
+            Path(
+                temp_dir,
+                "eth-canopy-height",
+                "ETH_GlobalCanopyHeight_10m_2020_N51E003_Map.nc",
+            )
+        )
+
+        return ds, canopy_height_dataset
+
     def test_ingest(self):
-        # with TemporaryDirectory() as temp_dir:
-            # canopy_height_dataset = eth_canopy_height.EthCanopyHeight()
-            # canopy_height_dataset.ingest(download_dir=data_folder, ingest_dir=temp_dir)
-        pass
+        with TemporaryDirectory() as temp_dir:
+            ds, _ = self.ingest_dummy_data(temp_dir)
+
+            assert type(ds) == xr.Dataset
 
     def test_load(self):
-        pass
+        with TemporaryDirectory() as temp_dir:
+            _, canopy_height_dataset = self.ingest_dummy_data(temp_dir)
+
+            times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-12-31"))
+            bbox = SpatialBounds(54, 6, 51, 3)
+            variable = ["height_of_vegetation"]
+
+            ds = canopy_height_dataset.load(
+                ingest_dir=Path(temp_dir),
+                time_bounds=times,
+                spatial_bounds=bbox,
+                variable_names=variable,
+                resolution=1.0,
+                regrid_method="flox",
+            )
+
+            # we assert the regridded coordinates
+            expected_lat = [51.0, 52.0, 53.0, 54.0]
+            expected_lon = [3.0, 4.0, 5.0, 6.0]
+
+            np.testing.assert_allclose(ds.latitude.values, expected_lat)
+            np.testing.assert_allclose(ds.longitude.values, expected_lon)
 
     def test_convert(self):
         pass
@@ -72,7 +108,7 @@ def test_get_filenames():
     assert file_names == expected
 
 
-def test_get_filenames_SD():
+def test_get_filenames_sd():
     """Test file names of standard deviation."""
     bbox = SpatialBounds(54, 8, 51, 3)
     expected = [
@@ -104,7 +140,11 @@ def test_valid_filenames():
 def test_parse_tiff_file():
     """Test tiff file parser."""
     dummy_ds = eth_canopy_height.parse_tiff_file(
-        Path(data_folder, "eth-canopy-height", "ETH_GlobalCanopyHeight_10m_2020_N51E003_Map.tif")
+        Path(
+            data_folder,
+            "eth-canopy-height",
+            "ETH_GlobalCanopyHeight_10m_2020_N51E003_Map.tif",
+        )
     )
     assert type(dummy_ds) == xr.Dataset
 
