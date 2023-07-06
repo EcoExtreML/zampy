@@ -1,6 +1,5 @@
 """Unit test for regridding."""
 
-import builtins
 from pathlib import Path
 import numpy as np
 import pytest
@@ -10,14 +9,14 @@ from zampy.utils import regrid
 
 
 path_dummy_data = Path(__file__).resolve().parent / "test_data" / "eth-canopy-height"
-
+XESMF_INSTALLED = True
 try:
     import xesmf as _  # noqa: F401 (unused import)
 except ImportError:
-    xesmf_installed = False
+    XESMF_INSTALLED = False
 
 
-@pytest.mark.skipif(xesmf_installed, reason="xesmf is installed")
+@pytest.mark.skipif(XESMF_INSTALLED, reason="xesmf is installed")
 def assert_xesmf_available() -> None:
     """Test assert_xesmf_available function with exception case."""
     with pytest.raises(ImportError, match="Could not import the `xesmf`"):

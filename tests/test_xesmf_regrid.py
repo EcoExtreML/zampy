@@ -3,17 +3,18 @@
 import pytest
 
 
+XESMF_INSTALLED = True
 try:
     import xesmf as _  # noqa: F401 (unused import)
 except ImportError:
-    xesmf_installed = False
+    XESMF_INSTALLED = False
 
 
-@pytest.mark.skipif(not xesmf_installed, reason="xesmf is not installed")
+@pytest.mark.skipif(not XESMF_INSTALLED, reason="xesmf is not installed")
 def test_create_new_grid():
     pass
 
 
-@pytest.mark.skipif(not xesmf_installed, reason="xesmf is not installed")
+@pytest.mark.skipif(not XESMF_INSTALLED, reason="xesmf is not installed")
 def test_xesfm_regrid():
     pass
