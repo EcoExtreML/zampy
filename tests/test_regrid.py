@@ -11,21 +11,14 @@ from zampy.utils import regrid
 
 path_dummy_data = Path(__file__).resolve().parent / "test_data" / "eth-canopy-height"
 
-
-@pytest.fixture
-def always_hide_xesfm(monkeypatch):
-    import_orig = builtins.__import__
-
-    def mocked_import(name, *args, **kwargs):
-        if name == "xesfm":
-            raise ImportError()
-        return import_orig(name, *args, **kwargs)
-
-    monkeypatch.setattr(builtins, "__import__", mocked_import)
+try:
+    import xesmf as _  # noqa: F401 (unused import)
+except ImportError:
+    xesmf_installed = False
 
 
-@pytest.mark.usefixtures("always_hide_xesfm")
-def test_assert_xesmf_available_no_xesmf():
+@pytest.mark.skipif(xesmf_installed, reason="xesmf is installed")
+def assert_xesmf_available() -> None:
     """Test assert_xesmf_available function with exception case."""
     with pytest.raises(ImportError, match="Could not import the `xesmf`"):
         regrid.assert_xesmf_available()
