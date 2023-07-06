@@ -1,4 +1,4 @@
-"""Unit test for regridding."""
+"""Unit test for converter."""
 
 from pathlib import Path
 import numpy as np

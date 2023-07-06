@@ -47,7 +47,7 @@ class TestEthCanopyHeight:
                 assert json_dict["variable_names"] == variable
 
     def ingest_dummy_data(self, temp_dir):
-        """Ïngest dummy tif data to nc for other tests."""
+        """Ingest dummy tif data to nc for other tests."""
         canopy_height_dataset = eth_canopy_height.EthCanopyHeight()
         canopy_height_dataset.ingest(
             download_dir=data_folder, ingest_dir=Path(temp_dir)
@@ -72,8 +72,7 @@ class TestEthCanopyHeight:
     def test_load(self):
         """Test load function."""
         with TemporaryDirectory() as temp_dir:
-            ds, canopy_height_dataset = self.ingest_dummy_data(temp_dir)
-            ds.close()  # make windows happy, otherwise gives PermissionError on CI/CD
+            _, canopy_height_dataset = self.ingest_dummy_data(temp_dir)
 
             times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-12-31"))
             bbox = SpatialBounds(54, 6, 51, 3)
@@ -99,10 +98,7 @@ class TestEthCanopyHeight:
         """Test convert function."""
         with TemporaryDirectory() as temp_dir:
             _, canopy_height_dataset = self.ingest_dummy_data(temp_dir)
-            canopy_height_dataset.convert(
-                ingest_dir=Path(temp_dir),
-                convention="ALMA"
-            )
+            canopy_height_dataset.convert(ingest_dir=Path(temp_dir), convention="ALMA")
             # TODO: finish this test when the function is complete.
 
 
