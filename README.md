@@ -1,6 +1,10 @@
 # zampy
 Tool for downloading Land Surface Model input data
 
+[![github license badge](https://img.shields.io/github/license/EcoExtreML/zampy)](https://github.com/EcoExtreML/zampy)
+[![build](https://github.com/EcoExtreML/zampy/actions/workflows/build.yml/badge.svg)](https://github.com/EcoExtreML/zampy/actions/workflows/build.yml)
+[![workflow scc badge](https://sonarcloud.io/api/project_badges/measure?project=EcoExtreML_zampy&metric=coverage)](https://sonarcloud.io/dashboard?id=EcoExtreML_zampy)
+
 
 ## Tool outline:
 

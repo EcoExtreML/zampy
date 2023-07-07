@@ -51,10 +51,10 @@ def compare_variables(
         variable_names: User requested variables.
 
     Raises:
-        ValueError: _description_
+        InvalidVariableError: If the variables are not available in the dataset
     """
     if not all(var in dataset.variable_names for var in variable_names):
-        raise ValueError(
+        raise InvalidVariableError(
             f"Input variable and/or units does not match the {dataset.name} dataset."
         )
 
