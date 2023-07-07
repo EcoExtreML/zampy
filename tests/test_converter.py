@@ -11,7 +11,7 @@ from zampy.datasets.eth_canopy_height import parse_tiff_file
 
 path_dummy_data = Path(__file__).resolve().parent / "test_data" / "eth-canopy-height"
 
-# ruff: noqa: B018 (protected-access)
+# ruff: noqa: B018
 
 
 def test_check_convention_not_support():

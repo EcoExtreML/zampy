@@ -15,6 +15,8 @@ try:
 except ImportError:
     XESMF_INSTALLED = False
 
+# ruff: noqa: B018
+
 
 @pytest.mark.skipif(XESMF_INSTALLED, reason="xesmf is installed")
 def assert_xesmf_available() -> None:
@@ -39,6 +41,28 @@ def test_infer_resolution(dummy_dataset):
 
     assert resolution_lat == pytest.approx(expected_lat, 0.001)
     assert resolution_lon == pytest.approx(expected_lon, 0.001)
+
+
+def test_groupby_regrid(dummy_dataset):
+    """Test groupby regrid function."""
+    bbox = SpatialBounds(54, 6, 51, 3)
+    ds = regrid._groupby_regrid(data=dummy_dataset, spatial_bounds=bbox, resolution=1.0)
+    expected_lat = [51.0, 52.0, 53.0, 54.0]
+    expected_lon = [3.0, 4.0, 5.0, 6.0]
+
+    np.testing.assert_allclose(ds.latitude.values, expected_lat)
+    np.testing.assert_allclose(ds.longitude.values, expected_lon)
+
+
+def test_interp_regrid(dummy_dataset):
+    """Test interp regrid function."""
+    bbox = SpatialBounds(51.1, 3.1, 51, 3)
+    ds = regrid._interp_regrid(data=dummy_dataset, spatial_bounds=bbox, resolution=0.05)
+    expected_lat = [51.0, 51.05, 51.1]
+    expected_lon = [3.0, 3.05, 3.1]
+
+    np.testing.assert_allclose(ds.latitude.values, expected_lat)
+    np.testing.assert_allclose(ds.longitude.values, expected_lon)
 
 
 def test_flox_regrid_4x_courser(dummy_dataset):
