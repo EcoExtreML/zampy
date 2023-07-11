@@ -9,6 +9,12 @@ from typing import Optional
 from typing import Union
 import requests
 from tqdm import tqdm
+from zampy.datasets.dataset_protocol import SpatialBounds
+from zampy.datasets.dataset_protocol import TimeBounds
+
+
+PRODUCT_FNAME = {"reanalysis-era5-single-levels": "era5",
+                 "reanalysis-era5-land": "era5-land"}
 
 
 class TqdmUpdate(tqdm):
@@ -60,10 +66,13 @@ def get_file_size(fpath: Path) -> int:
         return fpath.stat().st_size
 
 
-def cds_request(
-        product: str, variables: list[str],
-        time_bounds, spatial_bounds, path: Path,
-        overwrite: bool
+def cds_request(  # noqa: PLR0913
+        product: str,
+        variables: list[str],
+        time_bounds: TimeBounds,
+        spatial_bounds: SpatialBounds,
+        path: Path,
+        overwrite: bool,
     ) -> None:
     """Download data via CDS API.
     
@@ -75,6 +84,8 @@ def cds_request(
     https://confluence.ecmwf.int/display/CKB/Climate+Data+Store+%28CDS%29+documentation
     The downloading is organized by asking for one month of data per request.
     """
+    fname = PRODUCT_FNAME[product]
+
     with (Path.home() / ".cdsapirc").open(encoding="utf8") as f:
         url = f.readline().split(":", 1)[1].strip()
         api_key = f.readline().split(":", 1)[1].strip()
@@ -84,13 +95,19 @@ def cds_request(
         key=api_key,
         verify=True,
         quiet=True,
+        #wait_until_complete=False
     )
 
     # create list of year/month pairs
     year_month_pairs = time_bounds_to_year_month(time_bounds)
 
     for (year, month), variable in itertools.product(year_month_pairs, variables):
-        # TODO: check for overwrite
+        # check existence and overwrite
+        fpath = path / f"{fname}_{variable}_{year}-{month}.nc"
+        if fpath.exists() and not overwrite:
+            print(f"File '{fpath.name}' already exists, skipping...")
+            continue
+        # raise request
         c.retrieve(
             product,
             {
@@ -120,11 +137,11 @@ def cds_request(
                 ],
                 'format': 'netcdf',
             },
-            Path(path, f'era5_{variable}_{year}-{month}.nc')
+            fpath
         )
 
 
-def time_bounds_to_year_month(time_bounds):
+def time_bounds_to_year_month(time_bounds: TimeBounds):
     """Return year/month pairs."""
     date_range = pd.date_range(start=time_bounds.start, end=time_bounds.end, freq='M')
     year_month_pairs = [(str(date.year), str(date.month)) for date in date_range]

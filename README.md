@@ -21,3 +21,12 @@ Tool for downloading Land Surface Model input data
  - Support both a CLI & Python API.
 
 Note: items in *italic* will not be worked on for now/low priority, but we want to allow space for these in the future.
+
+## Insturction for CDS API users
+To download the following datasets, users need access to CDS via cdsapi:
+
+- ERA5
+- ERA5 land
+- LAI
+
+Before submitting any request with `zampy`, please configure your `.cdsapirc` file following the instructions on https://pypi.org/project/cdsapi/.

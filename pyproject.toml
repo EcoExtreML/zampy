@@ -62,6 +62,7 @@ dependencies = [
   "cf_xarray",  # required to auto-pint CF compliant datasets.
   "pint-xarray",
   "flox",  # For better groupby methods.
+  "cdsapi",
 ]
 dynamic = ["version"]
 
