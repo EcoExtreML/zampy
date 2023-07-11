@@ -29,4 +29,4 @@ To download the following datasets, users need access to CDS via cdsapi:
 - ERA5 land
 - LAI
 
-Before submitting any request with `zampy`, please configure your `.cdsapirc` file following the instructions on https://pypi.org/project/cdsapi/.
+Before submitting any request with `zampy`, please configure your `.cdsapirc` file following the instructions on https://cds.climate.copernicus.eu/api-how-to. For the first time, it is **necessary to agree to the Terms of Use of every datasets that you intend to download**. This can only be done via web API.

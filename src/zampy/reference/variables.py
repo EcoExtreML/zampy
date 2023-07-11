@@ -9,6 +9,10 @@ unit_registry.define("percent = 1e-2 frac = pct")
 unit_registry.define("ppm = 1e-6 fraction")
 unit_registry.define("degree_north = degree = degree_N = degreeN")
 unit_registry.define("degree_east = degree = degree_E = degreeE")
+unit_registry.define("radiation = joule / meter**2")
+unit_registry.define("velocity = meter / second")
+unit_registry.define("precipitation = kilogram / meter**2 / second")
+
 
 # By default, we use the variable names and units following the CF convention:
 # https://cfconventions.org/Data/cf-standard-names/current/build/cf-standard-name-table.html
