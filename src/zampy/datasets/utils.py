@@ -1,4 +1,8 @@
 """Shared utilities from datasets."""
+import itertools
+import cdsapi
+import numpy as np
+import pandas as pd
 import urllib.request
 from pathlib import Path
 from typing import Optional
@@ -44,7 +48,7 @@ def download_url(url: str, fpath: Path, overwrite: bool) -> None:
 
 def get_url_size(url: str) -> int:
     """Return the size (bytes) of a given URL."""
-    response = requests.head(url)
+    response = requests.head(url, timeout=90)
     return int(response.headers["Content-Length"])
 
 
@@ -54,3 +58,74 @@ def get_file_size(fpath: Path) -> int:
         return 0
     else:
         return fpath.stat().st_size
+
+
+def cds_request(
+        product: str, variables: list[str],
+        time_bounds, spatial_bounds, path: Path,
+        overwrite: bool
+    ) -> None:
+    """Download data via CDS API.
+    
+    To raise a request via CDS API, the user needs to set up the
+    configuration file `.cdsapirc` following the instructions on
+    https://pypi.org/project/cdsapi/.
+
+    Following the efficiency tips of request,
+    https://confluence.ecmwf.int/display/CKB/Climate+Data+Store+%28CDS%29+documentation
+    The downloading is organized by asking for one month of data per request.
+    """
+    with (Path.home() / ".cdsapirc").open(encoding="utf8") as f:
+        url = f.readline().split(":", 1)[1].strip()
+        api_key = f.readline().split(":", 1)[1].strip()
+
+    c = cdsapi.Client(
+        url=url,
+        key=api_key,
+        verify=True,
+        quiet=True,
+    )
+
+    # create list of year/month pairs
+    year_month_pairs = time_bounds_to_year_month(time_bounds)
+
+    for (year, month), variable in itertools.product(year_month_pairs, variables):
+        # TODO: check for overwrite
+        c.retrieve(
+            product,
+            {
+                'product_type': 'reanalysis',
+                'variable': [variable],
+                'year': year,
+                'month': month,
+                'day': [
+                    '01', '02', '03', '04', '05', '06',
+                    '07', '08', '09', '10', '11', '12',
+                    '13', '14', '15', '16', '17', '18',
+                    '19', '20', '21', '22', '23', '24',
+                    '25', '26', '27', '28', '29', '30',
+                    '31',
+                ],
+                'time': [
+                    '00:00', '01:00', '02:00', '03:00', '04:00', '05:00',
+                    '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
+                    '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
+                    '18:00', '19:00', '20:00', '21:00', '22:00', '23:00',
+                ],
+                'area': [
+                    spatial_bounds.north,
+                    spatial_bounds.west,
+                    spatial_bounds.south,
+                    spatial_bounds.east,
+                ],
+                'format': 'netcdf',
+            },
+            Path(path, f'era5_{variable}_{year}-{month}.nc')
+        )
+
+
+def time_bounds_to_year_month(time_bounds):
+    """Return year/month pairs."""
+    date_range = pd.date_range(start=time_bounds.start, end=time_bounds.end, freq='M')
+    year_month_pairs = [(str(date.year), str(date.month)) for date in date_range]
+    return year_month_pairs
