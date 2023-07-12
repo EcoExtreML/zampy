@@ -32,5 +32,9 @@
         "variable": "Qh",
         "units": "watt/meter**2",
         "positive_dir": "downward"
+    },
+    "surface_pressure": {
+        "variable": "Psurf",
+        "units": "pascal"
     }
 }

@@ -22,6 +22,7 @@ VARIABLE_REFERENCE = (
     Variable("air-temperature", unit_registry.kelvin),
     Variable("dewpoint-temperature", unit_registry.kelvin),
     Variable("relative-humidity", unit_registry.percent),
+    Variable("surface_pressure", unit_registry.pascal),
     Variable(
         "specific-humidity",
         unit_registry.fraction,
