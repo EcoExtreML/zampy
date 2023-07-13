@@ -29,12 +29,12 @@ class ERA5(Dataset):  # noqa: D101
     spatial_bounds = SpatialBounds(90, 180, -90, -180)
 
     raw_variables = (
-        Variable(name="mtpr", unit=unit_registry.precipitation),
-        Variable(name="strd", unit=unit_registry.radiation),
-        Variable(name="ssrd", unit=unit_registry.radiation),
+        Variable(name="mtpr", unit=unit_registry.kilogram_per_square_meter_second),
+        Variable(name="strd", unit=unit_registry.joule_per_square_meter),
+        Variable(name="ssrd", unit=unit_registry.joule_per_square_meter),
         Variable(name="sp", unit=unit_registry.pascal),
-        Variable(name="u10", unit=unit_registry.velocity),
-        Variable(name="v10", unit=unit_registry.velocity),
+        Variable(name="u10", unit=unit_registry.meter_per_second),
+        Variable(name="v10", unit=unit_registry.meter_per_second),
     )
 
     # variable names used in cdsapi downloading request
