@@ -147,7 +147,7 @@ class ERA5(Dataset):  # noqa: D101
         converter.check_convention(convention)
         ingest_folder = ingest_dir / self.name
 
-        data_file_pattern = "ETH_GlobalCanopyHeight_10m_2020_*.nc"
+        data_file_pattern = "era5_*.nc"
 
         data_files = list(ingest_folder.glob(data_file_pattern))
 

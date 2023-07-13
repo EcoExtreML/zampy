@@ -9,9 +9,8 @@ import xarray as xr
 from zampy.datasets.dataset_protocol import Dataset
 
 
-CONVENTIONS = {
-    "ALMA": "src/zampy/conventions/ALMA.json",
-}
+CONVENTIONS = ["ALMA"]
+conventions_path = Path(__file__).resolve().parents[1] / "conventions"
 
 
 def check_convention(convention: Union[str, Path]) -> None:
@@ -39,7 +38,9 @@ def convert(
     """Convert a loaded dataset to the specified convention."""
     converted = False
     if isinstance(convention, str):
-        convention_file = Path(CONVENTIONS[convention]).open(mode="r", encoding="UTF8")
+        convention_file = (conventions_path / f"{convention}.json").open(
+            mode="r", encoding="UTF8"
+        )
     else:
         convention_file = convention.open(mode="r", encoding="UTF8")
 
