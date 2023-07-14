@@ -8,9 +8,10 @@ from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
 
 
+@patch(".cdsapi")
 @patch("cdsapi.Client.retrieve")
 def test_cds_request(mock_retrieve):
-    """"Test cds request for downloading data from CDS server."""
+    """ "Test cds request for downloading data from CDS server."""
     product = "reanalysis-era5-single-levels"
     variables = ["10m_v_component_of_wind"]
     time_bounds = TimeBounds(
@@ -21,7 +22,7 @@ def test_cds_request(mock_retrieve):
     overwrite = True
 
     utils.cds_request(product, variables, time_bounds, spatial_bounds, path, overwrite)
-    
+
     mock_retrieve.assert_called_with(
         product,
         {
@@ -95,9 +96,10 @@ def test_cds_request(mock_retrieve):
                 spatial_bounds.east,
             ],
             "format": "netcdf",
-            },
+        },
         path / "era5_10m_v_component_of_wind_2010-1.nc",
     )
+
 
 def test_time_bounds_to_year_month():
     """Test year and month pair converter function."""
