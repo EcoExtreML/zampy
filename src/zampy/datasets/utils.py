@@ -57,7 +57,7 @@ def download_url(url: str, fpath: Path, overwrite: bool) -> None:
 
 def get_url_size(url: str) -> int:
     """Return the size (bytes) of a given URL."""
-    response = requests.head(url, timeout=90)
+    response = requests.head(url, timeout=30)
     return int(response.headers["Content-Length"])
 
 
@@ -106,7 +106,6 @@ def cds_request(  # noqa: PLR0913
         key=api_key,
         verify=True,
         quiet=True,
-        # wait_until_complete=False
     )
 
     # create list of year/month pairs
