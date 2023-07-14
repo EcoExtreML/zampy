@@ -18,9 +18,9 @@ unit_registry.define("kilogram_per_square_meter_second = kilogram/(meter**2*seco
 
 
 VARIABLE_REFERENCE = (
-    Variable("air-temperature", unit_registry.kelvin),
-    Variable("dewpoint-temperature", unit_registry.kelvin),
-    Variable("relative-humidity", unit_registry.percent),
+    Variable("air_temperature", unit_registry.kelvin),
+    Variable("dewpoint_temperature", unit_registry.kelvin),
+    Variable("relative_humidity", unit_registry.percent),
     Variable("surface_pressure", unit_registry.pascal),
     Variable("10m_u_component_of_wind", unit_registry.meter_per_second),
     Variable("10m_v_component_of_wind", unit_registry.meter_per_second),
@@ -30,7 +30,7 @@ VARIABLE_REFERENCE = (
         "mean_total_precipitation_rate", unit_registry.kilogram_per_square_meter_second
     ),
     Variable(
-        "specific-humidity",
+        "specific_humidity",
         unit_registry.fraction,
         desc="Mass fraction of water in air.",
     ),

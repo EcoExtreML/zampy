@@ -39,11 +39,13 @@
     },
     "10m_u_component_of_wind": {
         "variable": "Wind_N",
-        "units": "meter/second"
+        "units": "meter/second",
+        "positive_dir": "northward"
     },
     "10m_v_component_of_wind": {
         "variable": "Wind_E",
-        "units": "meter/second"
+        "units": "meter/second",
+        "positive_dir": "eastward"
     },
     "mean_total_precipitation_rate": {
         "variable": "Rainf",

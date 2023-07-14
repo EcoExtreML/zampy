@@ -67,6 +67,7 @@ def convert(
             f"Conversion of dataset '{dataset.name}' following {convention} "
             "convention is complete!"
         )
+        data.attrs["Conventions"] = convention
     else:
         warnings.warn(
             f"All variables already follow the {convention} convention or "
