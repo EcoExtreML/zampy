@@ -5,6 +5,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 import numpy as np
+import pytest
 import xarray as xr
 from zampy.datasets import era5
 from zampy.datasets.dataset_protocol import SpatialBounds
@@ -12,11 +13,20 @@ from zampy.datasets.dataset_protocol import TimeBounds
 from . import data_folder
 
 
+@pytest.fixture(scope="function")
+def valid_path_cds(tmp_path_factory):
+    """Create a dummy .cdsapirc file."""
+    fn = tmp_path_factory.mktemp("usrhome") / ".cdsapirc"
+    with open(fn, mode="w", encoding="utf-8") as f:
+        f.write("url: a\nkey: 123:abc-def")
+    return fn
+
+
 class TestERA5:
     """Test the ERA5 class."""
 
     @patch("cdsapi.Client.retrieve")
-    def test_download(self, mock_retrieve):
+    def test_download(self, mock_retrieve, valid_path_cds):
         """Test download functionality.
         Here we mock the downloading and save property file to a fake path.
         """
@@ -27,23 +37,26 @@ class TestERA5:
             download_dir = Path(temp_dir, "download")
 
             era5_dataset = era5.ERA5()
-            era5_dataset.download(
-                download_dir=download_dir,
-                time_bounds=times,
-                spatial_bounds=bbox,
-                variable_names=variable,
-            )
+            # create a dummy .cdsapirc
+            patching = patch("zampy.datasets.utils.CDSAPI_CONFIG_PATH", valid_path_cds)
+            with patching:
+                era5_dataset.download(
+                    download_dir=download_dir,
+                    time_bounds=times,
+                    spatial_bounds=bbox,
+                    variable_names=variable,
+                )
 
-            # make sure that the download is called
-            assert mock_retrieve.called
+                # make sure that the download is called
+                assert mock_retrieve.called
 
-            # check property file
-            with (download_dir / "era5" / "properties.json").open(
-                mode="r", encoding="utf-8"
-            ) as file:
-                json_dict = json.load(file)
-                # check property
-                assert json_dict["variable_names"] == variable
+                # check property file
+                with (download_dir / "era5" / "properties.json").open(
+                    mode="r", encoding="utf-8"
+                ) as file:
+                    json_dict = json.load(file)
+                    # check property
+                    assert json_dict["variable_names"] == variable
 
     def ingest_dummy_data(self, temp_dir):
         """Ingest dummy tif data to nc for other tests."""

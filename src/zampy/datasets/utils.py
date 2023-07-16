@@ -18,6 +18,7 @@ PRODUCT_FNAME = {
     "reanalysis-era5-single-levels": "era5",
     "reanalysis-era5-land": "era5-land",
 }
+CDSAPI_CONFIG_PATH = Path.home() / ".cdsapirc"
 
 
 class TqdmUpdate(tqdm):
@@ -97,7 +98,7 @@ def cds_request(  # noqa: PLR0913
     """
     fname = PRODUCT_FNAME[product]
 
-    with (Path.home() / ".cdsapirc").open(encoding="utf8") as f:
+    with CDSAPI_CONFIG_PATH.open(encoding="utf8") as f:
         url = f.readline().split(":", 1)[1].strip()
         api_key = f.readline().split(":", 1)[1].strip()
 
