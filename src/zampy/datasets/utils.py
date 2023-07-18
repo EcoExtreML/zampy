@@ -1,5 +1,4 @@
 """Shared utilities from datasets."""
-import itertools
 import urllib.request
 from pathlib import Path
 from typing import List
@@ -10,6 +9,7 @@ import cdsapi
 import pandas as pd
 import requests
 from tqdm import tqdm
+from tqdm.contrib.itertools import product
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
 
@@ -71,7 +71,7 @@ def get_file_size(fpath: Path) -> int:
 
 
 def cds_request(  # noqa: PLR0913
-    product: str,
+    dataset: str,
     variables: List[str],
     time_bounds: TimeBounds,
     spatial_bounds: SpatialBounds,
@@ -89,14 +89,14 @@ def cds_request(  # noqa: PLR0913
     The downloading is organized by asking for one month of data per request.
 
     Args:
-        product: Dataset name for retrieval via `cdsapi`.
+        dataset: Dataset name for retrieval via `cdsapi`.
         variables: Zampy variable.
         time_bounds: Zampy time bounds object.
         spatial_bounds: Zampy spatial bounds object.
         path: File path to which the data should be saved.
         overwrite: If an existing file (of the same size!) should be overwritten.
     """
-    fname = PRODUCT_FNAME[product]
+    fname = PRODUCT_FNAME[dataset]
 
     with CDSAPI_CONFIG_PATH.open(encoding="utf8") as f:
         url = f.readline().split(":", 1)[1].strip()
@@ -112,10 +112,12 @@ def cds_request(  # noqa: PLR0913
     # create list of year/month pairs
     year_month_pairs = time_bounds_to_year_month(time_bounds)
 
-    for (year, month), variable in itertools.product(year_month_pairs, variables):
+    for (year, month), variable in product(
+        year_month_pairs, variables, position=0, leave=True
+    ):
         # raise download request
         r = c.retrieve(
-            product,
+            dataset,
             {
                 "product_type": "reanalysis",
                 "variable": [variable],
@@ -149,6 +151,7 @@ def cds_request(  # noqa: PLR0913
 
         if get_file_size(fpath) != r.content_length or overwrite:
             r.download(fpath)
+            tqdm.write(f"Download {fpath.name} successfully.")
         else:
             print(f"File '{fpath.name}' already exists, skipping...")
 

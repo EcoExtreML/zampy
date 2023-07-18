@@ -81,7 +81,7 @@ class ERA5(Dataset):  # noqa: D101
         download_folder.mkdir(parents=True, exist_ok=True)
 
         utils.cds_request(
-            product="reanalysis-era5-single-levels",
+            dataset="reanalysis-era5-single-levels",
             variables=variable_names,
             time_bounds=time_bounds,
             spatial_bounds=spatial_bounds,
