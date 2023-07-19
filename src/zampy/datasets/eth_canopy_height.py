@@ -55,7 +55,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
 
     data_url = "https://share.phys.ethz.ch/~pf/nlangdata/ETH_GlobalCanopyHeight_10m_2020_version1/3deg_cogs/"
 
-    def download(  # noqa: PLR0913
+    def download(
         self,
         download_dir: Path,
         time_bounds: TimeBounds,
@@ -121,7 +121,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
 
         return True
 
-    def load(  # noqa: PLR0913
+    def load(
         self,
         ingest_dir: Path,
         time_bounds: TimeBounds,

@@ -105,7 +105,7 @@ class TestERA5:
 
     def test_convert(self):
         """Test convert function."""
-        with TemporaryDirectory() as temp_dir:
+        with TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
             _, era5_dataset = self.ingest_dummy_data(temp_dir)
             era5_dataset.convert(ingest_dir=Path(temp_dir), convention="ALMA")
             # TODO: finish this test when the function is complete.

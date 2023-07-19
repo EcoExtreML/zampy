@@ -70,7 +70,7 @@ def get_file_size(fpath: Path) -> int:
         return fpath.stat().st_size
 
 
-def cds_request(  # noqa: PLR0913
+def cds_request(
     dataset: str,
     variables: List[str],
     time_bounds: TimeBounds,

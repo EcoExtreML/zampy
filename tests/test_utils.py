@@ -65,7 +65,7 @@ def test_cds_request(mock_retrieve, valid_path_cds):
                     spatial_bounds.east,
                 ],
                 "format": "netcdf",
-            }
+            },
         )
 
 
