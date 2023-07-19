@@ -9,7 +9,7 @@ unit_registry.define("percent = 1e-2 frac = pct")
 unit_registry.define("ppm = 1e-6 fraction")
 unit_registry.define("degree_north = degree = degree_N = degreeN")
 unit_registry.define("degree_east = degree = degree_E = degreeE")
-unit_registry.define("joule_per_square_meter = joule/meter**2")
+unit_registry.define("watt_per_square_meter = watt/meter**2")
 unit_registry.define("kilogram_per_square_meter_second = kilogram/(meter**2*second)")
 
 
@@ -24,8 +24,8 @@ VARIABLE_REFERENCE = (
     Variable("surface_pressure", unit_registry.pascal),
     Variable("10m_u_component_of_wind", unit_registry.meter_per_second),
     Variable("10m_v_component_of_wind", unit_registry.meter_per_second),
-    Variable("surface_solar_radiation", unit_registry.joule_per_square_meter),
-    Variable("surface_thermal_radiation", unit_registry.joule_per_square_meter),
+    Variable("surface_solar_radiation", unit_registry.watt_per_square_meter),
+    Variable("surface_thermal_radiation", unit_registry.watt_per_square_meter),
     Variable(
         "mean_total_precipitation_rate", unit_registry.kilogram_per_square_meter_second
     ),

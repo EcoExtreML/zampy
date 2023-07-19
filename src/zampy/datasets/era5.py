@@ -30,8 +30,8 @@ class ERA5(Dataset):  # noqa: D101
 
     raw_variables = (
         Variable(name="mtpr", unit=unit_registry.kilogram_per_square_meter_second),
-        Variable(name="strd", unit=unit_registry.joule_per_square_meter),
-        Variable(name="ssrd", unit=unit_registry.joule_per_square_meter),
+        Variable(name="strd", unit=unit_registry.watt_per_square_meter),
+        Variable(name="ssrd", unit=unit_registry.watt_per_square_meter),
         Variable(name="sp", unit=unit_registry.pascal),
         Variable(name="u10", unit=unit_registry.meter_per_second),
         Variable(name="v10", unit=unit_registry.meter_per_second),
@@ -61,7 +61,7 @@ class ERA5(Dataset):  # noqa: D101
         }
     """
 
-    def download(  # noqa: PLR0913
+    def download(
         self,
         download_dir: Path,
         time_bounds: TimeBounds,
@@ -119,7 +119,7 @@ class ERA5(Dataset):  # noqa: D101
 
         return True
 
-    def load(  # noqa: PLR0913
+    def load(
         self,
         ingest_dir: Path,
         time_bounds: TimeBounds,
@@ -216,6 +216,9 @@ def parse_nc_file(file: Path) -> xr.Dataset:
         if variable in var_reference_era5_to_zampy:
             var = str(variable)  # Cast to string to please mypy
             variable_name = var_reference_era5_to_zampy[var]
+            # if statement variable name
+            # conversion for radiation (to flux) & precipitation (/ rho water)
+            # https://confluence.ecmwf.int/pages/viewpage.action?pageId=155337784
             ds = ds.rename({var: variable_name})
             ds[variable_name].attrs["units"] = str(
                 VARIABLE_REFERENCE_LOOKUP[variable_name].unit

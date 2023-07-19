@@ -2,7 +2,6 @@
 
 import json
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from unittest.mock import patch
 import numpy as np
 import pytest
@@ -22,41 +21,46 @@ def valid_path_cds(tmp_path_factory):
     return fn
 
 
+@pytest.fixture(scope="function")
+def dummy_dir(tmp_path_factory):
+    """Create a dummpy directory for testing."""
+    return tmp_path_factory.mktemp("data")
+
+
 class TestERA5:
     """Test the ERA5 class."""
 
     @patch("cdsapi.Client.retrieve")
-    def test_download(self, mock_retrieve, valid_path_cds):
+    def test_download(self, mock_retrieve, valid_path_cds, dummy_dir):
         """Test download functionality.
         Here we mock the downloading and save property file to a fake path.
         """
-        with TemporaryDirectory() as temp_dir:
-            times = TimeBounds(np.datetime64("2010-01-01"), np.datetime64("2010-01-31"))
-            bbox = SpatialBounds(54, 56, 1, 3)
-            variable = ["10m_v_component_of_wind"]
-            download_dir = Path(temp_dir, "download")
+        times = TimeBounds(np.datetime64("2010-01-01"), np.datetime64("2010-01-31"))
+        bbox = SpatialBounds(54, 56, 1, 3)
+        variable = ["10m_v_component_of_wind"]
+        download_dir = Path(dummy_dir, "download")
 
-            era5_dataset = era5.ERA5()
-            # create a dummy .cdsapirc
-            patching = patch("zampy.datasets.utils.CDSAPI_CONFIG_PATH", valid_path_cds)
-            with patching:
-                era5_dataset.download(
-                    download_dir=download_dir,
-                    time_bounds=times,
-                    spatial_bounds=bbox,
-                    variable_names=variable,
-                )
+        era5_dataset = era5.ERA5()
+        # create a dummy .cdsapirc
+        patching = patch("zampy.datasets.utils.CDSAPI_CONFIG_PATH", valid_path_cds)
+        with patching:
+            era5_dataset.download(
+                download_dir=download_dir,
+                time_bounds=times,
+                spatial_bounds=bbox,
+                variable_names=variable,
+            )
 
-                # make sure that the download is called
-                assert mock_retrieve.called
+            # make sure that the download is called
+            assert mock_retrieve.called
 
-                # check property file
-                with (download_dir / "era5" / "properties.json").open(
-                    mode="r", encoding="utf-8"
-                ) as file:
-                    json_dict = json.load(file)
-                    # check property
-                    assert json_dict["variable_names"] == variable
+            # check property file
+            with (download_dir / "era5" / "properties.json").open(
+                mode="r", encoding="utf-8"
+            ) as file:
+                json_dict = json.load(file)
+                # check property
+                assert json_dict["variable_names"] == variable
 
     def ingest_dummy_data(self, temp_dir):
         """Ingest dummy tif data to nc for other tests."""
@@ -72,12 +76,10 @@ class TestERA5:
 
         return ds, era5_dataset
 
-    def test_ingest(self):
+    def test_ingest(self, dummy_dir):
         """Test ingest function."""
-        with TemporaryDirectory() as temp_dir:
-            ds, _ = self.ingest_dummy_data(temp_dir)
-
-            assert type(ds) == xr.Dataset
+        ds, _ = self.ingest_dummy_data(dummy_dir)
+        assert type(ds) == xr.Dataset
 
     def test_load(self):
         """Test load function."""
@@ -103,27 +105,25 @@ class TestERA5:
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)
 
-    def test_convert(self):
+    def test_convert(self, dummy_dir):
         """Test convert function."""
-        with TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
-            _, era5_dataset = self.ingest_dummy_data(temp_dir)
-            era5_dataset.convert(ingest_dir=Path(temp_dir), convention="ALMA")
-            # TODO: finish this test when the function is complete.
+        _, era5_dataset = self.ingest_dummy_data(dummy_dir)
+        era5_dataset.convert(ingest_dir=Path(dummy_dir), convention="ALMA")
+        # TODO: finish this test when the function is complete.
 
 
-def test_convert_to_zampy():
+def test_convert_to_zampy(dummy_dir):
     """Test function for converting file to zampy format."""
-    with TemporaryDirectory() as temp_dir:
-        ingest_folder = Path(data_folder, "era5")
-        era5.convert_to_zampy(
-            ingest_folder=Path(temp_dir),
-            file=Path(ingest_folder, "era5_10m_v_component_of_wind_2010-1.nc"),
-            overwrite=True,
-        )
+    ingest_folder = Path(data_folder, "era5")
+    era5.convert_to_zampy(
+        ingest_folder=Path(dummy_dir),
+        file=Path(ingest_folder, "era5_10m_v_component_of_wind_2010-1.nc"),
+        overwrite=True,
+    )
 
-        ds = xr.load_dataset(Path(temp_dir, "era5_10m_v_component_of_wind_2010-1.nc"))
+    ds = xr.load_dataset(Path(dummy_dir, "era5_10m_v_component_of_wind_2010-1.nc"))
 
-        assert list(ds.data_vars)[0] == "10m_v_component_of_wind"
+    assert list(ds.data_vars)[0] == "10m_v_component_of_wind"
 
 
 def test_parse_nc_file():
