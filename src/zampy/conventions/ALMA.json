@@ -23,6 +23,16 @@
         "units": "watt/meter**2",
         "positive_dir": "downward"
     },
+    "surface_solar_radiation": {
+        "variable": "SWdown",
+        "units": "watt/meter**2",
+        "positive_dir": "downward"
+    },
+    "surface_thermal_radiation": {
+        "variable": "LWdown",
+        "units": "watt/meter**2",
+        "positive_dir": "downward"
+    },    
     "latent_heat_flux": {
         "variable": "Qle",
         "units": "watt/meter**2",
@@ -49,6 +59,6 @@
     },
     "mean_total_precipitation_rate": {
         "variable": "Rainf",
-        "units": "kilogram/(meter**2*second)"
+        "units": "millimeter/second"
     }
 }

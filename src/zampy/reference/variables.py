@@ -11,6 +11,7 @@ unit_registry.define("degree_north = degree = degree_N = degreeN")
 unit_registry.define("degree_east = degree = degree_E = degreeE")
 unit_registry.define("watt_per_square_meter = watt/meter**2")
 unit_registry.define("kilogram_per_square_meter_second = kilogram/(meter**2*second)")
+unit_registry.define("milimeter_per_second = watt/meter**2")
 
 
 # By default, we use the variable names and units following the CF convention:
@@ -26,9 +27,7 @@ VARIABLE_REFERENCE = (
     Variable("10m_v_component_of_wind", unit_registry.meter_per_second),
     Variable("surface_solar_radiation", unit_registry.watt_per_square_meter),
     Variable("surface_thermal_radiation", unit_registry.watt_per_square_meter),
-    Variable(
-        "mean_total_precipitation_rate", unit_registry.kilogram_per_square_meter_second
-    ),
+    Variable("mean_total_precipitation_rate", unit_registry.millimeter_per_second),
     Variable(
         "specific_humidity",
         unit_registry.fraction,

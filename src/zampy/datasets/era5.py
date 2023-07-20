@@ -199,6 +199,8 @@ var_reference_era5_to_zampy = {
     "v10": "10m_v_component_of_wind",
 }
 
+WATER_DENSITY = 997.0  # kg/m3
+
 
 def parse_nc_file(file: Path) -> xr.Dataset:
     """Parse the downloaded ERA5 nc files, to CF/Zampy standard dataset.
@@ -216,10 +218,18 @@ def parse_nc_file(file: Path) -> xr.Dataset:
         if variable in var_reference_era5_to_zampy:
             var = str(variable)  # Cast to string to please mypy
             variable_name = var_reference_era5_to_zampy[var]
-            # if statement variable name
-            # conversion for radiation (to flux) & precipitation (/ rho water)
-            # https://confluence.ecmwf.int/pages/viewpage.action?pageId=155337784
             ds = ds.rename({var: variable_name})
+            # convert radiation to flux J/m2 to W/m2
+            # https://confluence.ecmwf.int/pages/viewpage.action?pageId=155337784
+            if (
+                variable_name == "surface_solar_radiation"
+                or variable_name == "surface_thermal_radiation"
+            ):
+                ds[variable_name] = ds[variable_name] / 3600
+            # conversion precipitation kg/m2s to mm/s
+            elif variable_name == "mean_total_precipitation_rate":
+                ds[variable_name] = ds[variable_name] / WATER_DENSITY * 1000
+
             ds[variable_name].attrs["units"] = str(
                 VARIABLE_REFERENCE_LOOKUP[variable_name].unit
             )
