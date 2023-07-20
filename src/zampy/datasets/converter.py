@@ -7,6 +7,7 @@ import cf_xarray.units  # noqa: F401
 import pint_xarray  # noqa: F401
 import xarray as xr
 from zampy.datasets.dataset_protocol import Dataset
+from zampy.reference import variables
 
 
 CONVENTIONS = ["ALMA"]
@@ -36,6 +37,7 @@ def convert(
     data: xr.Dataset, dataset: Dataset, convention: Union[str, Path]
 ) -> xr.Dataset:
     """Convert a loaded dataset to the specified convention."""
+    unit_reg = variables.unit_registration()
     converted = False
     if isinstance(convention, str):
         convention_file = (conventions_path / f"{convention}.json").open(
@@ -50,7 +52,7 @@ def convert(
             convert_units = convention_dict[var.lower()]["units"]
             var_name = convention_dict[var.lower()]["variable"]
             var_units = data[var].attrs["units"]
-            if var_units != convert_units:
+            if unit_reg(var_units) != unit_reg(convert_units):
                 converted = True
                 # lazy dask array
                 data = _convert_var(data, var, convert_units)
