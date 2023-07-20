@@ -70,7 +70,7 @@ class TestERA5:
             Path(
                 temp_dir,
                 "era5",
-                "era5_10m_v_component_of_wind_2010-1.nc",
+                "era5_10m_v_component_of_wind_1996-1.nc",
             )
         )
 
@@ -83,8 +83,8 @@ class TestERA5:
 
     def test_load(self):
         """Test load function."""
-        times = TimeBounds(np.datetime64("2010-01-01"), np.datetime64("2010-01-31"))
-        bbox = SpatialBounds(54, 6, 51, 3)
+        times = TimeBounds(np.datetime64("1996-01-01"), np.datetime64("1996-01-02"))
+        bbox = SpatialBounds(39, -107, 37, -109)
         variable = ["10m_v_component_of_wind"]
 
         era5_dataset = era5.ERA5()
@@ -99,8 +99,8 @@ class TestERA5:
         )
 
         # we assert the regridded coordinates
-        expected_lat = [51.0, 52.0, 53.0, 54.0]
-        expected_lon = [3.0, 4.0, 5.0, 6.0]
+        expected_lat = [37.0, 38.0, 39.0]
+        expected_lon = [-109.0, -108.0, -107.0]
 
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)
@@ -117,21 +117,59 @@ def test_convert_to_zampy(dummy_dir):
     ingest_folder = Path(data_folder, "era5")
     era5.convert_to_zampy(
         ingest_folder=Path(dummy_dir),
-        file=Path(ingest_folder, "era5_10m_v_component_of_wind_2010-1.nc"),
+        file=Path(ingest_folder, "era5_10m_v_component_of_wind_1996-1.nc"),
         overwrite=True,
     )
 
-    ds = xr.load_dataset(Path(dummy_dir, "era5_10m_v_component_of_wind_2010-1.nc"))
+    ds = xr.load_dataset(Path(dummy_dir, "era5_10m_v_component_of_wind_1996-1.nc"))
 
     assert list(ds.data_vars)[0] == "10m_v_component_of_wind"
 
 
-def test_parse_nc_file():
-    """Test parsing netcdf file function."""
+def test_parse_nc_file_10m_v():
+    """Test parsing netcdf file function with 10 meter velocity."""
     ds = era5.parse_nc_file(
-        data_folder / "era5" / "era5_10m_v_component_of_wind_2010-1.nc"
+        data_folder / "era5" / "era5_10m_v_component_of_wind_1996-1.nc"
     )
     expected_var_name = "10m_v_component_of_wind"
 
     assert list(ds.data_vars)[0] == expected_var_name
     assert ds["10m_v_component_of_wind"].attrs["units"] == "meter_per_second"
+
+
+def test_parse_nc_file_radiation():
+    """Test parsing netcdf file function with surface radiation."""
+    ds_original = xr.load_dataset(
+        data_folder / "era5" / "era5_surface_thermal_radiation_downwards_1996-1.nc"
+    )
+    ds = era5.parse_nc_file(
+        data_folder / "era5" / "era5_surface_thermal_radiation_downwards_1996-1.nc"
+    )
+    expected_var_name = "surface_thermal_radiation"
+
+    assert list(ds.data_vars)[0] == expected_var_name
+    assert ds["surface_thermal_radiation"].attrs["units"] == "watt_per_square_meter"
+    assert np.allclose(
+        ds_original["strd"].values,
+        ds["surface_thermal_radiation"].values * 3600,
+        equal_nan=True,
+    )
+
+
+def test_parse_nc_file_precipitation():
+    """Test parsing netcdf file function with precipitation."""
+    ds_original = xr.load_dataset(
+        data_folder / "era5" / "era5_mean_total_precipitation_rate_1996-1.nc"
+    )
+    ds = era5.parse_nc_file(
+        data_folder / "era5" / "era5_mean_total_precipitation_rate_1996-1.nc"
+    )
+    expected_var_name = "mean_total_precipitation_rate"
+
+    assert list(ds.data_vars)[0] == expected_var_name
+    assert ds["mean_total_precipitation_rate"].attrs["units"] == "millimeter_per_second"
+    assert np.allclose(
+        ds_original["mtpr"].values,
+        ds["mean_total_precipitation_rate"].values * era5.WATER_DENSITY / 1000,
+        equal_nan=True,
+    )
