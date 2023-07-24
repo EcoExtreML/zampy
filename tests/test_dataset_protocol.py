@@ -90,7 +90,7 @@ def test_invalid_spatial_bounds_north_south():
 
 
 def test_invalid_spatial_bounds_east_west():
-    with pytest.raises(ValueError, match="greater than east bound"):
+    with pytest.raises(ValueError, match="greater than eastern bound"):
         SpatialBounds(54, 6, 51, 20)
 
 
