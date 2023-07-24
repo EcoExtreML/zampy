@@ -221,9 +221,9 @@ def parse_nc_file(file: Path) -> xr.Dataset:
             ds = ds.rename({var: variable_name})
             # convert radiation to flux J/m2 to W/m2
             # https://confluence.ecmwf.int/pages/viewpage.action?pageId=155337784
-            if (
-                variable_name == "surface_solar_radiation"
-                or variable_name == "surface_thermal_radiation"
+            if variable_name in (
+                "surface_solar_radiation",
+                "surface_thermal_radiation",
             ):
                 ds[variable_name] = ds[variable_name] / 3600
             # conversion precipitation kg/m2s to mm/s
