@@ -4,12 +4,13 @@ from pathlib import Path
 import numpy as np
 import pytest
 import xarray as xr
+from test_datasets import data_folder
 from zampy.datasets import EthCanopyHeight
 from zampy.datasets import converter
 from zampy.datasets.eth_canopy_height import parse_tiff_file
 
 
-path_dummy_data = Path(__file__).resolve().parent / "test_data" / "eth-canopy-height"
+path_dummy_data = data_folder / "eth-canopy-height"
 
 # ruff: noqa: B018
 

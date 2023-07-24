@@ -59,11 +59,11 @@ def convert(
             var_name = convention_dict[var.lower()]["variable"]
             var_units = data[var].attrs["units"]
             if var_units != convert_units:
-                converted = True
                 # lazy dask array
                 data = _convert_var(data, var, convert_units)
             data = data.rename({var: var_name})
             print(f"{var} renamed to {var_name}.")
+            converted = True
 
         else:
             print(f"Variable '{var}' is not included in '{convention}' convention.")

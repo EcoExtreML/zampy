@@ -1,15 +1,17 @@
 """Unit test for regridding."""
 
-from pathlib import Path
 import numpy as np
 import pytest
+from test_datasets import data_folder
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.eth_canopy_height import parse_tiff_file
 from zampy.utils import regrid
 
 
-path_dummy_data = Path(__file__).resolve().parent / "test_data" / "eth-canopy-height"
+path_dummy_data = data_folder / "eth-canopy-height"
 XESMF_INSTALLED = True
+# Since xesmf is only supported via conda, we need these checks to support
+# tests cases running with and without conda environment in CD/CI
 try:
     import xesmf as _  # noqa: F401 (unused import)
 except ImportError:
