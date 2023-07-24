@@ -127,7 +127,7 @@ def test_convert_to_zampy(dummy_dir):
 
 
 def test_parse_nc_file_10m_v():
-    """Test parsing netcdf file function with 10 meter velocity."""
+    """Test parsing netcdf file function with 10 meter velocity v component."""
     ds = era5.parse_nc_file(
         data_folder / "era5" / "era5_10m_v_component_of_wind_1996-1.nc"
     )
@@ -137,7 +137,18 @@ def test_parse_nc_file_10m_v():
     assert ds["10m_v_component_of_wind"].attrs["units"] == "meter_per_second"
 
 
-def test_parse_nc_file_radiation():
+def test_parse_nc_file_10m_u():
+    """Test parsing netcdf file function with 10 meter velocity u component."""
+    ds = era5.parse_nc_file(
+        data_folder / "era5" / "era5_10m_u_component_of_wind_1996-1.nc"
+    )
+    expected_var_name = "10m_u_component_of_wind"
+
+    assert list(ds.data_vars)[0] == expected_var_name
+    assert ds["10m_u_component_of_wind"].attrs["units"] == "meter_per_second"
+
+
+def test_parse_nc_file_thermal_radiation():
     """Test parsing netcdf file function with surface radiation."""
     ds_original = xr.load_dataset(
         data_folder / "era5" / "era5_surface_thermal_radiation_downwards_1996-1.nc"
@@ -152,6 +163,25 @@ def test_parse_nc_file_radiation():
     assert np.allclose(
         ds_original["strd"].values,
         ds["surface_thermal_radiation"].values * 3600,
+        equal_nan=True,
+    )
+
+
+def test_parse_nc_file_solar_radiation():
+    """Test parsing netcdf file function with surface radiation."""
+    ds_original = xr.load_dataset(
+        data_folder / "era5" / "era5_surface_solar_radiation_downwards_1996-1.nc"
+    )
+    ds = era5.parse_nc_file(
+        data_folder / "era5" / "era5_surface_solar_radiation_downwards_1996-1.nc"
+    )
+    expected_var_name = "surface_solar_radiation"
+
+    assert list(ds.data_vars)[0] == expected_var_name
+    assert ds["surface_solar_radiation"].attrs["units"] == "watt_per_square_meter"
+    assert np.allclose(
+        ds_original["ssrd"].values,
+        ds["surface_solar_radiation"].values * 3600,
         equal_nan=True,
     )
 
@@ -173,3 +203,12 @@ def test_parse_nc_file_precipitation():
         ds["mean_total_precipitation_rate"].values * era5.WATER_DENSITY / 1000,
         equal_nan=True,
     )
+
+
+def test_parse_nc_file_pressure():
+    """Test parsing netcdf file function with surface pressure."""
+    ds = era5.parse_nc_file(data_folder / "era5" / "era5_surface_pressure_1996-1.nc")
+    expected_var_name = "surface_pressure"
+
+    assert list(ds.data_vars)[0] == expected_var_name
+    assert ds["surface_pressure"].attrs["units"] == "pascal"
