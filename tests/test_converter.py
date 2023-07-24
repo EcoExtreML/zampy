@@ -43,7 +43,7 @@ def test_convert_var():
 def test_convert_var_name():
     """Test convert function.
 
-    In this test, no conversion is performed. Only the variable name is updated.
+    In this test, no unit-conversion is performed. Only the variable name is updated.
     """
     ds = parse_tiff_file(
         path_dummy_data / "ETH_GlobalCanopyHeight_10m_2020_N51E003_Map.tif",

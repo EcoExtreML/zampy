@@ -65,8 +65,8 @@ def test_interp_regrid(dummy_dataset):
     np.testing.assert_allclose(ds.longitude.values, expected_lon)
 
 
-def test_flox_regrid_4x_courser(dummy_dataset):
-    """Test flox regridding at a 4x courser resolution
+def test_flox_regrid_coarser(dummy_dataset):
+    """Test flox regridding at a coarser resolution
 
     Note that the native resolution is about lat/lon=0.01.
     """
@@ -79,8 +79,8 @@ def test_flox_regrid_4x_courser(dummy_dataset):
     np.testing.assert_allclose(ds.longitude.values, expected_lon)
 
 
-def test_flox_regrid_4x_finer(dummy_dataset):
-    """Test flox regridding at a 4x finer resolution
+def test_flox_regrid_finer(dummy_dataset):
+    """Test flox regridding at a finer resolution
 
     Note that the native resolution is about lat/lon=0.01.
     """

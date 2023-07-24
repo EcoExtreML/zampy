@@ -85,7 +85,7 @@ def test_copy_properties_file():
 
 
 def test_invalid_spatial_bounds_north_south():
-    with pytest.raises(ValueError, match="greater than norther bound"):
+    with pytest.raises(ValueError, match="greater than northern bound"):
         SpatialBounds(51, 6, 54, 3)
 
 
