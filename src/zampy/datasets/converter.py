@@ -36,7 +36,16 @@ def check_convention(convention: Union[str, Path]) -> None:
 def convert(
     data: xr.Dataset, dataset: Dataset, convention: Union[str, Path]
 ) -> xr.Dataset:
-    """Convert a loaded dataset to the specified convention."""
+    """Convert a loaded dataset to the specified convention.
+
+    Args:
+        data: Input xarray data.
+        dataset: Zampy dataset instance.
+        convention: Input data exchange convention.
+
+    Return:
+        Input xarray with converted variables following given convention.
+    """
     converted = False
     if isinstance(convention, str):
         convention_file = Path(CONVENTIONS[convention]).open(mode="r", encoding="UTF8")
@@ -50,11 +59,11 @@ def convert(
             var_name = convention_dict[var.lower()]["variable"]
             var_units = data[var].attrs["units"]
             if var_units != convert_units:
-                converted = True
                 # lazy dask array
                 data = _convert_var(data, var, convert_units)
             data = data.rename({var: var_name})
             print(f"{var} renamed to {var_name}.")
+            converted = True
 
         else:
             print(f"Variable '{var}' is not included in '{convention}' convention.")
