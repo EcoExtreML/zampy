@@ -58,7 +58,7 @@ def download_url(url: str, fpath: Path, overwrite: bool) -> None:
 
 def get_url_size(url: str) -> int:
     """Return the size (bytes) of a given URL."""
-    response = requests.head(url, timeout=30)
+    response = requests.head(url)
     return int(response.headers["Content-Length"])
 
 

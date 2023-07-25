@@ -38,12 +38,12 @@ class SpatialBounds:
         """Validate the initialized SpatialBounds class."""
         if self.south > self.north:
             raise ValueError(
-                "Value of southern bound is greater than norther bound."
+                "Value of southern bound is greater than northern bound."
                 "\nPlease check the spatial bounds input."
             )
         if self.west > self.east:
             raise ValueError(
-                "Value of western bound is greater than east bound."
+                "Value of western bound is greater than eastern bound."
                 "\nPlease check the spatial bounds input."
             )
 
