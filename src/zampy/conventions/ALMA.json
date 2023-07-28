@@ -23,7 +23,7 @@
         "units": "watt/meter**2",
         "positive_dir": "downward"
     },
-    "surface_solar_radiation": {
+    "surface_solar_radiation_downwards": {
         "variable": "SWdown",
         "units": "watt/meter**2",
         "positive_dir": "downward"
@@ -47,7 +47,7 @@
         "variable": "Psurf",
         "units": "pascal"
     },
-    "10m_u_component_of_wind": {
+    "eastward_component_of_wind": {
         "variable": "Wind_E",
         "units": "meter/second",
         "positive_dir": "eastward"
@@ -57,7 +57,7 @@
         "units": "meter/second",
         "positive_dir": "northward"
     },
-    "mean_total_precipitation_rate": {
+    "total_precipitation": {
         "variable": "Rainf",
         "units": "millimeter/second"
     }
