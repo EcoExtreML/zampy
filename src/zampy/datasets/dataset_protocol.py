@@ -88,7 +88,7 @@ class Dataset(Protocol):
         ...
 
     @abstractmethod
-    def download(  # noqa: PLR0913
+    def download(
         self,
         download_dir: Path,
         time_bounds: TimeBounds,
@@ -131,7 +131,7 @@ class Dataset(Protocol):
         ...
 
     @abstractmethod
-    def load(  # noqa: PLR0913
+    def load(
         self,
         ingest_dir: Path,
         time_bounds: TimeBounds,

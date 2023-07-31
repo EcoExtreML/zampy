@@ -7,11 +7,11 @@ import cf_xarray.units  # noqa: F401
 import pint_xarray  # noqa: F401
 import xarray as xr
 from zampy.datasets.dataset_protocol import Dataset
+from zampy.reference.variables import unit_registry
 
 
-CONVENTIONS = {
-    "ALMA": "src/zampy/conventions/ALMA.json",
-}
+CONVENTIONS = ["ALMA"]
+conventions_path = Path(__file__).resolve().parents[1] / "conventions"
 
 
 def check_convention(convention: Union[str, Path]) -> None:
@@ -48,7 +48,9 @@ def convert(
     """
     converted = False
     if isinstance(convention, str):
-        convention_file = Path(CONVENTIONS[convention]).open(mode="r", encoding="UTF8")
+        convention_file = (conventions_path / f"{convention}.json").open(
+            mode="r", encoding="UTF8"
+        )
     else:
         convention_file = convention.open(mode="r", encoding="UTF8")
 
@@ -58,7 +60,7 @@ def convert(
             convert_units = convention_dict[var.lower()]["units"]
             var_name = convention_dict[var.lower()]["variable"]
             var_units = data[var].attrs["units"]
-            if var_units != convert_units:
+            if unit_registry(var_units) != unit_registry(convert_units):
                 # lazy dask array
                 data = _convert_var(data, var, convert_units)
             data = data.rename({var: var_name})
@@ -75,6 +77,7 @@ def convert(
             f"Conversion of dataset '{dataset.name}' following {convention} "
             "convention is complete!"
         )
+        data.attrs["Conventions"] = convention
     else:
         warnings.warn(
             f"All variables already follow the {convention} convention or "

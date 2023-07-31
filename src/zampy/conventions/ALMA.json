@@ -23,6 +23,16 @@
         "units": "watt/meter**2",
         "positive_dir": "downward"
     },
+    "surface_solar_radiation_downwards": {
+        "variable": "SWdown",
+        "units": "watt/meter**2",
+        "positive_dir": "downward"
+    },
+    "surface_thermal_radiation_downwards": {
+        "variable": "LWdown",
+        "units": "watt/meter**2",
+        "positive_dir": "downward"
+    },    
     "latent_heat_flux": {
         "variable": "Qle",
         "units": "watt/meter**2",
@@ -32,5 +42,23 @@
         "variable": "Qh",
         "units": "watt/meter**2",
         "positive_dir": "downward"
+    },
+    "surface_pressure": {
+        "variable": "Psurf",
+        "units": "pascal"
+    },
+    "eastward_component_of_wind": {
+        "variable": "Wind_E",
+        "units": "meter/second",
+        "positive_dir": "eastward"
+    },
+    "northward_component_of_wind": {
+        "variable": "Wind_N",
+        "units": "meter/second",
+        "positive_dir": "northward"
+    },
+    "total_precipitation": {
+        "variable": "Rainf",
+        "units": "millimeter/second"
     }
 }

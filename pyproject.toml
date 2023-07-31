@@ -62,6 +62,7 @@ dependencies = [
   "cf_xarray",  # required to auto-pint CF compliant datasets.
   "pint-xarray",
   "flox",  # For better groupby methods.
+  "cdsapi",
 ]
 dynamic = ["version"]
 
@@ -142,6 +143,7 @@ extend-select = [
 ]
 ignore = [
   "PLR2004",  # magic value used in comparsion (i.e. `if ndays == 28: month_is_feb`).
+  "PLR0913",  # too many arguments
 ]
 line-length = 88
 exclude = ["docs", "build"]
