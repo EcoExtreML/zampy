@@ -12,6 +12,7 @@ def unit_registration() -> UnitRegistry:
     unit_registry.define("degree_north = degree = degree_N = degreeN")
     unit_registry.define("degree_east = degree = degree_E = degreeE")
     unit_registry.define("watt_per_square_meter = watt/meter**2")
+    unit_registry.define("joule_per_square_meter = joule/meter**2")
     unit_registry.define(
         "kilogram_per_square_meter_second = kilogram/(meter**2*second)"
     )

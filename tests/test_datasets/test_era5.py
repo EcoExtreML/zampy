@@ -49,10 +49,40 @@ class TestERA5:
                 time_bounds=times,
                 spatial_bounds=bbox,
                 variable_names=variable,
+                overwrite=True,
             )
 
             # make sure that the download is called
-            assert mock_retrieve.called
+            mock_retrieve.assert_called_once_with(
+                "reanalysis-era5-single-levels",
+                {
+                    "product_type": "reanalysis",
+                    "variable": variable,
+                    "year": "2010",
+                    "month": "1",
+                    # fmt: off
+                "day": [
+                    "01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
+                    "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+                    "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
+                    "31",
+                ],
+                "time": [
+                    "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00",
+                    "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
+                    "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00",
+                    "21:00", "22:00", "23:00",
+                ],
+                    # fmt: on
+                    "area": [
+                        bbox.north,
+                        bbox.west,
+                        bbox.south,
+                        bbox.east,
+                    ],
+                    "format": "netcdf",
+                },
+            )
 
             # check property file
             with (download_dir / "era5" / "properties.json").open(

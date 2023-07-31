@@ -30,8 +30,8 @@ class ERA5(Dataset):  # noqa: D101
 
     raw_variables = (
         Variable(name="mtpr", unit=unit_registry.kilogram_per_square_meter_second),
-        Variable(name="strd", unit=unit_registry.watt_per_square_meter),
-        Variable(name="ssrd", unit=unit_registry.watt_per_square_meter),
+        Variable(name="strd", unit=unit_registry.joule_per_square_meter),
+        Variable(name="ssrd", unit=unit_registry.joule_per_square_meter),
         Variable(name="sp", unit=unit_registry.pascal),
         Variable(name="u10", unit=unit_registry.meter_per_second),
         Variable(name="v10", unit=unit_registry.meter_per_second),
@@ -228,7 +228,12 @@ def parse_nc_file(file: Path) -> xr.Dataset:
                 ds[variable_name] = ds[variable_name] / 3600
             # conversion precipitation kg/m2s to mm/s
             elif variable_name == "total_precipitation":
-                ds[variable_name] = ds[variable_name] / WATER_DENSITY * 1000
+                ds[variable_name] = ds[variable_name] / WATER_DENSITY
+                ds[variable_name].attrs["units"] = "meter_per_second"
+                # convert from m/s to mm/s
+                ds = converter._convert_var(
+                    ds, variable_name, VARIABLE_REFERENCE_LOOKUP[variable_name].unit
+                )
 
             ds[variable_name].attrs["units"] = str(
                 VARIABLE_REFERENCE_LOOKUP[variable_name].unit
