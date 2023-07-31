@@ -28,7 +28,7 @@
         "units": "watt/meter**2",
         "positive_dir": "downward"
     },
-    "surface_thermal_radiation": {
+    "surface_thermal_radiation_downwards": {
         "variable": "LWdown",
         "units": "watt/meter**2",
         "positive_dir": "downward"
@@ -52,7 +52,7 @@
         "units": "meter/second",
         "positive_dir": "eastward"
     },
-    "10m_v_component_of_wind": {
+    "northward_component_of_wind": {
         "variable": "Wind_N",
         "units": "meter/second",
         "positive_dir": "northward"

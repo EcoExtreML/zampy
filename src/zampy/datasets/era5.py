@@ -191,12 +191,12 @@ def convert_to_zampy(
 
 
 var_reference_era5_to_zampy = {
-    "mtpr": "mean_total_precipitation_rate",
-    "strd": "surface_thermal_radiation",
-    "ssrd": "surface_solar_radiation",
+    "mtpr": "total_precipitation",
+    "strd": "surface_thermal_radiation_downwards",
+    "ssrd": "surface_solar_radiation_downwards",
     "sp": "surface_pressure",
-    "u10": "10m_u_component_of_wind",
-    "v10": "10m_v_component_of_wind",
+    "u10": "eastward_component_of_wind",
+    "v10": "northward_component_of_wind",
 }
 
 WATER_DENSITY = 997.0  # kg/m3
@@ -222,12 +222,12 @@ def parse_nc_file(file: Path) -> xr.Dataset:
             # convert radiation to flux J/m2 to W/m2
             # https://confluence.ecmwf.int/pages/viewpage.action?pageId=155337784
             if variable_name in (
-                "surface_solar_radiation",
-                "surface_thermal_radiation",
+                "surface_solar_radiation_downwards",
+                "surface_thermal_radiation_downwards",
             ):
                 ds[variable_name] = ds[variable_name] / 3600
             # conversion precipitation kg/m2s to mm/s
-            elif variable_name == "mean_total_precipitation_rate":
+            elif variable_name == "total_precipitation":
                 ds[variable_name] = ds[variable_name] / WATER_DENSITY * 1000
 
             ds[variable_name].attrs["units"] = str(

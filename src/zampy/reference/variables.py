@@ -29,11 +29,13 @@ VARIABLE_REFERENCE = (
     Variable("dewpoint_temperature", unit_registry.kelvin),
     Variable("relative_humidity", unit_registry.percent),
     Variable("surface_pressure", unit_registry.pascal),
-    Variable("10m_u_component_of_wind", unit_registry.meter_per_second),
-    Variable("10m_v_component_of_wind", unit_registry.meter_per_second),
-    Variable("surface_solar_radiation", unit_registry.watt_per_square_meter),
-    Variable("surface_thermal_radiation", unit_registry.watt_per_square_meter),
-    Variable("mean_total_precipitation_rate", unit_registry.millimeter_per_second),
+    Variable("eastward_component_of_wind", unit_registry.meter_per_second),
+    Variable("northward_component_of_wind", unit_registry.meter_per_second),
+    Variable("surface_solar_radiation_downwards", unit_registry.watt_per_square_meter),
+    Variable(
+        "surface_thermal_radiation_downwards", unit_registry.watt_per_square_meter
+    ),
+    Variable("total_precipitation", unit_registry.millimeter_per_second),
     Variable(
         "specific_humidity",
         unit_registry.fraction,

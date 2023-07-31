@@ -123,29 +123,33 @@ def test_convert_to_zampy(dummy_dir):
 
     ds = xr.load_dataset(Path(dummy_dir, "era5_10m_v_component_of_wind_1996-1.nc"))
 
-    assert list(ds.data_vars)[0] == "10m_v_component_of_wind"
+    assert list(ds.data_vars)[0] == "northward_component_of_wind"
 
 
 def test_parse_nc_file_10m_wind():
     """Test parsing netcdf file function with 10 meter velocity u/v component."""
-    variables = ["10m_v_component_of_wind", "10m_u_component_of_wind"]
+    variables = {
+        "10m_v_component_of_wind": "northward_component_of_wind",
+        "10m_u_component_of_wind": "eastward_component_of_wind",
+    }
     for variable in variables:
         ds = era5.parse_nc_file(data_folder / "era5" / f"era5_{variable}_1996-1.nc")
-
-        assert list(ds.data_vars)[0] == variable
-        assert ds[variable].attrs["units"] == "meter_per_second"
+        expected_var_name = variables[variable]
+        assert list(ds.data_vars)[0] == expected_var_name
+        assert ds[expected_var_name].attrs["units"] == "meter_per_second"
 
 
 def test_parse_nc_file_radiation():
     """Test parsing netcdf file function with surface radiation."""
-    variables = {"surface_thermal_radiation": "strd", "surface_solar_radiation": "ssrd"}
+    variables = {
+        "surface_thermal_radiation_downwards": "strd",
+        "surface_solar_radiation_downwards": "ssrd",
+    }
     for variable in variables:
         ds_original = xr.load_dataset(
-            data_folder / "era5" / f"era5_{variable}_downwards_1996-1.nc"
+            data_folder / "era5" / f"era5_{variable}_1996-1.nc"
         )
-        ds = era5.parse_nc_file(
-            data_folder / "era5" / f"era5_{variable}_downwards_1996-1.nc"
-        )
+        ds = era5.parse_nc_file(data_folder / "era5" / f"era5_{variable}_1996-1.nc")
 
         assert list(ds.data_vars)[0] == variable
         assert ds[variable].attrs["units"] == "watt_per_square_meter"
@@ -164,13 +168,13 @@ def test_parse_nc_file_precipitation():
     ds = era5.parse_nc_file(
         data_folder / "era5" / "era5_mean_total_precipitation_rate_1996-1.nc"
     )
-    expected_var_name = "mean_total_precipitation_rate"
+    expected_var_name = "total_precipitation"
 
     assert list(ds.data_vars)[0] == expected_var_name
-    assert ds["mean_total_precipitation_rate"].attrs["units"] == "millimeter_per_second"
+    assert ds["total_precipitation"].attrs["units"] == "millimeter_per_second"
     assert np.allclose(
         ds_original["mtpr"].values,
-        ds["mean_total_precipitation_rate"].values * era5.WATER_DENSITY / 1000,
+        ds["total_precipitation"].values * era5.WATER_DENSITY / 1000,
         equal_nan=True,
     )
 
