@@ -67,6 +67,9 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.scripts]
+zampy="zampy.cli:run_recipe"
+
 [project.optional-dependencies]
 dev = [
   "bump2version",
