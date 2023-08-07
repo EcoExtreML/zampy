@@ -81,6 +81,13 @@ dev = [
   "pytest-cov",
   "pre-commit",
 ]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocs-jupyter",
+    "mkdocstrings[python]",
+    "mkdocs-gen-files",
+]
 
 [tool.hatch.envs.default]
 features = ["dev"]
@@ -100,6 +107,13 @@ test = ["pytest ./src/zampy/ ./tests/ --doctest-modules --doctest-ignore-import-
 coverage = [
   "pytest --cov --cov-report term --cov-report xml --junitxml=xunit-result.xml tests/",
 ]
+
+[tool.hatch.envs.docs]
+features = ["docs"]
+
+[tool.hatch.envs.docs.scripts]
+build = ["mkdocs build"]
+serve = ["mkdocs serve"]
 
 # [tool.hatch.envs.conda]
 # type = "conda"
