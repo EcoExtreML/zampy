@@ -49,6 +49,7 @@ classifiers = [
 ]
 dependencies = [
   "requests",
+  "pyyaml",
   "netcdf4",
   "numpy",
   "pandas",
@@ -75,6 +76,7 @@ dev = [
   "mypy",
   "types-requests", # type stubs for request lib
   "types-urllib3", # type stubs for url lib
+  "types-PyYAML",
   "pytest",
   "pytest-cov",
   "pre-commit",
