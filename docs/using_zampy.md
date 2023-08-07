@@ -43,12 +43,10 @@ convert:
 You can specify multiple datasets and multiple variables per dataset.
 
 ## Running a recipe
-Save this recipe to disk and run the following code in Python (modifying the path to the file):
+Save this recipe to disk and run the following code in your shell:
 
-```py
-from zampy.recipe import RecipeManager
-r = RecipeManager(recipe_filename="/home/username/path_to_file/simple_recipe.yml")
-r.run()
+```sh
+zampy --filename /home/username/path_to_file/simple_recipe.yml
 ```
 
 This will execute the recipe (i.e. download, ingest, convert, resample and save the data).
