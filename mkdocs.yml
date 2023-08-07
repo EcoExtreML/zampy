@@ -1,0 +1,42 @@
+site_name: Zampy Documentation
+
+theme:
+  name: material
+  features:
+  - navigation.instant
+  - navigation.tabs
+  - navigation.tabs.sticky
+  
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+      primary: light green
+      accent: green
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+      primary: blue grey
+      accent: teal
+
+plugins:
+  - mkdocs-jupyter:
+        include_source: True
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            docstring_options:
+              ignore_init_summary: no
+            merge_init_into_class: yes
+            show_submodules: no
+
+extra:
+  generator: false
