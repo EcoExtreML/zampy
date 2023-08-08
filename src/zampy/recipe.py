@@ -50,7 +50,7 @@ def config_loader() -> dict:
     with config_path.open() as f:
         config: dict = yaml.safe_load(f)
 
-    if "working_directory" not in config.keys():
+    if not isinstance(config, dict) or "working_directory" not in config.keys():
         msg = "No `working_directory` key found in the config file."
         raise ValueError(msg)
 
