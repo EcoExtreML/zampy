@@ -82,6 +82,7 @@ dev = [
   "types-PyYAML",
   "pytest",
   "pytest-cov",
+  "pytest-mock",
   "pre-commit",
 ]
 docs = [
