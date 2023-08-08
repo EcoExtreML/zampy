@@ -62,9 +62,10 @@ class RecipeManager:
         # Load & parse recipe
         recipe = recipe_loader(recipe_filename)
 
-        start_year, end_year = recipe["download"]["years"]
+        self.start_year, self.end_year = recipe["download"]["years"]
         self.timebounds = TimeBounds(
-            np.datetime64(f"{start_year}"), np.datetime64(f"{end_year}")
+            np.datetime64(f"{self.start_year}-01-01T00:00"),
+            np.datetime64(f"{self.end_year}-12-13T23:59"),
         )
         self.spatialbounds = SpatialBounds(*recipe["download"]["bbox"])
 
@@ -119,8 +120,11 @@ class RecipeManager:
             comp = dict(zlib=True, complevel=5)
             encoding = {var: comp for var in ds.data_vars}
             fname = (  # e.g. "era5_2010-2020.nc"
-                f"{dataset_name.lower()}_"
-                f"{self.timebounds.start}-{self.timebounds.end}"
-                ".nc"
+                f"{dataset_name.lower()}_" f"{self.start_year}-{self.end_year}" ".nc"
             )
             ds.to_netcdf(path=self.data_dir / fname, encoding=encoding)
+
+        print(
+            "Finished running the recipe. Output data can be found at:\n"
+            f"    {self.data_dir}"
+        )
