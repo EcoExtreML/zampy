@@ -9,16 +9,14 @@ pip install zampy git+https://github.com/EcoExtreML/zampy
 ## Configuration
 Zampy needs to be configured with a simple configuration file.
 
-This file is created under your -*user's home*-/.config directory:
-
-`~/.config/zampy/zampy_config.yml`
+You need to create this file under your -*user's home*-/.config directory: `~/.config/zampy/zampy_config.yml`, and should contain the following:
 
 ```yaml
-working_directory: /home/bart/Zampy
+working_directory: /path_to_a_working_directory/  #for example: /home/bart/Zampy
 ```
 
 ## Formulating a recipe
-Recipes have the following structure:
+A "recipe" is a file with `yml` extension and has the following structure:
 
 ```yaml
 name: "test_recipe"
