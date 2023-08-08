@@ -105,7 +105,7 @@ def _groupby_regrid(
     ds_out = ds_out.swap_dims(
         {"latitude_bins": "latitude", "longitude_bins": "longitude"}
     )
-    ds_out = ds_out.drop(["latitude_bins", "longitude_bins"])
+    ds_out = ds_out.drop_vars(["latitude_bins", "longitude_bins"])
     return ds_out.transpose("time", "latitude", "longitude", ...)
 
 
