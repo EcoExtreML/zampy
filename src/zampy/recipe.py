@@ -65,7 +65,7 @@ class RecipeManager:
         self.start_year, self.end_year = recipe["download"]["years"]
         self.timebounds = TimeBounds(
             np.datetime64(f"{self.start_year}-01-01T00:00"),
-            np.datetime64(f"{self.end_year}-12-13T23:59"),
+            np.datetime64(f"{self.end_year}-12-31T23:59"),
         )
         self.spatialbounds = SpatialBounds(*recipe["download"]["bbox"])
 
@@ -81,7 +81,7 @@ class RecipeManager:
         self.ingest_dir = Path(config["working_directory"]) / "ingest"
         self.data_dir = (
             Path(config["working_directory"]) / "output" / str(recipe["name"])
-        )  # TODO: strip illegal chars from name.
+        )
 
         # Create required directories if they do not exist yet:
         for dir in [self.data_dir, self.download_dir, self.ingest_dir]:
@@ -120,7 +120,7 @@ class RecipeManager:
             comp = dict(zlib=True, complevel=5)
             encoding = {var: comp for var in ds.data_vars}
             fname = (  # e.g. "era5_2010-2020.nc"
-                f"{dataset_name.lower()}_" f"{self.start_year}-{self.end_year}" ".nc"
+                f"{dataset_name.lower()}_{self.start_year}-{self.end_year}.nc"
             )
             ds.to_netcdf(path=self.data_dir / fname, encoding=encoding)
 
