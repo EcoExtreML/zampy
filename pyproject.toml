@@ -22,7 +22,7 @@ name = "zampy"
 description = "python package for getting Land Surface Model input data."
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.8, <3.11"
+requires-python = ">=3.9, <3.12"
 authors = [
   {email = "b.schilperoort@esciencecenter.nl"},
   {name = "Bart Schilperoort, Yang Liu, Fakhereh Alidoost"}
@@ -43,7 +43,6 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
 ]
@@ -55,6 +54,7 @@ dependencies = [
   "pandas",
   "matplotlib",
   "xarray",
+  "scipy",  # required for xarray.interpolate
   "rioxarray",  # required for TIFF files
   "tqdm",
   "dask[diagnostics]",
