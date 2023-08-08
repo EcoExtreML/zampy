@@ -14,7 +14,6 @@ from zampy.datasets.dataset_protocol import TimeBounds
 from zampy.datasets.dataset_protocol import Variable
 from zampy.datasets.dataset_protocol import copy_properties_file
 from zampy.datasets.dataset_protocol import write_properties_file
-from zampy.reference.variables import VARIABLE_REFERENCE_LOOKUP
 from zampy.reference.variables import unit_registry
 from zampy.utils import regrid
 
@@ -109,7 +108,7 @@ class ERA5(Dataset):  # noqa: D101
         data_files = list(download_folder.glob(data_file_pattern))
 
         for file in data_files:
-            convert_to_zampy(
+            utils.convert_to_zampy(
                 ingest_folder,
                 file=file,
                 overwrite=overwrite,
@@ -161,87 +160,3 @@ class ERA5(Dataset):  # noqa: D101
             # call ds.compute()
 
         return True
-
-
-def convert_to_zampy(
-    ingest_folder: Path,
-    file: Path,
-    overwrite: bool = False,
-) -> None:
-    """Convert the downloaded nc files to standard CF/Zampy netCDF files.
-
-    The downloaded ERA5 data already follows CF1.6 convention. However, it uses
-    (abbreviated) variable name instead of standard name, which prohibits the format
-    conversion. Therefore we need to ingest the downloaded files and rename all
-    variables to standard names.
-
-    Args:
-        ingest_folder: Folder where the files have to be written to.
-        file: Path to the ERA5 nc file.
-        overwrite: Overwrite all existing files. If False, file that already exist will
-            be skipped.
-    """
-    ncfile = ingest_folder / file.with_suffix(".nc").name
-    if ncfile.exists() and not overwrite:
-        print(f"File '{ncfile.name}' already exists, skipping...")
-    else:
-        ds = parse_nc_file(file)
-
-        ds.to_netcdf(path=ncfile)
-
-
-var_reference_era5_to_zampy = {
-    "mtpr": "total_precipitation",
-    "strd": "surface_thermal_radiation_downwards",
-    "ssrd": "surface_solar_radiation_downwards",
-    "sp": "surface_pressure",
-    "u10": "eastward_component_of_wind",
-    "v10": "northward_component_of_wind",
-}
-
-WATER_DENSITY = 997.0  # kg/m3
-
-
-def parse_nc_file(file: Path) -> xr.Dataset:
-    """Parse the downloaded ERA5 nc files, to CF/Zampy standard dataset.
-
-    Args:
-        file: Path to the ERA5 nc file.
-
-    Returns:
-        CF/Zampy formatted xarray Dataset
-    """
-    # Open chunked: will be dask array -> file writing can be parallelized.
-    ds = xr.open_dataset(file, chunks={"x": 50, "y": 50})
-
-    for variable in ds.variables:
-        if variable in var_reference_era5_to_zampy:
-            var = str(variable)  # Cast to string to please mypy
-            variable_name = var_reference_era5_to_zampy[var]
-            ds = ds.rename({var: variable_name})
-            # convert radiation to flux J/m2 to W/m2
-            # https://confluence.ecmwf.int/pages/viewpage.action?pageId=155337784
-            if variable_name in (
-                "surface_solar_radiation_downwards",
-                "surface_thermal_radiation_downwards",
-            ):
-                ds[variable_name] = ds[variable_name] / 3600
-            # conversion precipitation kg/m2s to mm/s
-            elif variable_name == "total_precipitation":
-                ds[variable_name] = ds[variable_name] / WATER_DENSITY
-                ds[variable_name].attrs["units"] = "meter_per_second"
-                # convert from m/s to mm/s
-                ds = converter._convert_var(
-                    ds, variable_name, VARIABLE_REFERENCE_LOOKUP[variable_name].unit
-                )
-
-            ds[variable_name].attrs["units"] = str(
-                VARIABLE_REFERENCE_LOOKUP[variable_name].unit
-            )
-            ds[variable_name].attrs["description"] = VARIABLE_REFERENCE_LOOKUP[
-                variable_name
-            ].desc
-
-    # TODO: add dataset attributes.
-
-    return ds
