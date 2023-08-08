@@ -15,7 +15,7 @@ def recipe_loader(recipe_path: Path) -> dict:
     with recipe_path.open() as f:
         recipe: dict = yaml.safe_load(f)
 
-    if not all(("name", "download", "convert" in recipe.keys())):
+    if not all(key in recipe.keys() for key in ["name", "download", "convert"]):
         msg = (
             "One of the following items are missing from the recipe:\n"
             "name, download, convert."
@@ -26,7 +26,10 @@ def recipe_loader(recipe_path: Path) -> dict:
         msg = "No dataset entry found in the recipe."
         raise ValueError(msg)
 
-    if not all(("convention", "frequency", "resolution" in recipe["convert"].keys())):
+    if not all(
+        key in recipe["convert"].keys()
+        for key in ["convention", "frequency", "resolution"]
+    ):
         msg = (
             "One of the following items are missing from the recipe:\n"
             "name, download, convert."
