@@ -20,7 +20,7 @@ def test_recipe(tmp_path: Path, mocker):
             "zampy.recipe.config_loader",
             return_value={"working_directory": str(tmp_path.absolute())},
         )
-        rm = RecipeManager(str(RECIPE_FILE.absolute()))
+        rm = RecipeManager(RECIPE_FILE.absolute())
 
         spatial_bounds = SpatialBounds(51, 4, 50, 3)
         time_bounds = TimeBounds(
