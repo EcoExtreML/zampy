@@ -2,7 +2,7 @@
 
 ## Installing Zampy
 Zampy can be installed by doing:
-```sh
+```bash
 pip install zampy git+https://github.com/EcoExtreML/zampy
 ```
 
@@ -13,19 +13,18 @@ This file is created under your -*user's home*-/.config directory:
 
 `~/.config/zampy/zampy_config.yml`
 
-```yml
+```yaml
 working_directory: /home/bart/Zampy
-
 ```
 
 ## Formulating a recipe
 Recipes have the following structure:
 
-```yml
+```yaml
 name: "test_recipe"
 
 download:
-  years: [2019, 2020]
+  years: [2020, 2020]
   bbox: [54, 6, 50, 3] # NESW
 
   datasets:
@@ -33,6 +32,9 @@ download:
       variables:
         - 10m_v_component_of_wind
         - surface_pressure
+    eth_canopy_height:
+      variables:
+        - height_of_vegetation
 
 convert:
   convention: ALMA
@@ -45,7 +47,7 @@ You can specify multiple datasets and multiple variables per dataset.
 ## Running a recipe
 Save this recipe to disk and run the following code in your shell:
 
-```sh
+```bash
 zampy --filename /home/username/path_to_file/simple_recipe.yml
 ```
 
