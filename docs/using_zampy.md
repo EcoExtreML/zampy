@@ -30,9 +30,6 @@ download:
       variables:
         - 10m_v_component_of_wind
         - surface_pressure
-    eth_canopy_height:
-      variables:
-        - height_of_vegetation
 
 convert:
   convention: ALMA
