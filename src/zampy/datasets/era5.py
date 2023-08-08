@@ -25,7 +25,7 @@ from zampy.utils import regrid
 
 class ERA5(Dataset):  # noqa: D101
     name = "era5"
-    time_bounds = TimeBounds(np.datetime64("1940-01-01"), np.datetime64("2023-06-30"))
+    time_bounds = TimeBounds(np.datetime64("1940-01-01"), np.datetime64("2023-07-31"))
     spatial_bounds = SpatialBounds(90, 180, -90, -180)
 
     raw_variables = (
