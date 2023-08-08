@@ -22,7 +22,7 @@ name = "zampy"
 description = "python package for getting Land Surface Model input data."
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.8, <3.11"
+requires-python = ">=3.9, <3.12"
 authors = [
   {email = "b.schilperoort@esciencecenter.nl"},
   {name = "Bart Schilperoort, Yang Liu, Fakhereh Alidoost"}
@@ -43,17 +43,18 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
 ]
 dependencies = [
   "requests",
+  "pyyaml",
   "netcdf4",
   "numpy",
   "pandas",
   "matplotlib",
   "xarray",
+  "scipy",  # required for xarray.interpolate
   "rioxarray",  # required for TIFF files
   "tqdm",
   "dask[diagnostics]",
@@ -66,6 +67,9 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.scripts]
+zampy="zampy.cli:run_recipe"
+
 [project.optional-dependencies]
 dev = [
   "bump2version",
@@ -75,9 +79,18 @@ dev = [
   "mypy",
   "types-requests", # type stubs for request lib
   "types-urllib3", # type stubs for url lib
+  "types-PyYAML",
   "pytest",
   "pytest-cov",
+  "pytest-mock",
   "pre-commit",
+]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocs-jupyter",
+    "mkdocstrings[python]",
+    "mkdocs-gen-files",
 ]
 
 [tool.hatch.envs.default]
@@ -98,6 +111,13 @@ test = ["pytest ./src/zampy/ ./tests/ --doctest-modules --doctest-ignore-import-
 coverage = [
   "pytest --cov --cov-report term --cov-report xml --junitxml=xunit-result.xml tests/",
 ]
+
+[tool.hatch.envs.docs]
+features = ["docs"]
+
+[tool.hatch.envs.docs.scripts]
+build = ["mkdocs build"]
+serve = ["mkdocs serve"]
 
 # [tool.hatch.envs.conda]
 # type = "conda"
