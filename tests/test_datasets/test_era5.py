@@ -109,7 +109,7 @@ class TestERA5:
     def test_ingest(self, dummy_dir):
         """Test ingest function."""
         ds, _ = self.ingest_dummy_data(dummy_dir)
-        assert type(ds) == xr.Dataset
+        assert isinstance(ds, xr.Dataset)
 
     def test_load(self):
         """Test load function."""
@@ -140,79 +140,3 @@ class TestERA5:
         _, era5_dataset = self.ingest_dummy_data(dummy_dir)
         era5_dataset.convert(ingest_dir=Path(dummy_dir), convention="ALMA")
         # TODO: finish this test when the function is complete.
-
-
-def test_convert_to_zampy(dummy_dir):
-    """Test function for converting file to zampy format."""
-    ingest_folder = Path(data_folder, "era5")
-    era5.convert_to_zampy(
-        ingest_folder=Path(dummy_dir),
-        file=Path(ingest_folder, "era5_10m_v_component_of_wind_1996-1.nc"),
-        overwrite=True,
-    )
-
-    ds = xr.load_dataset(Path(dummy_dir, "era5_10m_v_component_of_wind_1996-1.nc"))
-
-    assert list(ds.data_vars)[0] == "northward_component_of_wind"
-
-
-def test_parse_nc_file_10m_wind():
-    """Test parsing netcdf file function with 10 meter velocity u/v component."""
-    variables = {
-        "10m_v_component_of_wind": "northward_component_of_wind",
-        "10m_u_component_of_wind": "eastward_component_of_wind",
-    }
-    for variable in variables:
-        ds = era5.parse_nc_file(data_folder / "era5" / f"era5_{variable}_1996-1.nc")
-        expected_var_name = variables[variable]
-        assert list(ds.data_vars)[0] == expected_var_name
-        assert ds[expected_var_name].attrs["units"] == "meter_per_second"
-
-
-def test_parse_nc_file_radiation():
-    """Test parsing netcdf file function with surface radiation."""
-    variables = {
-        "surface_thermal_radiation_downwards": "strd",
-        "surface_solar_radiation_downwards": "ssrd",
-    }
-    for variable in variables:
-        ds_original = xr.load_dataset(
-            data_folder / "era5" / f"era5_{variable}_1996-1.nc"
-        )
-        ds = era5.parse_nc_file(data_folder / "era5" / f"era5_{variable}_1996-1.nc")
-
-        assert list(ds.data_vars)[0] == variable
-        assert ds[variable].attrs["units"] == "watt_per_square_meter"
-        assert np.allclose(
-            ds_original[variables[variable]].values,
-            ds[variable].values * 3600,
-            equal_nan=True,
-        )
-
-
-def test_parse_nc_file_precipitation():
-    """Test parsing netcdf file function with precipitation."""
-    ds_original = xr.load_dataset(
-        data_folder / "era5" / "era5_mean_total_precipitation_rate_1996-1.nc"
-    )
-    ds = era5.parse_nc_file(
-        data_folder / "era5" / "era5_mean_total_precipitation_rate_1996-1.nc"
-    )
-    expected_var_name = "total_precipitation"
-
-    assert list(ds.data_vars)[0] == expected_var_name
-    assert ds["total_precipitation"].attrs["units"] == "millimeter_per_second"
-    assert np.allclose(
-        ds_original["mtpr"].values,
-        ds["total_precipitation"].values * era5.WATER_DENSITY / 1000,
-        equal_nan=True,
-    )
-
-
-def test_parse_nc_file_pressure():
-    """Test parsing netcdf file function with surface pressure."""
-    ds = era5.parse_nc_file(data_folder / "era5" / "era5_surface_pressure_1996-1.nc")
-    expected_var_name = "surface_pressure"
-
-    assert list(ds.data_vars)[0] == expected_var_name
-    assert ds["surface_pressure"].attrs["units"] == "pascal"

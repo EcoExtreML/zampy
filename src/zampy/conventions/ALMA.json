@@ -64,5 +64,9 @@
     "air_temperature": {
         "variable": "Tair",
         "units": "kelvin"
+    },
+    "dewpoint_temperature": {
+        "variable": "d2m",
+        "units": "kelvin"
     }
 }
