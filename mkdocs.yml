@@ -2,11 +2,17 @@ site_name: Zampy Documentation
 
 theme:
   name: material
+  highlightjs: true
+  hljs_languages:
+    - yaml
+    - python
+    - bash
   features:
   - navigation.instant
   - navigation.tabs
   - navigation.tabs.sticky
-  
+  - content.code.copy
+
   palette:
     # Palette toggle for light mode
     - scheme: default
@@ -37,6 +43,15 @@ plugins:
               ignore_init_summary: no
             merge_init_into_class: yes
             show_submodules: no
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
 
 extra:
   generator: false
