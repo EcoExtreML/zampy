@@ -10,9 +10,9 @@ from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
 
 
-def recipe_loader(recipe_filename: str) -> dict:
+def recipe_loader(recipe_path: Path) -> dict:
     """Load the yaml recipe into a dictionary, and do some validation."""
-    with open(recipe_filename) as f:
+    with recipe_path.open() as f:
         recipe: dict = yaml.safe_load(f)
 
     if not all(("name", "download", "convert" in recipe.keys())):
@@ -57,10 +57,10 @@ def config_loader() -> dict:
 class RecipeManager:
     """The recipe manager is used to get the required info, and then run the recipe."""
 
-    def __init__(self, recipe_filename: str) -> None:
+    def __init__(self, recipe_path: Path) -> None:
         """Instantiate the recipe manager, using a prepared recipe."""
         # Load & parse recipe
-        recipe = recipe_loader(recipe_filename)
+        recipe = recipe_loader(recipe_path)
 
         self.start_year, self.end_year = recipe["download"]["years"]
         self.timebounds = TimeBounds(

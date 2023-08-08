@@ -1,18 +1,15 @@
 """Implements CLI interface for Zampy."""
+from pathlib import Path
 import click
 from zampy.recipe import RecipeManager
 
 
 @click.command()
-@click.option(
-    "--filename",
-    prompt="Path to the recipe filename",
-    help="Path to the recipe filename.",
-)
-def run_recipe(filename: str) -> None:
+@click.argument("recipe", type=click.Path(exists=True, path_type=Path))
+def run_recipe(recipe: Path) -> None:
     """Run the recipe using the CLI."""
-    click.echo(f"Executing recipe: {filename}")
-    rm = RecipeManager(filename)
+    click.echo(f"Executing recipe: {recipe}")
+    rm = RecipeManager(recipe)
     rm.run()
 
 
