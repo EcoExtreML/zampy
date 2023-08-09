@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from typing import List
+from typing import Tuple
 from typing import Union
 import numpy as np
 import xarray as xr
@@ -27,6 +28,7 @@ class ERA5(Dataset):  # noqa: D101
     time_bounds = TimeBounds(np.datetime64("1940-01-01"), np.datetime64("2023-07-31"))
     spatial_bounds = SpatialBounds(90, 180, -90, -180)
 
+    raw_variables: Tuple[Variable, ...]  # please mypy for being the base of era5land
     raw_variables = (
         Variable(name="mtpr", unit=unit_registry.kilogram_per_square_meter_second),
         Variable(name="strd", unit=unit_registry.joule_per_square_meter),
@@ -36,6 +38,7 @@ class ERA5(Dataset):  # noqa: D101
         Variable(name="v10", unit=unit_registry.meter_per_second),
     )
 
+    variable_names: Tuple[str, ...]  # please mypy for being the base of era5land
     # variable names used in cdsapi downloading request
     variable_names = (
         "mean_total_precipitation_rate",
@@ -60,6 +63,8 @@ class ERA5(Dataset):  # noqa: D101
         }
     """
 
+    cds_dataset = "reanalysis-era5-single-levels"
+
     def download(
         self,
         download_dir: Path,
@@ -80,7 +85,7 @@ class ERA5(Dataset):  # noqa: D101
         download_folder.mkdir(parents=True, exist_ok=True)
 
         utils.cds_request(
-            dataset="reanalysis-era5-single-levels",
+            dataset=self.cds_dataset,
             variables=variable_names,
             time_bounds=time_bounds,
             spatial_bounds=spatial_bounds,
@@ -104,7 +109,7 @@ class ERA5(Dataset):  # noqa: D101
         ingest_folder = ingest_dir / self.name
         ingest_folder.mkdir(parents=True, exist_ok=True)
 
-        data_file_pattern = "era5_*.nc"
+        data_file_pattern = f"{self.name}_*.nc"
         data_files = list(download_folder.glob(data_file_pattern))
 
         for file in data_files:
@@ -130,7 +135,7 @@ class ERA5(Dataset):  # noqa: D101
         files: List[Path] = []
         for var in self.variable_names:
             if var in variable_names:
-                files += (ingest_dir / self.name).glob(f"era5_{var}*.nc")
+                files += (ingest_dir / self.name).glob(f"{self.name}_{var}*.nc")
 
         ds = xr.open_mfdataset(files, chunks={"latitude": 200, "longitude": 200})
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
@@ -146,7 +151,7 @@ class ERA5(Dataset):  # noqa: D101
         converter.check_convention(convention)
         ingest_folder = ingest_dir / self.name
 
-        data_file_pattern = "era5_*.nc"
+        data_file_pattern = f"{self.name}_*.nc"
 
         data_files = list(ingest_folder.glob(data_file_pattern))
 
