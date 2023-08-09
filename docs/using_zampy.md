@@ -43,7 +43,7 @@ You can specify multiple datasets and multiple variables per dataset.
 Save this recipe to disk and run the following code in your shell:
 
 ```bash
-zampy --filename /home/username/path_to_file/simple_recipe.yml
+zampy /home/username/path_to_file/simple_recipe.yml
 ```
 
 This will execute the recipe (i.e. download, ingest, convert, resample and save the data).
