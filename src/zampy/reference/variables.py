@@ -17,6 +17,7 @@ def unit_registration() -> UnitRegistry:
         "kilogram_per_square_meter_second = kilogram/(meter**2*second)"
     )
     unit_registry.define("milimeter_per_second = watt/meter**2")
+    unit_registry.define("kilogram_per_kilogram = kilogram/kilogram")
     return unit_registry
 
 
@@ -48,6 +49,7 @@ VARIABLE_REFERENCE = (
         unit_registry.meter,
         desc="Uncertainty of the 'height_of_vegetation' variable.",
     ),
+    Variable("carbon_dioxide", unit_registry.kilogram_per_kilogram),
     Variable("altitude", unit_registry.meter),
     Variable("latitude", unit=unit_registry.degree_north),
     Variable("longitude", unit=unit_registry.degree_east),

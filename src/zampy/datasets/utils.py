@@ -17,7 +17,9 @@ from zampy.datasets.dataset_protocol import TimeBounds
 PRODUCT_FNAME = {
     "reanalysis-era5-single-levels": "era5",
     "reanalysis-era5-land": "era5-land",
+    "cams-global-ghg-reanalysis-egg4": "cam2",
 }
+ADSAPI_CONFIG_PATH = Path.home() / ".adsapirc"
 CDSAPI_CONFIG_PATH = Path.home() / ".cdsapirc"
 
 
@@ -137,6 +139,61 @@ def cds_request(
                     "21:00", "22:00", "23:00",
                 ],
                 # fmt: on
+                "area": [
+                    spatial_bounds.north,
+                    spatial_bounds.west,
+                    spatial_bounds.south,
+                    spatial_bounds.east,
+                ],
+                "format": "netcdf",
+            },
+        )
+        # check existence and overwrite
+        fpath = path / f"{fname}_{variable}_{year}-{month}.nc"
+
+        if get_file_size(fpath) != r.content_length or overwrite:
+            r.download(fpath)
+            tqdm.write(f"Download {fpath.name} successfully.")
+        else:
+            print(f"File '{fpath.name}' already exists, skipping...")
+
+
+def ads_request(
+    dataset: str,
+    variables: List[str],
+    time_bounds: TimeBounds,
+    spatial_bounds: SpatialBounds,
+    path: Path,
+    overwrite: bool,
+) -> None:
+    """Download data via ADS API."""
+    fname = PRODUCT_FNAME[dataset]
+
+    with ADSAPI_CONFIG_PATH.open(encoding="utf8") as f:
+        url = f.readline().split(":", 1)[1].strip()
+        api_key = f.readline().split(":", 1)[1].strip()
+
+    c = cdsapi.Client(
+        url=url,
+        key=api_key,
+        verify=True,
+        quiet=True,
+    )
+
+    # create list of year/month pairs
+    year_month_pairs = time_bounds_to_year_month(time_bounds)
+
+    for (year, month), variable in product(
+        year_month_pairs, variables, position=0, leave=True
+    ):
+        # raise download request
+        r = c.retrieve(
+            dataset,
+            {
+                "model_level": "60",
+                "variable": [variable],
+                "date": f"{str(time_bounds.start)}/{str(time_bounds.end)}",
+                "step": ["0", "3", "6", "9", "12", "15", "18", "21"],
                 "area": [
                     spatial_bounds.north,
                     spatial_bounds.west,
