@@ -6,7 +6,7 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 import xarray as xr
-from zampy.datasets import era5_land
+from zampy.datasets import ERA5Land
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
 from . import data_folder
@@ -40,7 +40,7 @@ class TestERA5Land:
         variable = ["2m_dewpoint_temperature"]
         download_dir = Path(dummy_dir, "download")
 
-        era5_land_dataset = era5_land.ERA5Land()
+        era5_land_dataset = ERA5Land()
         # create a dummy .cdsapirc
         patching = patch("zampy.datasets.utils.CDSAPI_CONFIG_PATH", valid_path_cds)
         with patching:
@@ -94,7 +94,7 @@ class TestERA5Land:
 
     def ingest_dummy_data(self, temp_dir):
         """Ingest dummy tif data to nc for other tests."""
-        era5_land_dataset = era5_land.ERA5Land()
+        era5_land_dataset = ERA5Land()
         era5_land_dataset.ingest(download_dir=data_folder, ingest_dir=Path(temp_dir))
         ds = xr.load_dataset(
             Path(
@@ -117,7 +117,7 @@ class TestERA5Land:
         bbox = SpatialBounds(39, -107, 37, -109)
         variable = ["2m_dewpoint_temperature"]
 
-        era5_land_dataset = era5_land.ERA5Land()
+        era5_land_dataset = ERA5Land()
 
         ds = era5_land_dataset.load(
             ingest_dir=Path(data_folder),
