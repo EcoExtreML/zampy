@@ -1,14 +1,11 @@
 """Base module for datasets available on CDS."""
 
 from pathlib import Path
-from typing import List
-from typing import Tuple
 from typing import Union
 import xarray as xr
 from zampy.datasets import converter
 from zampy.datasets import utils
 from zampy.datasets import validation
-from zampy.datasets.dataset_protocol import Dataset
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
 from zampy.datasets.dataset_protocol import Variable
@@ -21,13 +18,16 @@ from zampy.utils import regrid
 # ruff: noqa: D102
 
 
-class ECMWFDataset(Dataset):  # noqa: D101
+class ECMWFDataset:  # noqa: D101
     name: str
     time_bounds: TimeBounds
     spatial_bounds = SpatialBounds(90, 180, -90, -180)
+    crs = "EPSG:4326"
 
-    raw_variables: Tuple[Variable, ...]
-    variable_names: Tuple[str, ...]
+    raw_variables: list[Variable]
+    cds_var_names: dict[str, str]
+    variable_names: list[str]
+    variables: list[Variable]
     license = "cc-by-4.0"
     bib = """
     @article{hersbach2020era5,
@@ -43,12 +43,16 @@ class ECMWFDataset(Dataset):  # noqa: D101
     """
     cds_dataset: str
 
+    def __init__(self) -> None:
+        """Init."""
+        pass
+
     def download(
         self,
         download_dir: Path,
         time_bounds: TimeBounds,
         spatial_bounds: SpatialBounds,
-        variable_names: List[str],
+        variable_names: list[str],
         overwrite: bool = False,
     ) -> bool:
         validation.validate_download_request(
@@ -56,7 +60,7 @@ class ECMWFDataset(Dataset):  # noqa: D101
             download_dir,
             time_bounds,
             spatial_bounds,
-            variable_names,
+            [self.cds_var_names[var] for var in self.cds_var_names.keys()],
         )
 
         download_folder = download_dir / self.name
@@ -108,10 +112,10 @@ class ECMWFDataset(Dataset):  # noqa: D101
         spatial_bounds: SpatialBounds,
         resolution: float,
         regrid_method: str,
-        variable_names: List[str],
+        variable_names: list[str],
     ) -> xr.Dataset:
-        files: List[Path] = []
-        for var in self.variable_names:
+        files: list[Path] = []
+        for var in self.cds_var_names.keys():
             if var in variable_names:
                 files += (ingest_dir / self.name).glob(f"{self.name}_{var}*.nc")
 

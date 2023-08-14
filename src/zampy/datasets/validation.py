@@ -1,6 +1,5 @@
 """Checks for user input validation."""
 from pathlib import Path
-from typing import List
 from zampy.datasets.dataset_protocol import Dataset
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
@@ -23,7 +22,7 @@ def validate_download_request(
     download_dir: Path,
     time_bounds: TimeBounds,
     spatial_bounds: SpatialBounds,
-    variable_names: List[str],
+    variable_names: list[str],
 ) -> None:
     """Validate the user's download request against the dataset.
 
@@ -42,7 +41,7 @@ def validate_download_request(
 
 def compare_variables(
     dataset: Dataset,
-    variable_names: List[str],
+    variable_names: list[str],
 ) -> None:
     """Compare the user's requested variables to the dataset's variables.
 

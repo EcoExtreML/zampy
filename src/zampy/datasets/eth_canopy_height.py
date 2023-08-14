@@ -1,14 +1,12 @@
 """ETH canopy height dataset."""
 import gzip
 from pathlib import Path
-from typing import List
 from typing import Union
 import numpy as np
 import xarray as xr
 from zampy.datasets import converter
 from zampy.datasets import utils
 from zampy.datasets import validation
-from zampy.datasets.dataset_protocol import Dataset
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
 from zampy.datasets.dataset_protocol import Variable
@@ -27,20 +25,18 @@ VALID_NAME_FILE = (
 # ruff: noqa: D102
 
 
-class EthCanopyHeight(Dataset):  # noqa: D101
+class EthCanopyHeight:  # noqa: D101
     name = "eth-canopy-height"
     time_bounds = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-12-31"))
     spatial_bounds = SpatialBounds(90, 180, -90, -180)
     crs = "EPSG:4326"
 
-    raw_variables = (
+    raw_variables = [
         Variable(name="h_canopy", unit=unit_registry.meter),
         Variable(name="h_canopy_SD", unit=unit_registry.meter),
-    )
-    variable_names = ("height_of_vegetation", "height_of_vegetation_standard_deviation")
-    variables = (
-        VARIABLE_REFERENCE_LOOKUP[var] for var in variable_names
-    )  # type: ignore
+    ]
+    variable_names = ["height_of_vegetation", "height_of_vegetation_standard_deviation"]
+    variables = [VARIABLE_REFERENCE_LOOKUP[var] for var in variable_names]
 
     license = "cc-by-4.0"
     bib = """
@@ -55,12 +51,16 @@ class EthCanopyHeight(Dataset):  # noqa: D101
 
     data_url = "https://share.phys.ethz.ch/~pf/nlangdata/ETH_GlobalCanopyHeight_10m_2020_version1/3deg_cogs/"
 
+    def __init__(self) -> None:
+        """Init."""
+        pass
+
     def download(
         self,
         download_dir: Path,
         time_bounds: TimeBounds,
         spatial_bounds: SpatialBounds,
-        variable_names: List[str],
+        variable_names: list[str],
         overwrite: bool = False,
     ) -> bool:
         validation.validate_download_request(
@@ -128,9 +128,9 @@ class EthCanopyHeight(Dataset):  # noqa: D101
         spatial_bounds: SpatialBounds,
         resolution: float,
         regrid_method: str,
-        variable_names: List[str],
+        variable_names: list[str],
     ) -> xr.Dataset:
-        files: List[Path] = []
+        files: list[Path] = []
         if self.variable_names[0] in variable_names:
             files += (ingest_dir / self.name).glob("*Map.nc")
         if self.variable_names[1] in variable_names:
@@ -165,7 +165,7 @@ class EthCanopyHeight(Dataset):  # noqa: D101
         return True
 
 
-def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> List[str]:
+def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> list[str]:
     """Get all valid ETH canopy height dataset filenames within given spatial bounds.
 
     Args:
@@ -202,7 +202,7 @@ def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> List[str]:
     return get_valid_filenames(fnames)
 
 
-def get_valid_filenames(filenames: List[str]) -> List[str]:
+def get_valid_filenames(filenames: list[str]) -> list[str]:
     """Returns a new list with only the valid filenames."""
     valid_name_file = (
         Path(__file__).parent / "assets" / "h_canopy_filenames_compressed.txt.gz"

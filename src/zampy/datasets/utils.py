@@ -1,9 +1,7 @@
 """Shared utilities from datasets."""
 import urllib.request
 from pathlib import Path
-from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Union
 import cdsapi
 import pandas as pd
@@ -75,7 +73,7 @@ def get_file_size(fpath: Path) -> int:
 
 def cds_request(
     dataset: str,
-    variables: List[str],
+    variables: list[str],
     time_bounds: TimeBounds,
     spatial_bounds: SpatialBounds,
     path: Path,
@@ -159,7 +157,7 @@ def cds_request(
             print(f"File '{fpath.name}' already exists, skipping...")
 
 
-def time_bounds_to_year_month(time_bounds: TimeBounds) -> List[Tuple[str, str]]:
+def time_bounds_to_year_month(time_bounds: TimeBounds) -> list[tuple[str, str]]:
     """Return year/month pairs."""
     date_range = pd.date_range(start=time_bounds.start, end=time_bounds.end, freq="M")
     year_month_pairs = [(str(date.year), str(date.month)) for date in date_range]

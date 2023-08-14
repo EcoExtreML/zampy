@@ -2,8 +2,8 @@
 
 import numpy as np
 import pytest
-from zampy.datasets import EthCanopyHeight
 from zampy.datasets import validation
+from zampy.datasets.catalog import EthCanopyHeight
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
 

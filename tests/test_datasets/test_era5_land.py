@@ -6,7 +6,7 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 import xarray as xr
-from zampy.datasets import ERA5Land
+from zampy.datasets.catalog import ERA5Land
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
 from . import data_folder
