@@ -1,14 +1,11 @@
 """Outline of the dataset protocol."""
 import json
 import shutil
-from abc import abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from typing import List
 from typing import Optional
 from typing import Protocol
-from typing import Tuple
 import numpy as np
 import xarray as xr
 
@@ -79,21 +76,20 @@ class Dataset(Protocol):
     crs: str
     license: str
     bib: str
-    raw_variables: Tuple[Variable, ...]
-    variable_names: Tuple[str, ...]
-    variables: Tuple[Variable, ...]
+    raw_variables: list[Variable]
+    variable_names: list[str]
+    variables: list[Variable]
 
     def __init__(self) -> None:
         """Init."""
         ...
 
-    @abstractmethod
     def download(
         self,
         download_dir: Path,
         time_bounds: TimeBounds,
         spatial_bounds: SpatialBounds,
-        variable_names: List[str],
+        variable_names: list[str],
         overwrite: bool = False,
     ) -> bool:
         """Download the data.
@@ -111,7 +107,6 @@ class Dataset(Protocol):
         """
         ...
 
-    @abstractmethod
     def ingest(
         self,
         download_dir: Path,
@@ -130,7 +125,6 @@ class Dataset(Protocol):
         """
         ...
 
-    @abstractmethod
     def load(
         self,
         ingest_dir: Path,
@@ -138,7 +132,7 @@ class Dataset(Protocol):
         spatial_bounds: SpatialBounds,
         resolution: float,
         regrid_method: str,
-        variable_names: List[str],
+        variable_names: list[str],
     ) -> xr.Dataset:
         """Get the dataset as an xarray Dataset.
 
@@ -160,7 +154,6 @@ class Dataset(Protocol):
         """
         ...
 
-    @abstractmethod
     def convert(
         self,
         ingest_dir: Path,
@@ -182,7 +175,7 @@ def write_properties_file(
     dataset_folder: Path,
     spatial_bounds: SpatialBounds,
     time_bounds: TimeBounds,
-    variable_names: List[str],
+    variable_names: list[str],
 ) -> None:
     """Write the (serialized) spatial and time bounds to a json file.
 
@@ -211,7 +204,7 @@ def write_properties_file(
 
 def read_properties_file(
     dataset_folder: Path,
-) -> Tuple[SpatialBounds, TimeBounds, List[str]]:
+) -> tuple[SpatialBounds, TimeBounds, list[str]]:
     """Load the serialized spatial and time bounds from the json file.
 
     Args:

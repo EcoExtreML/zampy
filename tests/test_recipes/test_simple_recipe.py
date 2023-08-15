@@ -26,7 +26,7 @@ def test_recipe(tmp_path: Path, mocker):
         time_bounds = TimeBounds(
             np.datetime64("2020-01-01T00:00"), np.datetime64("2020-12-31T23:59")
         )
-        variables = ["10m_v_component_of_wind", "surface_pressure"]
+        variables = ["northward_component_of_wind", "surface_pressure"]
 
         generate_test_data.generate_era5_files(
             directory=tmp_path / "download",

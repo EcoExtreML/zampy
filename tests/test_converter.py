@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 import xarray as xr
 from test_datasets import data_folder
-from zampy.datasets import EthCanopyHeight
 from zampy.datasets import converter
+from zampy.datasets.catalog import EthCanopyHeight
 from zampy.datasets.eth_canopy_height import parse_tiff_file
 
 

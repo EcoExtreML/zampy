@@ -1,5 +1,4 @@
 """Zampy regridding functions."""
-from typing import Tuple
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -19,7 +18,7 @@ def assert_xesmf_available() -> None:
         ) from e
 
 
-def infer_resolution(dataset: xr.Dataset) -> Tuple[float, float]:
+def infer_resolution(dataset: xr.Dataset) -> tuple[float, float]:
     """Infer the resolution of a dataset's latitude and longitude coordinates.
 
     Args:
