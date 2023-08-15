@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import cdsapi
+import numpy as np
 import pandas as pd
 import xarray as xr
 from tqdm import tqdm
@@ -166,15 +167,12 @@ def retrieve_cams(
                 "format": "netcdf",
             },
         )
-        year_start = time_bounds.start.astype(object).year
-        year_end = time_bounds.end.astype(object).year
-        month_start = time_bounds.start.astype(object).month
-        month_end = time_bounds.end.astype(object).month
-        # check existence and overwrite
-        fpath = (
-            path
-            / f"{fname}_{variable}_{year_start}_{month_start}-{year_end}_{month_end}.nc"
+        time_start = np.datetime_as_string(time_bounds.start, unit="M").replace(
+            "-", "_"
         )
+        time_end = np.datetime_as_string(time_bounds.end, unit="M").replace("-", "_")
+        # check existence and overwrite
+        fpath = path / f"{fname}_{variable}_{time_start}-{time_end}.nc"
         _check_and_download(r, fpath, overwrite)
 
 
