@@ -23,15 +23,15 @@ class ERA5(ECMWFDataset):  # noqa: D101
 
     # variable names used in cdsapi downloading request
     cds_var_names = {
-        "mean_total_precipitation_rate": "total_precipitation",
+        "total_precipitation": "mean_total_precipitation_rate",
         "surface_thermal_radiation_downwards": "surface_thermal_radiation_downwards",
         "surface_solar_radiation_downwards": "surface_solar_radiation_downwards",
         "surface_pressure": "surface_pressure",
-        "10m_u_component_of_wind": "eastward_component_of_wind",
-        "10m_v_component_of_wind": "northward_component_of_wind",
+        "eastward_component_of_wind": "10m_u_component_of_wind",
+        "northward_component_of_wind": "10m_v_component_of_wind",
     }
 
-    variable_names = list(cds_var_names.values())
+    variable_names = list(cds_var_names.keys())
 
     variables = [VARIABLE_REFERENCE_LOOKUP[var] for var in variable_names]
 
@@ -49,11 +49,11 @@ class ERA5Land(ECMWFDataset):  # noqa: D101
 
     # variable names used in cdsapi downloading request
     cds_var_names = {
-        "2m_temperature": "air_temperature",
-        "2m_dewpoint_temperature": "dewpoint_temperature",
+        "air_temperature": "2m_temperature",
+        "dewpoint_temperature": "2m_dewpoint_temperature",
     }
 
-    variable_names = list(cds_var_names.values())
+    variable_names = list(cds_var_names.keys())
 
     variables = [VARIABLE_REFERENCE_LOOKUP[var] for var in variable_names]
 

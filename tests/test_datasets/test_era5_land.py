@@ -37,7 +37,8 @@ class TestERA5Land:
         """
         times = TimeBounds(np.datetime64("2010-01-01"), np.datetime64("2010-01-31"))
         bbox = SpatialBounds(54, 56, 1, 3)
-        variable = ["2m_dewpoint_temperature"]
+        variable = ["dewpoint_temperature"]
+        cds_var_names = ["2m_dewpoint_temperature"]
         download_dir = Path(dummy_dir, "download")
 
         era5_land_dataset = ERA5Land()
@@ -57,7 +58,7 @@ class TestERA5Land:
                 "reanalysis-era5-land",
                 {
                     "product_type": "reanalysis",
-                    "variable": variable,
+                    "variable": cds_var_names,
                     "year": "2010",
                     "month": "1",
                     # fmt: off
@@ -100,7 +101,7 @@ class TestERA5Land:
             Path(
                 temp_dir,
                 "era5-land",
-                "era5-land_2m_dewpoint_temperature_1996-1.nc",
+                "era5-land_dewpoint_temperature_1996-1.nc",
             )
         )
 
@@ -115,7 +116,7 @@ class TestERA5Land:
         """Test load function."""
         times = TimeBounds(np.datetime64("1996-01-01"), np.datetime64("1996-01-02"))
         bbox = SpatialBounds(39, -107, 37, -109)
-        variable = ["2m_dewpoint_temperature"]
+        variable = ["dewpoint_temperature"]
 
         era5_land_dataset = ERA5Land()
 

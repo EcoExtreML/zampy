@@ -37,7 +37,8 @@ class TestERA5:
         """
         times = TimeBounds(np.datetime64("2010-01-01"), np.datetime64("2010-01-31"))
         bbox = SpatialBounds(54, 56, 1, 3)
-        variable = ["10m_v_component_of_wind"]
+        variable = ["eastward_component_of_wind"]
+        cds_var_names = ["10m_u_component_of_wind"]
         download_dir = Path(dummy_dir, "download")
 
         era5_dataset = era5.ERA5()
@@ -57,7 +58,7 @@ class TestERA5:
                 "reanalysis-era5-single-levels",
                 {
                     "product_type": "reanalysis",
-                    "variable": variable,
+                    "variable": cds_var_names,
                     "year": "2010",
                     "month": "1",
                     # fmt: off
@@ -100,7 +101,7 @@ class TestERA5:
             Path(
                 temp_dir,
                 "era5",
-                "era5_10m_v_component_of_wind_1996-1.nc",
+                "era5_northward_component_of_wind_1996-1.nc",
             )
         )
 
@@ -115,7 +116,7 @@ class TestERA5:
         """Test load function."""
         times = TimeBounds(np.datetime64("1996-01-01"), np.datetime64("1996-01-02"))
         bbox = SpatialBounds(39, -107, 37, -109)
-        variable = ["10m_v_component_of_wind"]
+        variable = ["northward_component_of_wind"]
 
         era5_dataset = era5.ERA5()
 

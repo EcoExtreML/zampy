@@ -87,7 +87,8 @@ def valid_path_cds(tmp_path_factory):
 def test_cds_request(mock_retrieve, valid_path_cds):
     """ "Test cds request for downloading data from CDS server."""
     product = "reanalysis-era5-single-levels"
-    variables = ["10m_v_component_of_wind"]
+    variables = ["eastward_component_of_wind"]
+    cds_var_names = {"eastward_component_of_wind": "10m_u_component_of_wind"}
     time_bounds = TimeBounds(
         np.datetime64("2010-01-01T00:00:00"), np.datetime64("2010-01-31T23:00:00")
     )
@@ -99,14 +100,20 @@ def test_cds_request(mock_retrieve, valid_path_cds):
     patching = patch("zampy.datasets.utils.CDSAPI_CONFIG_PATH", valid_path_cds)
     with patching:
         utils.cds_request(
-            product, variables, time_bounds, spatial_bounds, path, overwrite
+            product,
+            variables,
+            time_bounds,
+            spatial_bounds,
+            path,
+            cds_var_names,
+            overwrite,
         )
 
         mock_retrieve.assert_called_with(
             product,
             {
                 "product_type": "reanalysis",
-                "variable": variables,
+                "variable": ["10m_u_component_of_wind"],
                 "year": "2010",
                 "month": "1",
                 # fmt: off
@@ -153,24 +160,21 @@ def test_convert_to_zampy(dummy_dir):
     ingest_folder = Path(data_folder, "era5")
     utils.convert_to_zampy(
         ingest_folder=Path(dummy_dir),
-        file=Path(ingest_folder, "era5_10m_v_component_of_wind_1996-1.nc"),
+        file=Path(ingest_folder, "era5_northward_component_of_wind_1996-1.nc"),
         overwrite=True,
     )
 
-    ds = xr.load_dataset(Path(dummy_dir, "era5_10m_v_component_of_wind_1996-1.nc"))
+    ds = xr.load_dataset(Path(dummy_dir, "era5_northward_component_of_wind_1996-1.nc"))
 
     assert list(ds.data_vars)[0] == "northward_component_of_wind"
 
 
 def test_parse_nc_file_10m_wind():
     """Test parsing netcdf file function with 10 meter velocity u/v component."""
-    variables = {
-        "10m_v_component_of_wind": "northward_component_of_wind",
-        "10m_u_component_of_wind": "eastward_component_of_wind",
-    }
+    variables = ["northward_component_of_wind", "eastward_component_of_wind"]
     for variable in variables:
         ds = utils.parse_nc_file(data_folder / "era5" / f"era5_{variable}_1996-1.nc")
-        expected_var_name = variables[variable]
+        expected_var_name = variable
         assert list(ds.data_vars)[0] == expected_var_name
         assert ds[expected_var_name].attrs["units"] == "meter_per_second"
 
@@ -199,10 +203,10 @@ def test_parse_nc_file_radiation():
 def test_parse_nc_file_precipitation():
     """Test parsing netcdf file function with precipitation."""
     ds_original = xr.load_dataset(
-        data_folder / "era5" / "era5_mean_total_precipitation_rate_1996-1.nc"
+        data_folder / "era5" / "era5_total_precipitation_1996-1.nc"
     )
     ds = utils.parse_nc_file(
-        data_folder / "era5" / "era5_mean_total_precipitation_rate_1996-1.nc"
+        data_folder / "era5" / "era5_total_precipitation_1996-1.nc"
     )
     expected_var_name = "total_precipitation"
 
@@ -227,7 +231,7 @@ def test_parse_nc_file_pressure():
 def test_parse_nc_file_air_temperature():
     """Test parsing netcdf file function with 2 meter temperature."""
     ds = utils.parse_nc_file(
-        data_folder / "era5-land" / "era5-land_2m_temperature_1996-1.nc"
+        data_folder / "era5-land" / "era5-land_air_temperature_1996-1.nc"
     )
     expected_var_name = "air_temperature"
 
@@ -238,7 +242,7 @@ def test_parse_nc_file_air_temperature():
 def test_parse_nc_file_dew_temperature():
     """Test parsing netcdf file function with 2 meter dewpoint temperature."""
     ds = utils.parse_nc_file(
-        data_folder / "era5-land" / "era5-land_2m_dewpoint_temperature_1996-1.nc"
+        data_folder / "era5-land" / "era5-land_dewpoint_temperature_1996-1.nc"
     )
     expected_var_name = "dewpoint_temperature"
 

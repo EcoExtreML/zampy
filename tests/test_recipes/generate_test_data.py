@@ -46,8 +46,8 @@ def generate_era5_file(
 
 
 ERA5_LOOKUP = {  # name: (unit, fname)
-    "10m_u_component_of_wind": ("m s**-1", "u10"),
-    "10m_v_component_of_wind": ("m s**-1", "v10"),
+    "eastward_component_of_wind": ("m s**-1", "u10"),
+    "northward_component_of_wind": ("m s**-1", "v10"),
     "surface_pressure": ("Pa", "sp"),
 }
 

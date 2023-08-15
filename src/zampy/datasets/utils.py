@@ -77,6 +77,7 @@ def cds_request(
     time_bounds: TimeBounds,
     spatial_bounds: SpatialBounds,
     path: Path,
+    cds_var_names: dict[str, str],
     overwrite: bool,
 ) -> None:
     """Download data via CDS API.
@@ -91,10 +92,11 @@ def cds_request(
 
     Args:
         dataset: Dataset name for retrieval via `cdsapi`.
-        variables: Zampy variable.
+        variables: Zampy variables.
         time_bounds: Zampy time bounds object.
         spatial_bounds: Zampy spatial bounds object.
         path: File path to which the data should be saved.
+        cds_var_names: Variable names from CDS server side.
         overwrite: If an existing file (of the same size!) should be overwritten.
     """
     fname = PRODUCT_FNAME[dataset]
@@ -121,7 +123,7 @@ def cds_request(
             dataset,
             {
                 "product_type": "reanalysis",
-                "variable": [variable],
+                "variable": [cds_var_names[variable]],
                 "year": year,
                 "month": month,
                 # fmt: off

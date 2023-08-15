@@ -60,7 +60,7 @@ class ECMWFDataset:  # noqa: D101
             download_dir,
             time_bounds,
             spatial_bounds,
-            [self.cds_var_names[var] for var in self.cds_var_names.keys()],
+            variable_names,
         )
 
         download_folder = download_dir / self.name
@@ -72,6 +72,7 @@ class ECMWFDataset:  # noqa: D101
             time_bounds=time_bounds,
             spatial_bounds=spatial_bounds,
             path=download_folder,
+            cds_var_names=self.cds_var_names,
             overwrite=overwrite,
         )
 
@@ -115,7 +116,7 @@ class ECMWFDataset:  # noqa: D101
         variable_names: list[str],
     ) -> xr.Dataset:
         files: list[Path] = []
-        for var in self.cds_var_names.keys():
+        for var in self.variable_names:
             if var in variable_names:
                 files += (ingest_dir / self.name).glob(f"{self.name}_{var}*.nc")
 
