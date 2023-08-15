@@ -68,5 +68,9 @@
     "dewpoint_temperature": {
         "variable": "d2m",
         "units": "kelvin"
+    },
+    "elevation": {
+        "variable": "elevation",
+        "units": "meter"
     }
 }
