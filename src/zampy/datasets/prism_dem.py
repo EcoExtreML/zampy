@@ -6,6 +6,7 @@ from typing import Literal
 from typing import Union
 import numpy as np
 import xarray as xr
+from rasterio.io import MemoryFile
 from zampy.datasets import converter
 from zampy.datasets import utils
 from zampy.datasets import validation
@@ -231,9 +232,9 @@ def read_raw_dem(file: Path) -> xr.Dataset:
     if tfdata is None:
         raise ValueError(f"File {file} contains no data")
 
-    # rasterio can read bytestream (IO[bytes] type), but typing of open_dataarray is
-    # incorrect.
-    da = xr.open_dataarray(tfdata, engine="rasterio")  # type: ignore
+    # Reading bytestream is flakey. rasterio has a MemoryFile module to allow reading
+    # in-memory GeoTIFF file data:
+    da = xr.open_dataarray(MemoryFile(tfdata), engine="rasterio")  # type: ignore
 
     da = da.sortby(["x", "y"])  # sort the dims ascending
     da = da.isel(band=0)  # get rid of band dim
