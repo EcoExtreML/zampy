@@ -68,5 +68,9 @@
     "dewpoint_temperature": {
         "variable": "d2m",
         "units": "kelvin"
+    },
+    "co2_concentration": {
+        "variable": "CO2air",
+        "units": "kilogram/kilogram"
     }
 }

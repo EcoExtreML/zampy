@@ -166,10 +166,15 @@ def retrieve_cams(
                 "format": "netcdf",
             },
         )
-        year_start = time_bounds.start.astype("datetime64[Y]").astype(int) + 1970
-        year_end = time_bounds.end.astype("datetime64[Y]").astype(int) + 1970
+        year_start = time_bounds.start.astype(object).year
+        year_end = time_bounds.end.astype(object).year
+        month_start = time_bounds.start.astype(object).month
+        month_end = time_bounds.end.astype(object).month
         # check existence and overwrite
-        fpath = path / f"{fname}_{variable}_{year_start}-{year_end}.nc"
+        fpath = (
+            path
+            / f"{fname}_{variable}_{year_start}_{month_start}-{year_end}_{month_end}.nc"
+        )
         _check_and_download(r, fpath, overwrite)
 
 
@@ -225,7 +230,7 @@ def convert_to_zampy(
         ds.to_netcdf(path=ncfile)
 
 
-var_reference_era5_to_zampy = {
+var_reference_ecmwf_to_zampy = {
     # era5 variables
     "mtpr": "total_precipitation",
     "strd": "surface_thermal_radiation_downwards",
@@ -236,6 +241,8 @@ var_reference_era5_to_zampy = {
     # era5-land variables
     "t2m": "air_temperature",
     "d2m": "dewpoint_temperature",
+    # cams variables
+    "co2": "co2_concentration",
 }
 
 WATER_DENSITY = 997.0  # kg/m3
@@ -254,9 +261,9 @@ def parse_nc_file(file: Path) -> xr.Dataset:
     ds = xr.open_dataset(file, chunks={"x": 50, "y": 50})
 
     for variable in ds.variables:
-        if variable in var_reference_era5_to_zampy:
+        if variable in var_reference_ecmwf_to_zampy:
             var = str(variable)  # Cast to string to please mypy
-            variable_name = var_reference_era5_to_zampy[var]
+            variable_name = var_reference_ecmwf_to_zampy[var]
             ds = ds.rename({var: variable_name})
             # convert radiation to flux J/m2 to W/m2
             # https://confluence.ecmwf.int/pages/viewpage.action?pageId=155337784
