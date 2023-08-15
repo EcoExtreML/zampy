@@ -43,7 +43,7 @@ class TestERA5Land:
 
         era5_land_dataset = ERA5Land()
         # create a dummy .cdsapirc
-        patching = patch("zampy.datasets.utils.CDSAPI_CONFIG_PATH", valid_path_cds)
+        patching = patch("zampy.datasets.cds_utils.CDSAPI_CONFIG_PATH", valid_path_cds)
         with patching:
             era5_land_dataset.download(
                 download_dir=download_dir,
