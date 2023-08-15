@@ -49,7 +49,7 @@ VARIABLE_REFERENCE = (
         unit_registry.meter,
         desc="Uncertainty of the 'height_of_vegetation' variable.",
     ),
-    Variable("carbon_dioxide", unit_registry.kilogram_per_kilogram),
+    Variable("co2_concentration", unit_registry.kilogram_per_kilogram),
     Variable("altitude", unit_registry.meter),
     Variable("latitude", unit=unit_registry.degree_north),
     Variable("longitude", unit=unit_registry.degree_east),
