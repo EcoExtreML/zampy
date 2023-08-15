@@ -1,4 +1,4 @@
-"""Unit test for ERA5 dataset."""
+"""Unit test for ERA5-land dataset."""
 
 import json
 from pathlib import Path
@@ -6,7 +6,7 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 import xarray as xr
-from zampy.datasets import era5
+from zampy.datasets.catalog import ERA5Land
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
 from . import data_folder
@@ -27,8 +27,8 @@ def dummy_dir(tmp_path_factory):
     return tmp_path_factory.mktemp("data")
 
 
-class TestERA5:
-    """Test the ERA5 class."""
+class TestERA5Land:
+    """Test the ERA5Land class."""
 
     @patch("cdsapi.Client.retrieve")
     def test_download(self, mock_retrieve, valid_path_cds, dummy_dir):
@@ -37,15 +37,15 @@ class TestERA5:
         """
         times = TimeBounds(np.datetime64("2010-01-01"), np.datetime64("2010-01-31"))
         bbox = SpatialBounds(54, 56, 1, 3)
-        variable = ["eastward_component_of_wind"]
-        cds_var_names = ["10m_u_component_of_wind"]
+        variable = ["dewpoint_temperature"]
+        cds_var_names = ["2m_dewpoint_temperature"]
         download_dir = Path(dummy_dir, "download")
 
-        era5_dataset = era5.ERA5()
+        era5_land_dataset = ERA5Land()
         # create a dummy .cdsapirc
         patching = patch("zampy.datasets.utils.CDSAPI_CONFIG_PATH", valid_path_cds)
         with patching:
-            era5_dataset.download(
+            era5_land_dataset.download(
                 download_dir=download_dir,
                 time_bounds=times,
                 spatial_bounds=bbox,
@@ -55,7 +55,7 @@ class TestERA5:
 
             # make sure that the download is called
             mock_retrieve.assert_called_once_with(
-                "reanalysis-era5-single-levels",
+                "reanalysis-era5-land",
                 {
                     "product_type": "reanalysis",
                     "variable": cds_var_names,
@@ -86,7 +86,7 @@ class TestERA5:
             )
 
             # check property file
-            with (download_dir / "era5" / "properties.json").open(
+            with (download_dir / "era5-land" / "properties.json").open(
                 mode="r", encoding="utf-8"
             ) as file:
                 json_dict = json.load(file)
@@ -95,17 +95,17 @@ class TestERA5:
 
     def ingest_dummy_data(self, temp_dir):
         """Ingest dummy tif data to nc for other tests."""
-        era5_dataset = era5.ERA5()
-        era5_dataset.ingest(download_dir=data_folder, ingest_dir=Path(temp_dir))
+        era5_land_dataset = ERA5Land()
+        era5_land_dataset.ingest(download_dir=data_folder, ingest_dir=Path(temp_dir))
         ds = xr.load_dataset(
             Path(
                 temp_dir,
-                "era5",
-                "era5_northward_component_of_wind_1996-1.nc",
+                "era5-land",
+                "era5-land_dewpoint_temperature_1996-1.nc",
             )
         )
 
-        return ds, era5_dataset
+        return ds, era5_land_dataset
 
     def test_ingest(self, dummy_dir):
         """Test ingest function."""
@@ -116,11 +116,11 @@ class TestERA5:
         """Test load function."""
         times = TimeBounds(np.datetime64("1996-01-01"), np.datetime64("1996-01-02"))
         bbox = SpatialBounds(39, -107, 37, -109)
-        variable = ["northward_component_of_wind"]
+        variable = ["dewpoint_temperature"]
 
-        era5_dataset = era5.ERA5()
+        era5_land_dataset = ERA5Land()
 
-        ds = era5_dataset.load(
+        ds = era5_land_dataset.load(
             ingest_dir=Path(data_folder),
             time_bounds=times,
             spatial_bounds=bbox,
@@ -138,6 +138,6 @@ class TestERA5:
 
     def test_convert(self, dummy_dir):
         """Test convert function."""
-        _, era5_dataset = self.ingest_dummy_data(dummy_dir)
-        era5_dataset.convert(ingest_dir=Path(dummy_dir), convention="ALMA")
+        _, era5_land_dataset = self.ingest_dummy_data(dummy_dir)
+        era5_land_dataset.convert(ingest_dir=Path(dummy_dir), convention="ALMA")
         # TODO: finish this test when the function is complete.
