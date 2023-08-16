@@ -4,6 +4,8 @@ from zampy.datasets.cams import CAMS
 from zampy.datasets.era5 import ERA5
 from zampy.datasets.era5 import ERA5Land
 from zampy.datasets.eth_canopy_height import EthCanopyHeight
+from zampy.datasets.prism_dem import PrismDEM30
+from zampy.datasets.prism_dem import PrismDEM90
 
 
 # This object tracks which datasets are available.
@@ -13,4 +15,6 @@ DATASETS: dict[str, type[dataset_protocol.Dataset]] = {
     "era5_land": ERA5Land,
     "cams": CAMS,
     "eth_canopy_height": EthCanopyHeight,
+    "prism_dem_30": PrismDEM30,
+    "prism_dem_90": PrismDEM90,
 }

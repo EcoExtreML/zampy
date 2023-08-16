@@ -105,7 +105,10 @@ def _groupby_regrid(
         {"latitude_bins": "latitude", "longitude_bins": "longitude"}
     )
     ds_out = ds_out.drop_vars(["latitude_bins", "longitude_bins"])
-    return ds_out.transpose("time", "latitude", "longitude", ...)
+    if "time" in ds_out.dims:
+        return ds_out.transpose("time", "latitude", "longitude", ...)
+    else:
+        return ds_out.transpose("latitude", "longitude", ...)
 
 
 def _interp_regrid(
