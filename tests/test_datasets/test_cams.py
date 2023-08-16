@@ -87,7 +87,7 @@ class TestCAMS:
             Path(
                 temp_dir,
                 "cams",
-                "cams_co2_concentration_2003_01-2020_12.nc",
+                "cams_co2_concentration_2003_01_02-2020_12_31.nc",
             )
         )
 

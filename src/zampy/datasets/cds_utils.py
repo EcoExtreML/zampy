@@ -149,6 +149,9 @@ def retrieve_cams(
     overwrite: bool,
 ) -> None:
     """Download data via ADS API."""
+    # make sure time format is YY-MM-DD
+    time_start = str(np.datetime_as_string(time_bounds.start, unit="D"))  # please mypy
+    time_end = str(np.datetime_as_string(time_bounds.end, unit="D"))
     # raise download request
     for variable in tqdm(variables):
         r = client.retrieve(
@@ -156,7 +159,7 @@ def retrieve_cams(
             {
                 "model_level": "60",
                 "variable": [cds_var_names[variable]],
-                "date": f"{str(time_bounds.start)}/{str(time_bounds.end)}",
+                "date": f"{time_start}/{time_end}",
                 "step": ["0", "3", "6", "9", "12", "15", "18", "21"],
                 "area": [
                     spatial_bounds.north,
@@ -167,10 +170,8 @@ def retrieve_cams(
                 "format": "netcdf",
             },
         )
-        time_start = np.datetime_as_string(time_bounds.start, unit="M").replace(
-            "-", "_"
-        )
-        time_end = np.datetime_as_string(time_bounds.end, unit="M").replace("-", "_")
+        time_start = time_start.replace("-", "_")
+        time_end = time_end.replace("-", "_")
         # check existence and overwrite
         fpath = path / f"{fname}_{variable}_{time_start}-{time_end}.nc"
         _check_and_download(r, fpath, overwrite)

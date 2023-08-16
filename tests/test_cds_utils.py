@@ -21,7 +21,7 @@ def valid_path_cds(tmp_path_factory):
 
 
 @patch("cdsapi.Client.retrieve")
-def test_cds_request(mock_retrieve, valid_path_cds):
+def test_cds_request_era5(mock_retrieve, valid_path_cds):
     """ "Test cds request for downloading data from CDS server."""
     product = "reanalysis-era5-single-levels"
     variables = ["eastward_component_of_wind"]
@@ -67,6 +67,50 @@ def test_cds_request(mock_retrieve, valid_path_cds):
                     "21:00", "22:00", "23:00",
                 ],
                 # fmt: on
+                "area": [
+                    spatial_bounds.north,
+                    spatial_bounds.west,
+                    spatial_bounds.south,
+                    spatial_bounds.east,
+                ],
+                "format": "netcdf",
+            },
+        )
+
+
+@patch("cdsapi.Client.retrieve")
+def test_cds_request_cams_co2(mock_retrieve, valid_path_cds):
+    """ "Test cds request for downloading data from CDS server."""
+    product = "cams-global-ghg-reanalysis-egg4"
+    variables = ["co2_concentration"]
+    cds_var_names = {"co2_concentration": "carbon_dioxide"}
+    time_bounds = TimeBounds(
+        np.datetime64("2003-01-02T00:00:00"), np.datetime64("2003-01-31T23:00:00")
+    )
+    spatial_bounds = SpatialBounds(54, 56, 1, 3)
+    path = Path(__file__).resolve().parent
+    overwrite = True
+
+    # create a dummy .cdsapirc
+    patching = patch("zampy.datasets.cds_utils.CDSAPI_CONFIG_PATH", valid_path_cds)
+    with patching:
+        cds_utils.cds_request(
+            product,
+            variables,
+            time_bounds,
+            spatial_bounds,
+            path,
+            cds_var_names,
+            overwrite,
+        )
+
+        mock_retrieve.assert_called_with(
+            product,
+            {
+                "model_level": "60",
+                "variable": [cds_var_names["co2_concentration"]],
+                "date": "2003-01-02/2003-01-31",
+                "step": ["0", "3", "6", "9", "12", "15", "18", "21"],
                 "area": [
                     spatial_bounds.north,
                     spatial_bounds.west,
@@ -191,3 +235,14 @@ def test_parse_nc_file_dew_temperature():
 
     assert list(ds.data_vars)[0] == expected_var_name
     assert ds["dewpoint_temperature"].attrs["units"] == "kelvin"
+
+
+def test_parse_nc_file_co2_concentration():
+    """Test parsing netcdf file function with co2 concentration."""
+    ds = cds_utils.parse_nc_file(
+        data_folder / "cams" / "cams_co2_concentration_2003_01_02-2020_12_31.nc"
+    )
+    expected_var_name = "co2_concentration"
+
+    assert list(ds.data_vars)[0] == expected_var_name
+    assert ds["co2_concentration"].attrs["units"] == "kilogram_per_kilogram"
