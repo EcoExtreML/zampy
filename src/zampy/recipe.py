@@ -118,7 +118,8 @@ class RecipeManager:
 
             ds = converter.convert(ds, dataset, convention=self.convention)
 
-            ds = ds.resample(time=self.frequency).mean()
+            if "time" in ds.dims:  # Dataset with only DEM (e.g.) has no time dim.
+                ds = ds.resample(time=self.frequency).mean()
 
             comp = dict(zlib=True, complevel=5)
             encoding = {var: comp for var in ds.data_vars}
