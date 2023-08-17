@@ -5,6 +5,7 @@ import cdsapi
 import numpy as np
 import pandas as pd
 import xarray as xr
+import yaml
 from tqdm import tqdm
 from tqdm.contrib.itertools import product
 from zampy.datasets import converter
@@ -19,8 +20,13 @@ PRODUCT_FNAME = {
     "reanalysis-era5-land": "era5-land",
     "cams-global-ghg-reanalysis-egg4": "cams",
 }
-ADSAPI_CONFIG_PATH = Path.home() / ".adsapirc"
-CDSAPI_CONFIG_PATH = Path.home() / ".cdsapirc"
+SERVER_API = {
+    "era5": "cdsapi",
+    "era5-land": "cdsapi",
+    "cams": "adsapi",
+}
+CONFIG_PATH = Path.home() / ".config" / "zampy" / "zampy_config.yml"
+CDSAPI_FALLBACK_PATH = Path.home() / ".cdsapirc"
 
 
 def cds_request(
@@ -57,9 +63,7 @@ def cds_request(
     """
     fname = PRODUCT_FNAME[dataset]
 
-    with CDSAPI_CONFIG_PATH.open(encoding="utf8") as f:
-        url = f.readline().split(":", 1)[1].strip()
-        api_key = f.readline().split(":", 1)[1].strip()
+    url, api_key = cds_api_key(fname)
 
     c = cdsapi.Client(
         url=url,
@@ -82,6 +86,42 @@ def cds_request(
         cds_var_names,
         overwrite,
     )
+
+
+def cds_api_key(product_name: str) -> tuple[str, str]:
+    """Load url and cds api key."""
+    server_api = SERVER_API[product_name]
+
+    def default_cdsapi(cdsapi_fallback_path: Path) -> tuple[str, str]:
+        """Fallback with default .cdsapirc setup."""
+        with cdsapi_fallback_path.open(encoding="utf8") as f:
+            url = f.readline().split(":", 1)[1].strip()
+            api_key = f.readline().split(":", 1)[1].strip()
+
+        return url, api_key
+
+    if CONFIG_PATH.exists():
+        with CONFIG_PATH.open() as f:
+            config_zampy: dict = yaml.safe_load(f)
+            if server_api in config_zampy.keys():
+                url = config_zampy[server_api]["url"]
+                api_key = config_zampy[server_api]["key"]
+            else:
+                print(f"No {server_api} key was found at '{CONFIG_PATH}'.")
+                print(f"Look for {server_api} key at '{CDSAPI_FALLBACK_PATH}'.")
+                url, api_key = default_cdsapi(CDSAPI_FALLBACK_PATH)
+    elif CDSAPI_FALLBACK_PATH.exists():
+        print(f"No config file was found at '{CONFIG_PATH}'.")
+        print(f"Look for {server_api} key at '{CDSAPI_FALLBACK_PATH}'.")
+        url, api_key = default_cdsapi(CDSAPI_FALLBACK_PATH)
+    else:
+        raise FileNotFoundError(
+            "Could not find zampy config file or '.cdsapirc'. "
+            "Please config your CDS API following insturctions "
+            "in `README.md.`"
+        )
+
+    return url, api_key
 
 
 def retrieve_era5(

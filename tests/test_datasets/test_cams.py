@@ -13,11 +13,12 @@ from . import data_folder
 
 
 @pytest.fixture(scope="function")
-def valid_path_cds(tmp_path_factory):
-    """Create a dummy .cdsapirc file."""
-    fn = tmp_path_factory.mktemp("usrhome") / ".cdsapirc"
+def valid_path_config(tmp_path_factory):
+    """Create a dummy .zampy_config file."""
+    fn = tmp_path_factory.mktemp("usrhome") / "zampy_config.yml"
     with open(fn, mode="w", encoding="utf-8") as f:
-        f.write("url: a\nkey: 123:abc-def")
+        f.write("cdsapi:\n  url: a\n  key: 123:abc-def\n")
+        f.write("adsapi:\n  url: a\n  key: 123:abc-def")
     return fn
 
 
@@ -31,7 +32,7 @@ class TestCAMS:
     """Test the CAMS class."""
 
     @patch("cdsapi.Client.retrieve")
-    def test_download(self, mock_retrieve, valid_path_cds, dummy_dir):
+    def test_download(self, mock_retrieve, valid_path_config, dummy_dir):
         """Test download functionality.
         Here we mock the downloading and save property file to a fake path.
         """
@@ -43,7 +44,7 @@ class TestCAMS:
 
         cams_dataset = CAMS()
         # create a dummy .cdsapirc
-        patching = patch("zampy.datasets.cds_utils.CDSAPI_CONFIG_PATH", valid_path_cds)
+        patching = patch("zampy.datasets.cds_utils.CONFIG_PATH", valid_path_config)
         with patching:
             cams_dataset.download(
                 download_dir=download_dir,

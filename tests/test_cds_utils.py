@@ -12,6 +12,16 @@ from zampy.datasets.dataset_protocol import TimeBounds
 
 
 @pytest.fixture(scope="function")
+def valid_path_config(tmp_path_factory):
+    """Create a dummy .zampy_config file."""
+    fn = tmp_path_factory.mktemp("usrhome") / "zampy_config.yml"
+    with open(fn, mode="w", encoding="utf-8") as f:
+        f.write("cdsapi:\n  url: a\n  key: 123:abc-def\n")
+        f.write("adsapi:\n  url: a\n  key: 123:abc-def")
+    return fn
+
+
+@pytest.fixture(scope="function")
 def valid_path_cds(tmp_path_factory):
     """Create a dummy .cdsapirc file."""
     fn = tmp_path_factory.mktemp("usrhome") / ".cdsapirc"
@@ -21,7 +31,7 @@ def valid_path_cds(tmp_path_factory):
 
 
 @patch("cdsapi.Client.retrieve")
-def test_cds_request_era5(mock_retrieve, valid_path_cds):
+def test_cds_request_era5(mock_retrieve, valid_path_config):
     """ "Test cds request for downloading data from CDS server."""
     product = "reanalysis-era5-single-levels"
     variables = ["eastward_component_of_wind"]
@@ -34,7 +44,7 @@ def test_cds_request_era5(mock_retrieve, valid_path_cds):
     overwrite = True
 
     # create a dummy .cdsapirc
-    patching = patch("zampy.datasets.cds_utils.CDSAPI_CONFIG_PATH", valid_path_cds)
+    patching = patch("zampy.datasets.cds_utils.CONFIG_PATH", valid_path_config)
     with patching:
         cds_utils.cds_request(
             product,
@@ -79,7 +89,7 @@ def test_cds_request_era5(mock_retrieve, valid_path_cds):
 
 
 @patch("cdsapi.Client.retrieve")
-def test_cds_request_cams_co2(mock_retrieve, valid_path_cds):
+def test_cds_request_cams_co2(mock_retrieve, valid_path_config):
     """ "Test cds request for downloading data from CDS server."""
     product = "cams-global-ghg-reanalysis-egg4"
     variables = ["co2_concentration"]
@@ -92,7 +102,7 @@ def test_cds_request_cams_co2(mock_retrieve, valid_path_cds):
     overwrite = True
 
     # create a dummy .cdsapirc
-    patching = patch("zampy.datasets.cds_utils.CDSAPI_CONFIG_PATH", valid_path_cds)
+    patching = patch("zampy.datasets.cds_utils.CONFIG_PATH", valid_path_config)
     with patching:
         cds_utils.cds_request(
             product,
@@ -150,99 +160,96 @@ def test_convert_to_zampy(dummy_dir):
     assert list(ds.data_vars)[0] == "northward_component_of_wind"
 
 
-def test_parse_nc_file_10m_wind():
-    """Test parsing netcdf file function with 10 meter velocity u/v component."""
-    variables = ["northward_component_of_wind", "eastward_component_of_wind"]
-    for variable in variables:
-        ds = cds_utils.parse_nc_file(
-            data_folder / "era5" / f"era5_{variable}_1996-1.nc"
-        )
-        expected_var_name = variable
-        assert list(ds.data_vars)[0] == expected_var_name
-        assert ds[expected_var_name].attrs["units"] == "meter_per_second"
+class TestParser:
+    """Test parsing netcdf files for all relevant variables."""
 
+    def test_parse_nc_file_10m_wind(self):
+        """Test parsing netcdf file function with 10 meter velocity u/v component."""
+        variables = ["northward_component_of_wind", "eastward_component_of_wind"]
+        for variable in variables:
+            ds = cds_utils.parse_nc_file(
+                data_folder / "era5" / f"era5_{variable}_1996-1.nc"
+            )
+            expected_var_name = variable
+            assert list(ds.data_vars)[0] == expected_var_name
+            assert ds[expected_var_name].attrs["units"] == "meter_per_second"
 
-def test_parse_nc_file_radiation():
-    """Test parsing netcdf file function with surface radiation."""
-    variables = {
-        "surface_thermal_radiation_downwards": "strd",
-        "surface_solar_radiation_downwards": "ssrd",
-    }
-    for variable in variables:
+    def test_parse_nc_file_radiation(self):
+        """Test parsing netcdf file function with surface radiation."""
+        variables = {
+            "surface_thermal_radiation_downwards": "strd",
+            "surface_solar_radiation_downwards": "ssrd",
+        }
+        for variable in variables:
+            ds_original = xr.load_dataset(
+                data_folder / "era5" / f"era5_{variable}_1996-1.nc"
+            )
+            ds = cds_utils.parse_nc_file(
+                data_folder / "era5" / f"era5_{variable}_1996-1.nc"
+            )
+
+            assert list(ds.data_vars)[0] == variable
+            assert ds[variable].attrs["units"] == "watt_per_square_meter"
+            assert np.allclose(
+                ds_original[variables[variable]].values,
+                ds[variable].values * 3600,
+                equal_nan=True,
+            )
+
+    def test_parse_nc_file_precipitation(self):
+        """Test parsing netcdf file function with precipitation."""
         ds_original = xr.load_dataset(
-            data_folder / "era5" / f"era5_{variable}_1996-1.nc"
+            data_folder / "era5" / "era5_total_precipitation_1996-1.nc"
         )
         ds = cds_utils.parse_nc_file(
-            data_folder / "era5" / f"era5_{variable}_1996-1.nc"
+            data_folder / "era5" / "era5_total_precipitation_1996-1.nc"
         )
+        expected_var_name = "total_precipitation"
 
-        assert list(ds.data_vars)[0] == variable
-        assert ds[variable].attrs["units"] == "watt_per_square_meter"
+        assert list(ds.data_vars)[0] == expected_var_name
+        assert ds["total_precipitation"].attrs["units"] == "millimeter_per_second"
         assert np.allclose(
-            ds_original[variables[variable]].values,
-            ds[variable].values * 3600,
+            ds_original["mtpr"].values,
+            ds["total_precipitation"].values * cds_utils.WATER_DENSITY / 1000,
             equal_nan=True,
         )
 
+    def test_parse_nc_file_pressure(self):
+        """Test parsing netcdf file function with surface pressure."""
+        ds = cds_utils.parse_nc_file(
+            data_folder / "era5" / "era5_surface_pressure_1996-1.nc"
+        )
+        expected_var_name = "surface_pressure"
 
-def test_parse_nc_file_precipitation():
-    """Test parsing netcdf file function with precipitation."""
-    ds_original = xr.load_dataset(
-        data_folder / "era5" / "era5_total_precipitation_1996-1.nc"
-    )
-    ds = cds_utils.parse_nc_file(
-        data_folder / "era5" / "era5_total_precipitation_1996-1.nc"
-    )
-    expected_var_name = "total_precipitation"
+        assert list(ds.data_vars)[0] == expected_var_name
+        assert ds["surface_pressure"].attrs["units"] == "pascal"
 
-    assert list(ds.data_vars)[0] == expected_var_name
-    assert ds["total_precipitation"].attrs["units"] == "millimeter_per_second"
-    assert np.allclose(
-        ds_original["mtpr"].values,
-        ds["total_precipitation"].values * cds_utils.WATER_DENSITY / 1000,
-        equal_nan=True,
-    )
+    def test_parse_nc_file_air_temperature(self):
+        """Test parsing netcdf file function with 2 meter temperature."""
+        ds = cds_utils.parse_nc_file(
+            data_folder / "era5-land" / "era5-land_air_temperature_1996-1.nc"
+        )
+        expected_var_name = "air_temperature"
 
+        assert list(ds.data_vars)[0] == expected_var_name
+        assert ds["air_temperature"].attrs["units"] == "kelvin"
 
-def test_parse_nc_file_pressure():
-    """Test parsing netcdf file function with surface pressure."""
-    ds = cds_utils.parse_nc_file(
-        data_folder / "era5" / "era5_surface_pressure_1996-1.nc"
-    )
-    expected_var_name = "surface_pressure"
+    def test_parse_nc_file_dew_temperature(self):
+        """Test parsing netcdf file function with 2 meter dewpoint temperature."""
+        ds = cds_utils.parse_nc_file(
+            data_folder / "era5-land" / "era5-land_dewpoint_temperature_1996-1.nc"
+        )
+        expected_var_name = "dewpoint_temperature"
 
-    assert list(ds.data_vars)[0] == expected_var_name
-    assert ds["surface_pressure"].attrs["units"] == "pascal"
+        assert list(ds.data_vars)[0] == expected_var_name
+        assert ds["dewpoint_temperature"].attrs["units"] == "kelvin"
 
+    def test_parse_nc_file_co2_concentration(self):
+        """Test parsing netcdf file function with co2 concentration."""
+        ds = cds_utils.parse_nc_file(
+            data_folder / "cams" / "cams_co2_concentration_2003_01_02-2020_12_31.nc"
+        )
+        expected_var_name = "co2_concentration"
 
-def test_parse_nc_file_air_temperature():
-    """Test parsing netcdf file function with 2 meter temperature."""
-    ds = cds_utils.parse_nc_file(
-        data_folder / "era5-land" / "era5-land_air_temperature_1996-1.nc"
-    )
-    expected_var_name = "air_temperature"
-
-    assert list(ds.data_vars)[0] == expected_var_name
-    assert ds["air_temperature"].attrs["units"] == "kelvin"
-
-
-def test_parse_nc_file_dew_temperature():
-    """Test parsing netcdf file function with 2 meter dewpoint temperature."""
-    ds = cds_utils.parse_nc_file(
-        data_folder / "era5-land" / "era5-land_dewpoint_temperature_1996-1.nc"
-    )
-    expected_var_name = "dewpoint_temperature"
-
-    assert list(ds.data_vars)[0] == expected_var_name
-    assert ds["dewpoint_temperature"].attrs["units"] == "kelvin"
-
-
-def test_parse_nc_file_co2_concentration():
-    """Test parsing netcdf file function with co2 concentration."""
-    ds = cds_utils.parse_nc_file(
-        data_folder / "cams" / "cams_co2_concentration_2003_01_02-2020_12_31.nc"
-    )
-    expected_var_name = "co2_concentration"
-
-    assert list(ds.data_vars)[0] == expected_var_name
-    assert ds["co2_concentration"].attrs["units"] == "kilogram_per_kilogram"
+        assert list(ds.data_vars)[0] == expected_var_name
+        assert ds["co2_concentration"].attrs["units"] == "kilogram_per_kilogram"
