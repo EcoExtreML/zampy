@@ -12,8 +12,24 @@ You can add these yourself by creating a pull request, or open an issue to reque
 
     Fore more information, see [the ECMWF website](https://www.ecmwf.int/en/forecasts/dataset/ecmwf-reanalysis-v5).
 
+=== "ERA5-land"
+    - `2m_temperature`
+    - `2m_dewpoint_temperature`
+
+    Fore more information, see [the ECMWF website](https://www.ecmwf.int/en/forecasts/dataset/ecmwf-reanalysis-v5-land).
+
 === "ETH canopy height"
     - `height_of_vegetation`
     - `height_of_vegetation_standard_deviation`
 
     For more information, see [their webpage](https://langnico.github.io/globalcanopyheight/).
+
+=== "PRISM DEM"
+    - `elevation`
+
+    For more information, see [their webpage](https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model).
+
+=== "CAMS"
+    - `carbon_dioxide`
+
+    For more information, see [their webpage](https://www.ecmwf.int/en/research/climate-reanalysis/cams-reanalysis).

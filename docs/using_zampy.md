@@ -15,6 +15,17 @@ You need to create this file under your -*user's home*-/.config directory: `~/.c
 working_directory: /path_to_a_working_directory/  #for example: /home/bart/Zampy
 ```
 
+If you need access to data on CDS or ADS server, you should add your CDS or ADS credentials to `zampy_config.yml`:
+
+```yaml
+cdsapi:
+  url:  # for example https://cds.climate.copernicus.eu/api/v2
+  key:  # for example 12345:xhashd-232jcsha-dsaj429-cdjajd29319
+adsapi:
+  url:  # for example https://ads.atmosphere.copernicus.eu/api/v2
+  key:  # for example 12345:xhashd-232jcsha-dsaj429-cdjajd29319
+```
+
 ## Formulating a recipe
 A "recipe" is a file with `yml` extension and has the following structure:
 

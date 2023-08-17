@@ -33,18 +33,35 @@ To download the following datasets, users need access to CDS via cdsapi:
 - ERA5 land
 - LAI
 
-First, you need to be a registered user on CDS via the [registration page](https://cds.climate.copernicus.eu/user/register?destination=%2F%23!%2Fhome).
+First, you need to be a registered user on *CDS* via the [registration page](https://cds.climate.copernicus.eu/user/register?destination=%2F%23!%2Fhome).
 
-Before submitting any request with `zampy`, please configure your `.cdsapirc` file following the instructions on https://cds.climate.copernicus.eu/api-how-to.
+Before submitting any request with `zampy`, please configure your zampy config file and put your `cdsapi` credentials in `zampy_config.yml`. Here is a short [instruction](https://cds.climate.copernicus.eu/api-how-to) about how to find your CDS API key (you can skip the steps related to `.cdsapirc` as we save them in `zampy_config.yml`.)
+
+You need to create this file under your -*user's home*-/.config directory: `~/.config/zampy/zampy_config.yml`, and should contain the following:
+
+```yaml
+cdsapi:
+  url:  # for example https://cds.climate.copernicus.eu/api/v2
+  key:  # for example 12345:xhashd-232jcsha-dsaj429-cdjajd29319
+```
 
 ## Instructions for ADS datasets (e.g. CAMS)
 To download the following datasets, users need access to ADS via cdsapi:
 
 - CAMS (e.g. co2)
 
-First, you need to be a registered user on ADS via the [registration page](https://ads.atmosphere.copernicus.eu/user/register?destination=%2F%23!%2Fhome).
+First, you need to be a registered user on *ADS* via the [registration page](https://ads.atmosphere.copernicus.eu/user/register?destination=%2F%23!%2Fhome).
 
-Before submitting any request with `zampy`, please configure your `.adsapirc` file following the instructions on https://cds.climate.copernicus.eu/api-how-to.
+Before submitting any request with `zampy`, please configure your zampy config file and put your `cdsapi` credentials in `zampy_config.yml`. Here is a short [instruction](https://ads.atmosphere.copernicus.eu/api-how-to) about how to find your CDS API key (you can skip the steps related to `.cdsapirc` as we save them in `zampy_config.yml`.)
+
+You need to create this file under your -*user's home*-/.config directory: `~/.config/zampy/zampy_config.yml`, and should contain the following:
+
+```yaml
+adsapi:
+  url:  # for example https://ads.atmosphere.copernicus.eu/api/v2
+  key:  # for example 12345:xhashd-232jcsha-dsaj429-cdjajd29319
+```
+
 
 ### Agree to the Terms of Use on CDS/ADS
 
