@@ -48,6 +48,9 @@ def cds_request(
     the configuration file `.cdsapirc` following the instructions on
     https://ads.atmosphere.copernicus.eu/api-how-to.
 
+    It is recommended to put your ADS API key and CDS API key to the zampy
+    config file at `CONFIG_PATH`.
+
     Following the efficiency tips of request for ERA5 and ERA5-land dataset,
     https://confluence.ecmwf.int/display/CKB/Climate+Data+Store+%28CDS%29+documentation
     The downloading is organized by asking for one month of data per request.
@@ -89,7 +92,19 @@ def cds_request(
 
 
 def cds_api_key(product_name: str) -> tuple[str, str]:
-    """Load url and cds api key."""
+    """Load url and CDS/ADS API key.
+
+    This function loads url and CDS/ADS API key from zampy config file.
+
+    If zampy config file is not available, this function will look for
+    `.cdsapirc` as fallback.
+
+    Args:
+        product_name: Dataset name alias.
+
+    Returns:
+        url and API key for making a request to CDS server.
+    """
     server_api = SERVER_API[product_name]
 
     def default_cdsapi(cdsapi_fallback_path: Path) -> tuple[str, str]:
@@ -135,7 +150,19 @@ def retrieve_era5(
     cds_var_names: dict[str, str],
     overwrite: bool,
 ) -> None:
-    """Retrieve details of era5 and era5-land request."""
+    """Retrieve details of era5 and era5-land request.
+
+    Args:
+        client: CDS API client.
+        fname: Dataset name alias.
+        dataset: Dataset name for retrieval via `cdsapi`.
+        variables: Zampy variables.
+        time_bounds: Zampy time bounds object.
+        spatial_bounds: Zampy spatial bounds object.
+        path: File path to which the data should be saved.
+        cds_var_names: Variable names from CDS server side.
+        overwrite: If an existing file (of the same size!) should be overwritten.
+    """
     # create list of year/month pairs
     year_month_pairs = time_bounds_to_year_month(time_bounds)
 
@@ -188,7 +215,19 @@ def retrieve_cams(
     cds_var_names: dict[str, str],
     overwrite: bool,
 ) -> None:
-    """Download data via ADS API."""
+    """Download data via ADS API.
+
+    Args:
+        client: CDS API client.
+        fname: Dataset name alias.
+        dataset: Dataset name for retrieval via `cdsapi`.
+        variables: Zampy variables.
+        time_bounds: Zampy time bounds object.
+        spatial_bounds: Zampy spatial bounds object.
+        path: File path to which the data should be saved.
+        cds_var_names: Variable names from CDS server side.
+        overwrite: If an existing file (of the same size!) should be overwritten.
+    """
     # make sure time format is YY-MM-DD
     time_start = str(np.datetime_as_string(time_bounds.start, unit="D"))  # please mypy
     time_end = str(np.datetime_as_string(time_bounds.end, unit="D"))
