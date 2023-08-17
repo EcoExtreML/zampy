@@ -62,7 +62,6 @@ adsapi:
   key:  # for example 12345:xhashd-232jcsha-dsaj429-cdjajd29319
 ```
 
-
 ### Agree to the Terms of Use on CDS/ADS
 
 When downloading a dataset for the first time, it is **necessary to agree to the Terms of Use of every datasets that you intend to download**. This can only be done via the CDS website. When you try to download these datasets, you will be prompted to go to the terms of use and accept them.

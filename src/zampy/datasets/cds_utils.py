@@ -26,7 +26,6 @@ SERVER_API = {
     "cams": "adsapi",
 }
 CONFIG_PATH = Path.home() / ".config" / "zampy" / "zampy_config.yml"
-CDSAPI_FALLBACK_PATH = Path.home() / ".cdsapirc"
 
 
 def cds_request(
@@ -40,20 +39,17 @@ def cds_request(
 ) -> None:
     """Download data via CDS API.
 
-    To raise a request via CDS API, the user needs to set up the
-    configuration file `.cdsapirc` following the instructions on
-    https://cds.climate.copernicus.eu/api-how-to.
+    To raise a request via CDS API using `zampy`, user needs to set up the
+    zampy configuration file `zampy_config.yml` following the instructions on
+    https://github.com/EcoExtreML/zampy/blob/main/README.md#instructions-for-cds-datasets-eg-era5.
 
-    If the target dataset is available on ADS, then please set up
-    the configuration file `.cdsapirc` following the instructions on
-    https://ads.atmosphere.copernicus.eu/api-how-to.
+    If the target dataset is available on ADS, then please add your ADS credentials
+    to `zampy_config.yml` following the same instructions above.
 
-    It is recommended to put your ADS API key and CDS API key to the zampy
-    config file at `CONFIG_PATH`.
-
-    Following the efficiency tips of request for ERA5 and ERA5-land dataset,
+    Given the efficiency tips of request for ERA5 and ERA5-land dataset,
     https://confluence.ecmwf.int/display/CKB/Climate+Data+Store+%28CDS%29+documentation
-    The downloading is organized by asking for one month of data per request.
+    downloading is organized by asking for one month of data per request for ERA5 and
+    ERA5-land datasets.
 
     Args:
         dataset: Dataset name for retrieval via `cdsapi`.
@@ -106,14 +102,7 @@ def cds_api_key(product_name: str) -> tuple[str, str]:
         url and API key for making a request to CDS server.
     """
     server_api = SERVER_API[product_name]
-
-    def default_cdsapi(cdsapi_fallback_path: Path) -> tuple[str, str]:
-        """Fallback with default .cdsapirc setup."""
-        with cdsapi_fallback_path.open(encoding="utf8") as f:
-            url = f.readline().split(":", 1)[1].strip()
-            api_key = f.readline().split(":", 1)[1].strip()
-
-        return url, api_key
+    default_cdsapi_path = Path.home() / ".cdsapirc"
 
     if CONFIG_PATH.exists():
         with CONFIG_PATH.open() as f:
@@ -122,18 +111,19 @@ def cds_api_key(product_name: str) -> tuple[str, str]:
                 url = config_zampy[server_api]["url"]
                 api_key = config_zampy[server_api]["key"]
             else:
-                print(f"No {server_api} key was found at '{CONFIG_PATH}'.")
-                print(f"Look for {server_api} key at '{CDSAPI_FALLBACK_PATH}'.")
-                url, api_key = default_cdsapi(CDSAPI_FALLBACK_PATH)
-    elif CDSAPI_FALLBACK_PATH.exists():
-        print(f"No config file was found at '{CONFIG_PATH}'.")
-        print(f"Look for {server_api} key at '{CDSAPI_FALLBACK_PATH}'.")
-        url, api_key = default_cdsapi(CDSAPI_FALLBACK_PATH)
+                raise KeyError(f"No {server_api} key was found at '{CONFIG_PATH}'.")
+    elif default_cdsapi_path.exists():
+        raise FileNotFoundError(
+            f"No config file was found at '{CONFIG_PATH}'. Found `.cdsapirc` file at "
+            f"{default_cdsapi_path}. Please create your config file and put your "
+            f"{server_api} credentials from `.cdsapirc` to the config file following "
+            "insturctions in the documentation."
+        )
     else:
         raise FileNotFoundError(
-            "Could not find zampy config file or '.cdsapirc'. "
-            "Please config your CDS API following insturctions "
-            "in `README.md.`"
+            "Could not find zampy config file. Please create your config file and add "
+            f"your {server_api} credentials to the config file following insturctions "
+            "in the documentation."
         )
 
     return url, api_key

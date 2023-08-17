@@ -6,7 +6,7 @@ from zampy.datasets.dataset_protocol import Variable
 def unit_registration() -> UnitRegistry:
     """Create unit registration for all custom units."""
     unit_registry = UnitRegistry()
-    unit_registry.define("fraction = [] = frac")
+    unit_registry.define("fraction = [] = frac = kilogram_per_kilogram")
     unit_registry.define("percent = 1e-2 frac = pct")
     unit_registry.define("ppm = 1e-6 fraction")
     unit_registry.define("degree_north = degree = degree_N = degreeN")
@@ -17,7 +17,6 @@ def unit_registration() -> UnitRegistry:
         "kilogram_per_square_meter_second = kilogram/(meter**2*second)"
     )
     unit_registry.define("milimeter_per_second = watt/meter**2")
-    unit_registry.define("kilogram_per_kilogram = kilogram/kilogram")
     return unit_registry
 
 

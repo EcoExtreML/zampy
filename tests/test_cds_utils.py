@@ -21,15 +21,6 @@ def valid_path_config(tmp_path_factory):
     return fn
 
 
-@pytest.fixture(scope="function")
-def valid_path_cds(tmp_path_factory):
-    """Create a dummy .cdsapirc file."""
-    fn = tmp_path_factory.mktemp("usrhome") / ".cdsapirc"
-    with open(fn, mode="w", encoding="utf-8") as f:
-        f.write("url: a\nkey: 123:abc-def")
-    return fn
-
-
 @patch("cdsapi.Client.retrieve")
 def test_cds_request_era5(mock_retrieve, valid_path_config):
     """ "Test cds request for downloading data from CDS server."""
@@ -130,6 +121,26 @@ def test_cds_request_cams_co2(mock_retrieve, valid_path_config):
                 "format": "netcdf",
             },
         )
+
+
+def test_cds_api_key_config_exist(valid_path_config):
+    """Test zampy config exists."""
+    patching = patch("zampy.datasets.cds_utils.CONFIG_PATH", valid_path_config)
+    with patching:
+        url, api_key = cds_utils.cds_api_key("era5")
+        assert url == "a"
+        assert api_key == "123:abc-def"
+
+
+def test_cds_api_key_config_apikey_not_exist(tmp_path_factory):
+    """Test zampy config exists but the required api key is missing."""
+    fn = tmp_path_factory.mktemp("usrhome") / "zampy_config.yml"
+    with open(fn, mode="w", encoding="utf-8") as f:
+        f.write("wrong_key:\n")
+    patching = patch("zampy.datasets.cds_utils.CONFIG_PATH", fn)
+    with patching:
+        with pytest.raises(KeyError, match="No cdsapi key was found at"):
+            cds_utils.cds_api_key("era5")
 
 
 def test_time_bounds_to_year_month():
@@ -252,4 +263,4 @@ class TestParser:
         expected_var_name = "co2_concentration"
 
         assert list(ds.data_vars)[0] == expected_var_name
-        assert ds["co2_concentration"].attrs["units"] == "kilogram_per_kilogram"
+        assert ds["co2_concentration"].attrs["units"] == "fraction"
