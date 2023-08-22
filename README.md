@@ -43,10 +43,10 @@ cdsapi:
   key:  # for example 12345:xhashd-232jcsha-dsaj429-cdjajd29319
 ```
 
-## Instructions for ADS datasets (e.g. CAMS)
+## Instructions for ADS datasets (e.g. CAMS EGG4)
 To download the following datasets, users need access to ADS via cdsapi:
 
-- CAMS (e.g. co2)
+- CAMS EGG4 (e.g. co2)
 
 First, you need to be a registered user on *ADS* via the [registration page](https://ads.atmosphere.copernicus.eu/user/register?destination=%2F%23!%2Fhome).
 

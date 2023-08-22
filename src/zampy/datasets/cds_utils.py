@@ -208,7 +208,7 @@ def retrieve_cams(
     cds_var_names: dict[str, str],
     overwrite: bool,
 ) -> None:
-    """Download data via ADS API.
+    """Download CAMS EGG4 data via ADS API.
 
     Note that the model level is set to "60" and all steps are included for downloading.
 

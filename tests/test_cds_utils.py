@@ -86,7 +86,7 @@ def test_cds_request_cams_co2(mock_retrieve, valid_path_config):
     variables = ["co2_concentration"]
     cds_var_names = {"co2_concentration": "carbon_dioxide"}
     time_bounds = TimeBounds(
-        np.datetime64("2003-01-02T00:00:00"), np.datetime64("2003-01-31T23:00:00")
+        np.datetime64("2003-01-02T00:00:00"), np.datetime64("2003-01-04T00:00:00")
     )
     spatial_bounds = SpatialBounds(54, 56, 1, 3)
     path = Path(__file__).resolve().parent
@@ -110,7 +110,7 @@ def test_cds_request_cams_co2(mock_retrieve, valid_path_config):
             {
                 "model_level": "60",
                 "variable": [cds_var_names["co2_concentration"]],
-                "date": "2003-01-02/2003-01-31",
+                "date": "2003-01-02/2003-01-04",
                 "step": ["0", "3", "6", "9", "12", "15", "18", "21"],
                 "area": [
                     spatial_bounds.north,
@@ -258,7 +258,7 @@ class TestParser:
     def test_parse_nc_file_co2_concentration(self):
         """Test parsing netcdf file function with co2 concentration."""
         ds = cds_utils.parse_nc_file(
-            data_folder / "cams" / "cams_co2_concentration_2003_01_02-2020_12_31.nc"
+            data_folder / "cams" / "cams_co2_concentration_2003_01_02-2003_01_04.nc"
         )
         expected_var_name = "co2_concentration"
 

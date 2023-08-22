@@ -33,7 +33,7 @@ You can add these yourself by creating a pull request, or open an issue to reque
 
     For more information, see [their webpage](https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model).
 
-=== "CAMS"
+=== "CAMS EGG4"
     - `carbon_dioxide`
 
     Note: model level is set to "60" and all steps are included for downloading.

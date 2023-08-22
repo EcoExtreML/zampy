@@ -36,7 +36,7 @@ class TestCAMS:
         """Test download functionality.
         Here we mock the downloading and save property file to a fake path.
         """
-        times = TimeBounds(np.datetime64("2003-01-02"), np.datetime64("2020-12-31"))
+        times = TimeBounds(np.datetime64("2003-01-02"), np.datetime64("2003-01-04"))
         bbox = SpatialBounds(54, 56, 1, 3)
         variable = ["co2_concentration"]
         cds_var_names = ["carbon_dioxide"]
@@ -88,7 +88,7 @@ class TestCAMS:
             Path(
                 temp_dir,
                 "cams",
-                "cams_co2_concentration_2003_01_02-2020_12_31.nc",
+                "cams_co2_concentration_2003_01_02-2003_01_04.nc",
             )
         )
 
@@ -101,7 +101,7 @@ class TestCAMS:
 
     def test_load(self):
         """Test load function."""
-        times = TimeBounds(np.datetime64("1996-01-01"), np.datetime64("1996-01-02"))
+        times = TimeBounds(np.datetime64("2003-01-02"), np.datetime64("2003-01-04"))
         bbox = SpatialBounds(39, -107, 37, -109)
         variable = ["co2_concentration"]
 
