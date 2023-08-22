@@ -35,6 +35,8 @@ class ERA5(ECMWFDataset):  # noqa: D101
 
     variables = [VARIABLE_REFERENCE_LOOKUP[var] for var in variable_names]
 
+    data_url = "https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels?tab=form"
+
     cds_dataset = "reanalysis-era5-single-levels"
 
 
@@ -56,5 +58,7 @@ class ERA5Land(ECMWFDataset):  # noqa: D101
     variable_names = list(cds_var_names.keys())
 
     variables = [VARIABLE_REFERENCE_LOOKUP[var] for var in variable_names]
+
+    data_url = "https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land?tab=form"
 
     cds_dataset = "reanalysis-era5-land"

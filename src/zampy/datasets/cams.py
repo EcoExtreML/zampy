@@ -37,4 +37,7 @@ class CAMS(ECMWFDataset):  # noqa: D101
         publisher={Copernicus Publications G{\"o}ttingen, Germany}
         }
     """
+
+    data_url = "https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-ghg-reanalysis-egg4?tab=form"
+
     cds_dataset = "cams-global-ghg-reanalysis-egg4"

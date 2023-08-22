@@ -39,9 +39,13 @@ download:
   datasets:
     era5:
       variables:
-        - 10m_v_component_of_wind
+        - eastward_component_of_wind
         - surface_pressure
 
+    cams:
+      variables:
+        - co2_concentration
+    
 convert:
   convention: ALMA
   frequency: 1H  # outputs at 1 hour frequency. Pandas-like freq-keyword.

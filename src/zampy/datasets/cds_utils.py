@@ -142,6 +142,9 @@ def retrieve_era5(
 ) -> None:
     """Retrieve details of era5 and era5-land request.
 
+    Note that all hours in a day are covered and all days for the given
+    month are included for downloading.
+
     Args:
         client: CDS API client.
         fname: Dataset name alias.
@@ -206,6 +209,8 @@ def retrieve_cams(
     overwrite: bool,
 ) -> None:
     """Download data via ADS API.
+
+    Note that the model level is set to "60" and all steps are included for downloading.
 
     Args:
         client: CDS API client.
