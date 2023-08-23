@@ -59,6 +59,7 @@ class PrismDEM:
     title = {Copernicus Prism DEM}
     }
     """
+    data_url = "https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model#anchor"
 
     def __init__(self) -> None:
         """Init."""

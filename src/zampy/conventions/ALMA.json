@@ -72,5 +72,9 @@
     "elevation": {
         "variable": "elevation",
         "units": "meter"
+    },
+    "co2_concentration": {
+        "variable": "CO2air",
+        "units": "kilogram/kilogram"
     }
 }

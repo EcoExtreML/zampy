@@ -10,10 +10,32 @@ You can add these yourself by creating a pull request, or open an issue to reque
     - `10m_u_component_of_wind`
     - `10m_v_component_of_wind`
 
-    Fore more information, see [the ECMWF website](https://www.ecmwf.int/en/forecasts/dataset/ecmwf-reanalysis-v5).
+    Note: all hours in a day are covered and all days for the given month are included for downloading.
+
+    Fore more information, see [the ECMWF website](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels).
+
+=== "ERA5-land"
+    - `2m_temperature`
+    - `2m_dewpoint_temperature`
+
+    Note: all hours in a day are covered and all days for the given month are included for downloading.
+
+    Fore more information, see [the ECMWF website](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land).
 
 === "ETH canopy height"
     - `height_of_vegetation`
     - `height_of_vegetation_standard_deviation`
 
     For more information, see [their webpage](https://langnico.github.io/globalcanopyheight/).
+
+=== "PRISM DEM"
+    - `elevation`
+
+    For more information, see [their webpage](https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model).
+
+=== "CAMS EGG4"
+    - `carbon_dioxide`
+
+    Note: model level is set to "60" and all steps are included for downloading.
+
+    For more information, see [their webpage](https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-ghg-reanalysis-egg4).

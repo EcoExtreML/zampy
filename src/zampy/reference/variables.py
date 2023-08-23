@@ -6,7 +6,7 @@ from zampy.datasets.dataset_protocol import Variable
 def unit_registration() -> UnitRegistry:
     """Create unit registration for all custom units."""
     unit_registry = UnitRegistry()
-    unit_registry.define("fraction = [] = frac")
+    unit_registry.define("fraction = [] = frac = kilogram_per_kilogram")
     unit_registry.define("percent = 1e-2 frac = pct")
     unit_registry.define("ppm = 1e-6 fraction")
     unit_registry.define("degree_north = degree = degree_N = degreeN")
@@ -48,6 +48,7 @@ VARIABLE_REFERENCE = (
         unit_registry.meter,
         desc="Uncertainty of the 'height_of_vegetation' variable.",
     ),
+    Variable("co2_concentration", unit_registry.kilogram_per_kilogram),
     Variable("altitude", unit_registry.meter),
     Variable("latitude", unit=unit_registry.degree_north),
     Variable("longitude", unit=unit_registry.degree_east),

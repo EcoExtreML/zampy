@@ -6,18 +6,19 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 import xarray as xr
-from zampy.datasets import era5
+from zampy.datasets.catalog import ERA5
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
 from . import data_folder
 
 
 @pytest.fixture(scope="function")
-def valid_path_cds(tmp_path_factory):
-    """Create a dummy .cdsapirc file."""
-    fn = tmp_path_factory.mktemp("usrhome") / ".cdsapirc"
+def valid_path_config(tmp_path_factory):
+    """Create a dummy .zampy_config file."""
+    fn = tmp_path_factory.mktemp("usrhome") / "zampy_config.yml"
     with open(fn, mode="w", encoding="utf-8") as f:
-        f.write("url: a\nkey: 123:abc-def")
+        f.write("cdsapi:\n  url: a\n  key: 123:abc-def\n")
+        f.write("adsapi:\n  url: a\n  key: 123:abc-def")
     return fn
 
 
@@ -31,7 +32,7 @@ class TestERA5:
     """Test the ERA5 class."""
 
     @patch("cdsapi.Client.retrieve")
-    def test_download(self, mock_retrieve, valid_path_cds, dummy_dir):
+    def test_download(self, mock_retrieve, valid_path_config, dummy_dir):
         """Test download functionality.
         Here we mock the downloading and save property file to a fake path.
         """
@@ -41,9 +42,9 @@ class TestERA5:
         cds_var_names = ["10m_u_component_of_wind"]
         download_dir = Path(dummy_dir, "download")
 
-        era5_dataset = era5.ERA5()
+        era5_dataset = ERA5()
         # create a dummy .cdsapirc
-        patching = patch("zampy.datasets.utils.CDSAPI_CONFIG_PATH", valid_path_cds)
+        patching = patch("zampy.datasets.cds_utils.CONFIG_PATH", valid_path_config)
         with patching:
             era5_dataset.download(
                 download_dir=download_dir,
@@ -95,7 +96,7 @@ class TestERA5:
 
     def ingest_dummy_data(self, temp_dir):
         """Ingest dummy tif data to nc for other tests."""
-        era5_dataset = era5.ERA5()
+        era5_dataset = ERA5()
         era5_dataset.ingest(download_dir=data_folder, ingest_dir=Path(temp_dir))
         ds = xr.load_dataset(
             Path(
@@ -118,7 +119,7 @@ class TestERA5:
         bbox = SpatialBounds(39, -107, 37, -109)
         variable = ["northward_component_of_wind"]
 
-        era5_dataset = era5.ERA5()
+        era5_dataset = ERA5()
 
         ds = era5_dataset.load(
             ingest_dir=Path(data_folder),

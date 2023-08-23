@@ -3,8 +3,8 @@
 from pathlib import Path
 from typing import Union
 import xarray as xr
+from zampy.datasets import cds_utils
 from zampy.datasets import converter
-from zampy.datasets import utils
 from zampy.datasets import validation
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
@@ -66,7 +66,7 @@ class ECMWFDataset:  # noqa: D101
         download_folder = download_dir / self.name
         download_folder.mkdir(parents=True, exist_ok=True)
 
-        utils.cds_request(
+        cds_utils.cds_request(
             dataset=self.cds_dataset,
             variables=variable_names,
             time_bounds=time_bounds,
@@ -96,7 +96,7 @@ class ECMWFDataset:  # noqa: D101
         data_files = list(download_folder.glob(data_file_pattern))
 
         for file in data_files:
-            utils.convert_to_zampy(
+            cds_utils.convert_to_zampy(
                 ingest_folder,
                 file=file,
                 overwrite=overwrite,

@@ -33,8 +33,31 @@ To download the following datasets, users need access to CDS via cdsapi:
 - ERA5 land
 - LAI
 
-First, you need to be a registered user on CDS via the [registration page](https://cds.climate.copernicus.eu/user/register?destination=%2F%23!%2Fhome).
+First, you need to be a registered user on *CDS* via the [registration page](https://cds.climate.copernicus.eu/user/register?destination=%2F%23!%2Fhome).
 
-Before submitting any request with `zampy`, please configure your `.cdsapirc` file following the instructions on https://cds.climate.copernicus.eu/api-how-to.
+Before submitting any request with `zampy`, please configure your zampy config file `zampy_config.yml` and put your `cdsapi` credentials in `zampy_config.yml`. Here is a short [instruction](https://cds.climate.copernicus.eu/api-how-to) about how to find your CDS API key. You can skip the steps related to `.cdsapirc` and instead create `zampy_config.yml` file under your _*user home*_/.config directory i.e. `~/.config/zampy/zampy_config.yml`. Then, add the key as: 
+
+```yaml
+cdsapi:
+  url:  # for example https://cds.climate.copernicus.eu/api/v2
+  key:  # for example 12345:xhashd-232jcsha-dsaj429-cdjajd29319
+```
+
+## Instructions for ADS datasets (e.g. CAMS EGG4)
+To download the following datasets, users need access to ADS via cdsapi:
+
+- CAMS EGG4 (e.g. co2)
+
+First, you need to be a registered user on *ADS* via the [registration page](https://ads.atmosphere.copernicus.eu/user/register?destination=%2F%23!%2Fhome).
+
+Before submitting any request with `zampy`, please configure your zampy config file `zampy_config.yml` and put your `cdsapi` credentials in `zampy_config.yml`. Here is a short [instruction](https://cds.climate.copernicus.eu/api-how-to) about how to find your CDS API key. You can skip the steps related to `.cdsapirc` and instead create `zampy_config.yml` file under your _*user home*_/.config directory i.e. `~/.config/zampy/zampy_config.yml`. Then, add the key as: 
+
+```yaml
+adsapi:
+  url:  # for example https://ads.atmosphere.copernicus.eu/api/v2
+  key:  # for example 12345:xhashd-232jcsha-dsaj429-cdjajd29319
+```
+
+### Agree to the Terms of Use on CDS/ADS
 
 When downloading a dataset for the first time, it is **necessary to agree to the Terms of Use of every datasets that you intend to download**. This can only be done via the CDS website. When you try to download these datasets, you will be prompted to go to the terms of use and accept them.
