@@ -32,6 +32,7 @@ To download the following datasets, users need access to CDS via cdsapi:
 - ERA5
 - ERA5 land
 - LAI
+- land cover
 
 First, you need to be a registered user on *CDS* via the [registration page](https://cds.climate.copernicus.eu/user/register?destination=%2F%23!%2Fhome).
 
