@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import numpy as np
+from zipfile import ZipFile
 from zampy.datasets import cds_utils
 from zampy.datasets import validation
 from zampy.datasets.dataset_protocol import SpatialBounds
@@ -85,3 +86,53 @@ class LandCover:  # noqa: D101
         )
 
         return True
+
+    def ingest(
+        self,
+        download_dir: Path,
+        ingest_dir: Path,
+        overwrite: bool = False,
+    ) -> bool:
+        download_folder = download_dir / self.name
+        ingest_folder = ingest_dir / self.name
+        ingest_folder.mkdir(parents=True, exist_ok=True)
+
+        archive_file_pattern = f"{self.name}_*.zip"
+        archive_files = list(download_folder.glob(archive_file_pattern))
+
+        for file in archive_files:
+            unzip_raw_to_netcdf(
+                ingest_folder,
+                file=file,
+                overwrite=overwrite,
+            )
+
+        copy_properties_file(download_folder, ingest_folder)
+
+        return True
+
+
+def unzip_raw_to_netcdf(
+    ingest_folder: Path,
+    file: Path,
+    overwrite: bool = False,
+) -> None:
+    """Convert a downloaded zip netcdf file to a standard CF/Zampy netCDF file.
+
+    Args:
+        ingest_folder: Folder where the files have to be written to.
+        file: Path to the land cover .zip archive.
+        overwrite: Overwrite all existing files. If False, file that already exist will
+            be skipped.
+    """
+    ncfile = ingest_folder / file.with_suffix(".nc").name
+    if ncfile.exists() and not overwrite:
+        print(f"File '{ncfile.name}' already exists, skipping...")
+    else:
+        extract_netcdf_to_zampy(file, ingest_folder)
+
+
+def extract_netcdf_to_zampy(file, ingest_folder):
+    with ZipFile(file, 'r') as zip_object:
+        zipped_file_name = zip_object.namelist()[0]
+        zip_object.extract(zipped_file_name, path = ingest_folder)
