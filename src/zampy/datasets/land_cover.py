@@ -114,6 +114,42 @@ class LandCover:
 
         return True
 
+    def load(
+        self,
+        ingest_dir: Path,
+        time_bounds: TimeBounds,
+        spatial_bounds: SpatialBounds,
+        resolution: float,
+        regrid_method: str,  # Unused in land-cover dataset
+        variable_names: list[str],
+    ) -> xr.Dataset:
+        files: list[Path] = []
+        for var in variable_names:
+            if var not in self.variable_names:
+                msg = (
+                    "One or more variables are not in this dataset.\n"
+                    f"Please check input. Dataset: '{self.name}'\n"
+                    f"Variables: '{variable_names}'"
+                )
+                raise ValueError(msg)
+        files = list((ingest_dir / self.name).glob(f"{self.name}_*.nc"))
+
+        ds = xr.open_mfdataset(files, chunks={"latitude": 200, "longitude": 200})
+        ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
+        new_grid = xarray_regrid.Grid(
+            north=spatial_bounds.north,
+            east=spatial_bounds.east,
+            south=spatial_bounds.south,
+            west=spatial_bounds.west,
+            resolution_lat=resolution,
+            resolution_lon=resolution,
+        )
+        target_dataset = xarray_regrid.create_regridding_dataset(new_grid)
+
+        ds_regrid = ds.regrid.most_common(target_dataset, time_dim="time", max_mem=1e9)
+
+        return ds_regrid
+
 
 def unzip_raw_to_netcdf(
     ingest_folder: Path,
@@ -165,7 +201,7 @@ def extract_netcdf_to_zampy(ingest_folder: Path, file: Path) -> xr.Dataset:
         east=180,
         south=-90,
         west=-180,
-        resolution_lat=0.25,
+        resolution_lat=0.25,  # same as resolution of ERA5, must be sufficient
         resolution_lon=0.25,
     )
 

@@ -129,10 +129,10 @@ def cds_request_land_cover(
         r = c.retrieve(
             dataset,
             {
-                'variable': "all",
-                'format': "zip",
-                'year': year,
-                'version': version,
+                "variable": "all",
+                "format": "zip",
+                "year": year,
+                "version": version,
             },
         )
         fpath = path / f"{fname}_LCCS_MAP_300m_{year}.zip"
