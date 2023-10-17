@@ -65,6 +65,7 @@ dependencies = [
   "pint-xarray",
   "flox",  # For better groupby methods.
   "cdsapi",
+  "xarray-regrid", # for land cover data regridding
 ]
 dynamic = ["version"]
 
