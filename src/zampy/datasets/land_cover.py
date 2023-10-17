@@ -2,11 +2,13 @@
 
 import os
 from pathlib import Path
+from typing import Union
 from zipfile import ZipFile
 import numpy as np
 import xarray as xr
 import xarray_regrid
 from zampy.datasets import cds_utils
+from zampy.datasets import converter
 from zampy.datasets import validation
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
@@ -149,6 +151,29 @@ class LandCover:
         ds_regrid = ds.regrid.most_common(target_dataset, time_dim="time", max_mem=1e9)
 
         return ds_regrid
+
+    def convert(
+        self,
+        ingest_dir: Path,
+        convention: Union[str, Path],
+    ) -> bool:
+        converter.check_convention(convention)
+        ingest_folder = ingest_dir / self.name
+
+        data_file_pattern = "land-cover_LCCS_MAP_*.nc"
+
+        data_files = list(ingest_folder.glob(data_file_pattern))
+
+        for file in data_files:
+            # start conversion process
+            print(f"Start processing file `{file.name}`.")
+            ds = xr.open_dataset(file)
+            ds = converter.convert(ds, dataset=self, convention=convention)
+            # TODO: support derived variables
+            # TODO: other calculations
+            # call ds.compute()
+
+        return True
 
 
 def unzip_raw_to_netcdf(
