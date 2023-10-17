@@ -49,7 +49,7 @@ class EthCanopyHeight:  # noqa: D101
     }
     """
 
-    data_url = "https://share.phys.ethz.ch/~pf/nlangdata/ETH_GlobalCanopyHeight_10m_2020_version1/3deg_cogs/"
+    data_url = "https://libdrive.ethz.ch/index.php/s/cO8or7iOe5dT2Rt/"
 
     def __init__(self) -> None:
         """Init."""
@@ -81,7 +81,7 @@ class EthCanopyHeight:  # noqa: D101
         download_folder.mkdir(parents=True, exist_ok=True)
         for fname in download_files:
             utils.download_url(
-                url=self.data_url + fname,
+                url=self.data_url + "download?path=%2F3deg_cogs&files=" + fname,
                 fpath=download_folder / fname,
                 overwrite=overwrite,
             )
