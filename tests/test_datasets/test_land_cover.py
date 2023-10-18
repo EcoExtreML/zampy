@@ -36,9 +36,7 @@ class TestLandCover:
         """Test download functionality.
         Here we mock the downloading and save property file to a fake path.
         """
-        time_bounds = TimeBounds(
-            np.datetime64("1996-01-01"), np.datetime64("1996-12-31")
-        )
+        times = TimeBounds(np.datetime64("1996-01-01"), np.datetime64("1996-12-31"))
         bbox = SpatialBounds(54, 56, 1, 3)
         variable = ["land_cover"]
         download_dir = Path(dummy_dir, "download")
@@ -49,7 +47,7 @@ class TestLandCover:
         with patching:
             land_cover_dataset.download(
                 download_dir=download_dir,
-                time_bounds=time_bounds,
+                time_bounds=times,
                 spatial_bounds=bbox,
                 variable_names=variable,
                 overwrite=True,
@@ -92,3 +90,33 @@ class TestLandCover:
         """Test ingest function."""
         ds, _ = self.ingest_dummy_data(dummy_dir)
         assert isinstance(ds, xr.Dataset)
+
+    def test_load(self, dummy_dir):
+        """Test load function."""
+        times = TimeBounds(np.datetime64("1996-01-01"), np.datetime64("1996-12-31"))
+        bbox = SpatialBounds(39, -107, 37, -109)
+        variable = ["land_cover"]
+
+        _, land_cover_dataset = self.ingest_dummy_data(dummy_dir)
+
+        ds = land_cover_dataset.load(
+            ingest_dir=Path(dummy_dir),
+            time_bounds=times,
+            spatial_bounds=bbox,
+            variable_names=variable,
+            resolution=1.0,
+            regrid_method="most_common",
+        )
+
+        # we assert the regridded coordinates
+        expected_lat = [37.0, 38.0, 39.0]
+        expected_lon = [-109.0, -108.0, -107.0]
+
+        np.testing.assert_allclose(ds.latitude.values, expected_lat)
+        np.testing.assert_allclose(ds.longitude.values, expected_lon)
+
+    def test_convert(self, dummy_dir):
+        """Test convert function."""
+        _, land_cover_dataset = self.ingest_dummy_data(dummy_dir)
+        land_cover_dataset.convert(ingest_dir=Path(dummy_dir), convention="ALMA")
+        # TODO: finish this test when the function is complete.
