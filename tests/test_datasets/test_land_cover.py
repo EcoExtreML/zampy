@@ -6,6 +6,7 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 import xarray as xr
+import zampy.datasets.land_cover
 from zampy.datasets.catalog import LandCover
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
@@ -120,3 +121,19 @@ class TestLandCover:
         _, land_cover_dataset = self.ingest_dummy_data(dummy_dir)
         land_cover_dataset.convert(ingest_dir=Path(dummy_dir), convention="ALMA")
         # TODO: finish this test when the function is complete.
+
+
+def test_unzip_raw_to_netcdf():
+    ds = zampy.datasets.land_cover.extract_netcdf_to_zampy(
+        data_folder / "land-cover/land-cover_LCCS_MAP_300m_1996.zip"
+    )
+    assert isinstance(ds, xr.Dataset)
+
+
+def test_extract_netcdf_to_zampy(dummy_dir):
+    zampy.datasets.land_cover.unzip_raw_to_netcdf(
+        Path(dummy_dir),
+        data_folder / "land-cover/land-cover_LCCS_MAP_300m_1996.zip",
+    )
+    dataset_path = Path(dummy_dir) / "land-cover_LCCS_MAP_300m_1996.nc"
+    assert dataset_path.exists()

@@ -201,11 +201,10 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
     """Extract zipped data and convert to zampy format.
 
     Args:
-        ingest_folder: Folder where the files have to be written to.
         file: Path to the land cover .zip archive.
 
     Returns:
-        Coarse land cover data satisfying zampy standard.
+        Coarse land cover data in zampy format.
     """
     with TemporaryDirectory() as temp_dir:
         unzip_folder = Path(temp_dir)
