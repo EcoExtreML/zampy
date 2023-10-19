@@ -1,8 +1,6 @@
 """Shared utilities from datasets."""
 import urllib.request
 from pathlib import Path
-from typing import Optional
-from typing import Union
 import requests
 from tqdm import tqdm
 
@@ -11,8 +9,8 @@ class TqdmUpdate(tqdm):
     """Wrap a tqdm progress bar to be updateable by urllib.request.urlretrieve."""
 
     def update_to(
-        self, b: int = 1, bsize: int = 1, tsize: Optional[int] = None
-    ) -> Union[bool, None]:
+        self, b: int = 1, bsize: int = 1, tsize: int | None = None
+    ) -> bool | None:
         """Update the progress bar.
 
         Args:

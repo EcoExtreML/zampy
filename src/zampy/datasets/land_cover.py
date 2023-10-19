@@ -2,7 +2,6 @@
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Union
 from zipfile import ZipFile
 import numpy as np
 import xarray as xr
@@ -155,7 +154,7 @@ class LandCover:
     def convert(
         self,
         ingest_dir: Path,
-        convention: Union[str, Path],
+        convention: str | Path,
     ) -> bool:
         converter.check_convention(convention)
         ingest_folder = ingest_dir / self.name

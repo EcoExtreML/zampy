@@ -1,7 +1,6 @@
 """Base module for datasets available on CDS."""
 
 from pathlib import Path
-from typing import Union
 import xarray as xr
 from zampy.datasets import cds_utils
 from zampy.datasets import converter
@@ -129,7 +128,7 @@ class ECMWFDataset:  # noqa: D101
     def convert(
         self,
         ingest_dir: Path,
-        convention: Union[str, Path],
+        convention: str | Path,
     ) -> bool:
         converter.check_convention(convention)
         ingest_folder = ingest_dir / self.name
