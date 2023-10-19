@@ -235,6 +235,7 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
 
         ds_regrid = ds.regrid.most_common(target_dataset, time_dim="time", max_mem=1e9)
 
+        ds.close()
         # rename variable to follow the zampy convention
         variable_name = "land_cover"
         ds_regrid = ds_regrid.rename({raw_variable: variable_name})
