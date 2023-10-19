@@ -123,9 +123,8 @@ class TestLandCover:
         # TODO: finish this test when the function is complete.
 
 
-def test_unzip_raw_to_netcdf(dummy_dir):
+def test_unzip_raw_to_netcdf():
     ds = zampy.datasets.land_cover.extract_netcdf_to_zampy(
-        dummy_dir,
         data_folder / "land-cover/land-cover_LCCS_MAP_300m_1996.zip"
     )
     assert isinstance(ds, xr.Dataset)

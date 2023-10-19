@@ -1,7 +1,7 @@
 """Land cover classification dataset."""
 
-import os
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Union
 from zipfile import ZipFile
 import numpy as np
@@ -193,57 +193,56 @@ def unzip_raw_to_netcdf(
     if ncfile.exists() and not overwrite:
         print(f"File '{ncfile.name}' already exists, skipping...")
     else:
-        ds = extract_netcdf_to_zampy(ingest_folder, file)
+        ds = extract_netcdf_to_zampy(file)
         ds.to_netcdf(path=ncfile)
 
 
-def extract_netcdf_to_zampy(ingest_folder: Path, file: Path) -> xr.Dataset:
+def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
     """Extract zipped data and convert to zampy format.
 
     Args:
-        ingest_folder: Folder where the files have to be written to.
         file: Path to the land cover .zip archive.
 
     Returns:
         Coarse land cover data in zampy format.
     """
-    with ZipFile(file, "r") as zip_object:
-        zipped_file_name = zip_object.namelist()[0]
-        zip_object.extract(zipped_file_name, path=ingest_folder)
+    with TemporaryDirectory() as temp_dir:
+        unzip_folder = Path(temp_dir)
+        with ZipFile(file, "r") as zip_object:
+            zipped_file_name = zip_object.namelist()[0]
+            zip_object.extract(zipped_file_name, path=unzip_folder)
 
-    # only keep land cover class variable
-    ds = xr.open_dataset(ingest_folder / zipped_file_name)
-    var_list = [var for var in ds.data_vars]
-    raw_variable = "lccs_class"
-    var_list.remove(raw_variable)
-    ds = ds.drop_vars(var_list)
+        # only keep land cover class variable
+        ds = xr.open_dataset(unzip_folder / zipped_file_name)
+        var_list = [var for var in ds.data_vars]
+        raw_variable = "lccs_class"
+        var_list.remove(raw_variable)
+        ds = ds.drop_vars(var_list)
 
-    # coarsen to fit into memory
-    ds = ds.sortby(["lat", "lon"])
-    ds = ds.rename({"lat": "latitude", "lon": "longitude"})
-    new_grid = xarray_regrid.Grid(
-        north=90,
-        east=180,
-        south=-90,
-        west=-180,
-        resolution_lat=0.25,  # same as resolution of ERA5, must be sufficient
-        resolution_lon=0.25,
-    )
+        # coarsen to fit into memory
+        ds = ds.sortby(["lat", "lon"])
+        ds = ds.rename({"lat": "latitude", "lon": "longitude"})
+        new_grid = xarray_regrid.Grid(
+            north=90,
+            east=180,
+            south=-90,
+            west=-180,
+            resolution_lat=0.25,  # same as resolution of ERA5, must be sufficient
+            resolution_lon=0.25,
+        )
 
-    target_dataset = xarray_regrid.create_regridding_dataset(new_grid)
+        target_dataset = xarray_regrid.create_regridding_dataset(new_grid)
 
-    ds_regrid = ds.regrid.most_common(target_dataset, time_dim="time", max_mem=1e9)
+        ds_regrid = ds.regrid.most_common(target_dataset, time_dim="time", max_mem=1e9)
 
-    # rename variable to follow the zampy convention
-    variable_name = "land_cover"
-    ds_regrid = ds_regrid.rename({raw_variable: variable_name})
-    ds_regrid[variable_name].attrs["units"] = str(
-        VARIABLE_REFERENCE_LOOKUP[variable_name].unit
-    )
-    ds_regrid[variable_name].attrs["description"] = VARIABLE_REFERENCE_LOOKUP[
-        variable_name
-    ].desc
-
-    os.remove(ingest_folder / zipped_file_name)
+        # rename variable to follow the zampy convention
+        variable_name = "land_cover"
+        ds_regrid = ds_regrid.rename({raw_variable: variable_name})
+        ds_regrid[variable_name].attrs["units"] = str(
+            VARIABLE_REFERENCE_LOOKUP[variable_name].unit
+        )
+        ds_regrid[variable_name].attrs["description"] = VARIABLE_REFERENCE_LOOKUP[
+            variable_name
+        ].desc
 
     return ds_regrid
