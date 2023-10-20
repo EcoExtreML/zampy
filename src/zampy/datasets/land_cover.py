@@ -205,34 +205,36 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
     Returns:
         Coarse land cover data in zampy format.
     """
-    with TemporaryDirectory() as temp_dir:
+    with TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
         unzip_folder = Path(temp_dir)
         with ZipFile(file, "r") as zip_object:
             zipped_file_name = zip_object.namelist()[0]
             zip_object.extract(zipped_file_name, path=unzip_folder)
 
         # only keep land cover class variable
-        ds = xr.open_dataset(unzip_folder / zipped_file_name)
-        var_list = [var for var in ds.data_vars]
-        raw_variable = "lccs_class"
-        var_list.remove(raw_variable)
-        ds = ds.drop_vars(var_list)
+        with xr.open_dataset(unzip_folder / zipped_file_name) as ds:
+            var_list = [var for var in ds.data_vars]
+            raw_variable = "lccs_class"
+            var_list.remove(raw_variable)
+            ds = ds.drop_vars(var_list)  # noqa: PLW2901
 
-        # coarsen to fit into memory
-        ds = ds.sortby(["lat", "lon"])
-        ds = ds.rename({"lat": "latitude", "lon": "longitude"})
-        new_grid = xarray_regrid.Grid(
-            north=90,
-            east=180,
-            south=-90,
-            west=-180,
-            resolution_lat=0.25,  # same as resolution of ERA5, must be sufficient
-            resolution_lon=0.25,
-        )
+            # coarsen to fit into memory
+            ds = ds.sortby(["lat", "lon"])  # noqa: PLW2901
+            ds = ds.rename({"lat": "latitude", "lon": "longitude"})  # noqa: PLW2901
+            new_grid = xarray_regrid.Grid(
+                north=90,
+                east=180,
+                south=-90,
+                west=-180,
+                resolution_lat=0.25,  # same as resolution of ERA5, must be sufficient
+                resolution_lon=0.25,
+            )
 
-        target_dataset = xarray_regrid.create_regridding_dataset(new_grid)
+            target_dataset = xarray_regrid.create_regridding_dataset(new_grid)
 
-        ds_regrid = ds.regrid.most_common(target_dataset, time_dim="time", max_mem=1e9)
+            ds_regrid = ds.regrid.most_common(
+                target_dataset, time_dim="time", max_mem=1e9
+            )
 
         # rename variable to follow the zampy convention
         variable_name = "land_cover"
