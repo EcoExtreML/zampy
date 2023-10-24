@@ -199,13 +199,18 @@ def unzip_raw_to_netcdf(
 def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
     """Extract zipped data and convert to zampy format.
 
+    Since the original land cover field is too large to fit into
+    the memory in general, in this function the loaded land cover
+    data are regridded. They are regrid to a resoltuion of 0.25
+    degree, same as the native resolution of ERA5 data.
+
     Args:
         file: Path to the land cover .zip archive.
 
     Returns:
         Coarse land cover data in zampy format.
     """
-    with TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
+    with TemporaryDirectory() as temp_dir:
         unzip_folder = Path(temp_dir)
         with ZipFile(file, "r") as zip_object:
             zipped_file_name = zip_object.namelist()[0]
@@ -226,7 +231,7 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
                 east=180,
                 south=-90,
                 west=-180,
-                resolution_lat=0.25,  # same as resolution of ERA5, must be sufficient
+                resolution_lat=0.25,  # same as resolution of ERA5
                 resolution_lon=0.25,
             )
 
