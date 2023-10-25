@@ -67,8 +67,8 @@ class RecipeManager:
 
         self.start_time, self.end_time = recipe["download"]["time"]
         self.timebounds = TimeBounds(
-            np.datetime64(f"{self.start_time}"),
-            np.datetime64(f"{self.end_time}"),
+            convert_time(f"{self.start_time}"),
+            convert_time(f"{self.end_time}"),
         )
         self.spatialbounds = SpatialBounds(*recipe["download"]["bbox"])
 
@@ -133,3 +133,17 @@ class RecipeManager:
             "Finished running the recipe. Output data can be found at:\n"
             f"    {self.data_dir}"
         )
+
+
+def convert_time(time: str) -> np.datetime64:
+    """Check input time and convert to np.datetime64."""
+    try:
+        timestamp = np.datetime64(time)
+    except ValueError as err:
+        raise ValueError(
+            "The input format of timestamp in the recipe is incorrect. \n Please"
+            " follow the format of `numpy.datetime64` and update the input time,"
+            " e.g. 'YYYY-MM-DD'."
+        ) from err
+
+    return timestamp
