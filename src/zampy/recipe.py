@@ -140,10 +140,11 @@ def convert_time(time: str) -> np.datetime64:
     try:
         timestamp = np.datetime64(time)
     except ValueError as err:
-        raise ValueError(
+        msg = (
             "The input format of timestamp in the recipe is incorrect. \n Please"
             " follow the format of `numpy.datetime64` and update the input time,"
             " e.g. 'YYYY-MM-DD'."
-        ) from err
+        )
+        raise ValueError(msg) from err
 
     return timestamp
