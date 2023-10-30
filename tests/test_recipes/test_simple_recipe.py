@@ -3,12 +3,14 @@ from pathlib import Path
 from unittest.mock import patch
 import generate_test_data
 import numpy as np
+import pytest
 import xarray as xr
 from zampy.datasets import DATASETS
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
 from zampy.datasets.dataset_protocol import write_properties_file
 from zampy.recipe import RecipeManager
+from zampy.recipe import convert_time
 
 
 RECIPE_FILE = Path(__file__).parent / "recipes" / "era5_recipe.yml"
@@ -42,3 +44,9 @@ def test_recipe(tmp_path: Path, mocker):
 
         ds = xr.open_mfdataset(str(tmp_path / "output" / "era5_recipe" / "*.nc"))
         assert all(var in ds.data_vars for var in ["Psurf", "Wind_N"])
+
+
+def test_invalid_time_format():
+    time_from_recipe = "2020-1-01"
+    with pytest.raises(ValueError, match="The input format of timestamp"):
+        convert_time(time_from_recipe)

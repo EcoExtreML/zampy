@@ -33,7 +33,7 @@ A "recipe" is a file with `yml` extension and has the following structure:
 name: "test_recipe"
 
 download:
-  years: [2020, 2020]
+  time: [2020-01-01, 2020-01-31] # must follow the numpy.datetime64 format.
   bbox: [54, 6, 50, 3] # NESW
 
   datasets:
