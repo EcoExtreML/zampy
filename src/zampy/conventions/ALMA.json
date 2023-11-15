@@ -76,5 +76,9 @@
     "co2_concentration": {
         "variable": "CO2air",
         "units": "kilogram/kilogram"
+    },
+    "leaf_area_index": {
+        "variable": "LAI",
+        "units": "fraction"
     }
 }

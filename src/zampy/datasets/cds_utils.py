@@ -23,6 +23,7 @@ PRODUCT_FNAME = {
 SERVER_API = {
     "era5": "cdsapi",
     "era5-land": "cdsapi",
+    "fapar-lai": "cdsapi",
     "cams": "adsapi",
 }
 CONFIG_PATH = Path.home() / ".config" / "zampy" / "zampy_config.yml"

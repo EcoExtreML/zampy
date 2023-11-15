@@ -53,6 +53,7 @@ VARIABLE_REFERENCE = (
     Variable("latitude", unit=unit_registry.degree_north),
     Variable("longitude", unit=unit_registry.degree_east),
     Variable("elevation", unit=unit_registry.meter),
+    Variable("leaf_area_index", unit=unit_registry.fraction),
 )
 
 VARIABLE_REFERENCE_LOOKUP = {var.name: var for var in VARIABLE_REFERENCE}
