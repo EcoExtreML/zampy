@@ -22,7 +22,7 @@ name = "zampy"
 description = "python package for getting Land Surface Model input data."
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.9, <3.12"
+requires-python = ">=3.10, <3.12"
 authors = [
   {email = "b.schilperoort@esciencecenter.nl"},
   {name = "Bart Schilperoort, Yang Liu, Fakhereh Alidoost"}
@@ -43,7 +43,6 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
 ]
@@ -65,6 +64,7 @@ dependencies = [
   "pint-xarray",
   "flox",  # For better groupby methods.
   "cdsapi",
+  "xarray-regrid", # for land cover data regridding
 ]
 dynamic = ["version"]
 
@@ -136,11 +136,11 @@ testpaths = ["tests"]
 [tool.mypy]
 ignore_missing_imports = true
 disallow_untyped_defs = true
-python_version = "3.9"
+python_version = "3.10"
 
 [tool.black]
 line-length = 88
-target-version = ['py39', 'py310', 'py311']
+target-version = ['py310', 'py311']
 include = '\.pyi?$'
 
 [tool.ruff]
@@ -171,7 +171,7 @@ line-length = 88
 exclude = ["docs", "build"]
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.per-file-ignores]
 "tests/**" = ["D"]

@@ -2,7 +2,6 @@
 import json
 import warnings
 from pathlib import Path
-from typing import Union
 import cf_xarray.units  # noqa: F401
 import pint_xarray  # noqa: F401
 import xarray as xr
@@ -14,7 +13,7 @@ CONVENTIONS = ["ALMA"]
 conventions_path = Path(__file__).resolve().parents[1] / "conventions"
 
 
-def check_convention(convention: Union[str, Path]) -> None:
+def check_convention(convention: str | Path) -> None:
     """Check if the given convention is supported."""
     if isinstance(convention, str):
         if convention.upper() not in CONVENTIONS:
@@ -33,9 +32,7 @@ def check_convention(convention: Union[str, Path]) -> None:
         print(f"Starting data conversion to the convention defined in '{convention}'")
 
 
-def convert(
-    data: xr.Dataset, dataset: Dataset, convention: Union[str, Path]
-) -> xr.Dataset:
+def convert(data: xr.Dataset, dataset: Dataset, convention: str | Path) -> xr.Dataset:
     """Convert a loaded dataset to the specified convention.
 
     Args:

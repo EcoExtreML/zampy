@@ -123,6 +123,37 @@ def test_cds_request_cams_co2(mock_retrieve, valid_path_config):
         )
 
 
+@patch("cdsapi.Client.retrieve")
+def test_cds_request_land_cover(mock_retrieve, valid_path_config):
+    """ "Test cds request for downloading data from CDS server."""
+    dataset = "satellite-land-cover"
+    time_bounds = TimeBounds(
+        np.datetime64("1996-01-01T00:00:00"), np.datetime64("1996-12-31T00:00:00")
+    )
+    path = Path(__file__).resolve().parent
+    overwrite = True
+
+    # create a dummy .cdsapirc
+    patching = patch("zampy.datasets.cds_utils.CONFIG_PATH", valid_path_config)
+    with patching:
+        cds_utils.cds_request_land_cover(
+            dataset,
+            time_bounds,
+            path,
+            overwrite,
+        )
+
+    mock_retrieve.assert_called_with(
+        dataset,
+        {
+            "variable": "all",
+            "format": "zip",
+            "year": "1996",
+            "version": "v2.0.7cds",
+        },
+    )
+
+
 def test_cds_api_key_config_exist(valid_path_config):
     """Test zampy config exists."""
     patching = patch("zampy.datasets.cds_utils.CONFIG_PATH", valid_path_config)

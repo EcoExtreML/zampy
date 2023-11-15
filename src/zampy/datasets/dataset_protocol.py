@@ -4,7 +4,6 @@ import shutil
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from typing import Optional
 from typing import Protocol
 import numpy as np
 import xarray as xr
@@ -19,7 +18,7 @@ class Variable:
 
     name: str
     unit: Any  # pint unit. typing has issues with pint 0.21
-    desc: Optional[str] = ""
+    desc: str | None = ""
 
 
 @dataclass

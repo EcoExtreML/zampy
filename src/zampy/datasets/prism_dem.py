@@ -3,7 +3,6 @@ import gzip
 import tarfile
 from pathlib import Path
 from typing import Literal
-from typing import Union
 import numpy as np
 import xarray as xr
 from rasterio.io import MemoryFile
@@ -153,7 +152,7 @@ class PrismDEM:
     def convert(
         self,
         ingest_dir: Path,
-        convention: Union[str, Path],
+        convention: str | Path,
     ) -> bool:
         converter.check_convention(convention)
         ingest_folder = ingest_dir / self.name
@@ -301,7 +300,7 @@ def get_archive_filenames(
     else:
         raise ValueError("Unknown glo_number.")
 
-    for i, (lat, lon) in enumerate(zip(lats, lons)):
+    for i, (lat, lon) in enumerate(zip(lats, lons, strict=True)):
         lat_ = int(lat // step * step)
         lon_ = int(lon // step * step)
 
