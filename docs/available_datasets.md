@@ -44,3 +44,8 @@ You can add these yourself by creating a pull request, or open an issue to reque
     - `land_cover`
 
     For more information, see [their webpage](https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-land-cover).
+
+=== FAPAR Leaf Area Index
+    - `leaf_area_index`
+
+    For more info see [their webpage](https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-lai-fapar).
