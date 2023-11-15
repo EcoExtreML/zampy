@@ -11,6 +11,7 @@ import cdsapi
 import numpy as np
 import pandas as pd
 import xarray as xr
+import xarray_regrid
 from tqdm import tqdm
 from zampy.datasets import cds_utils
 from zampy.datasets import converter
@@ -22,7 +23,6 @@ from zampy.datasets.dataset_protocol import copy_properties_file
 from zampy.datasets.dataset_protocol import write_properties_file
 from zampy.reference.variables import VARIABLE_REFERENCE_LOOKUP
 from zampy.reference.variables import unit_registry
-from zampy.utils import regrid
 
 
 ## Ignore missing class/method docstrings: they are implemented in the Dataset class.
@@ -143,18 +143,20 @@ class FaparLAI:  # noqa: D101
         time_bounds: TimeBounds,
         spatial_bounds: SpatialBounds,
         resolution: float,
-        regrid_method: str,
+        regrid_method: str,  # should be deprecated.
         variable_names: list[str],
     ) -> xr.Dataset:
         files = list((ingest_dir / self.name).glob("*.nc"))
 
-        ds = xr.open_mfdataset(files, chunks={"latitude": 2000, "longitude": 2000})
+        ds = xr.open_mfdataset(files, parallel=True)
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
-        ds = regrid.regrid_data(ds, spatial_bounds, resolution, regrid_method)
+
+        target_dataset = create_regridding_ds(spatial_bounds, resolution)
+        ds = ds.regrid.linear(target_dataset)
 
         return ds
 
-    def convert(
+    def convert(  # Will be removed, see issue #43.
         self,
         ingest_dir: Path,
         convention: Union[str, Path],
@@ -169,10 +171,33 @@ class FaparLAI:  # noqa: D101
         for file in data_files:
             # start conversion process
             print(f"Start processing file `{file.name}`.")
-            ds = xr.open_dataset(file, chunks={"x": 2000, "y": 2000})
+            ds = xr.open_dataset(file, chunks={"latitude": 2000, "longitude": 2000})
             ds = converter.convert(ds, dataset=self, convention=convention)
 
         return True
+
+
+def create_regridding_ds(
+    spatial_bounds: SpatialBounds, resolution: float
+) -> xr.Dataset:
+    """Create dataset to use with xarray-regrid regridding.
+
+    Args:
+        spatial_bounds: Spatial bounds of the new dataset.
+        resolution: Latitude and longitude resolution of the new dataset.
+
+    Returns:
+        The dataset ready to be used in regridding.
+    """
+    new_grid = xarray_regrid.Grid(
+        north=spatial_bounds.north,
+        east=spatial_bounds.east,
+        south=spatial_bounds.south,
+        west=spatial_bounds.west,
+        resolution_lat=resolution,
+        resolution_lon=resolution,
+    )
+    return xarray_regrid.create_regridding_dataset(new_grid)
 
 
 def get_year_month_pairs(time_bounds: TimeBounds) -> list[tuple[int, int]]:
