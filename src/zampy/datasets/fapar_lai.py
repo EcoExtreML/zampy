@@ -206,11 +206,9 @@ def get_year_month_pairs(time_bounds: TimeBounds) -> list[tuple[int, int]]:
     year_month = []
     for year in range(start.year, end.year + 1):
         for month in range(1, 13):
-            if year == start.year and month < start.month:
-                pass
-            elif year == end.year and month > end.month:
-                pass
-            else:
+            before_first_month = year == start.year and month < start.month
+            after_last_month = year == end.year and month > end.month
+            if not before_first_month and not after_last_month:
                 year_month.append((year, month))
 
     return year_month
