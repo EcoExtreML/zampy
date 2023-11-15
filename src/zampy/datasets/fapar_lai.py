@@ -5,8 +5,6 @@ import tempfile
 import zipfile
 from pathlib import Path
 from typing import Any
-from typing import Optional
-from typing import Union
 import cdsapi
 import numpy as np
 import pandas as pd
@@ -159,7 +157,7 @@ class FaparLAI:  # noqa: D101
     def convert(  # Will be removed, see issue #43.
         self,
         ingest_dir: Path,
-        convention: Union[str, Path],
+        convention: str | Path,
     ) -> bool:
         converter.check_convention(convention)
         ingest_folder = ingest_dir / self.name
@@ -235,7 +233,7 @@ def download_fapar_lai(
     year: int,
     month: int,
     download_dir: Path,
-    spatial_bounds: Optional[SpatialBounds] = None,
+    spatial_bounds: SpatialBounds | None = None,
     overwrite: bool = False,
 ) -> None:
     """Download the FAPAR LAI data from CDS."""

@@ -19,12 +19,14 @@ PRODUCT_FNAME = {
     "reanalysis-era5-single-levels": "era5",
     "reanalysis-era5-land": "era5-land",
     "cams-global-ghg-reanalysis-egg4": "cams",
+    "satellite-land-cover": "land-cover",
 }
 SERVER_API = {
     "era5": "cdsapi",
     "era5-land": "cdsapi",
     "fapar-lai": "cdsapi",
     "cams": "adsapi",
+    "land-cover": "cdsapi",
 }
 CONFIG_PATH = Path.home() / ".config" / "zampy" / "zampy_config.yml"
 
@@ -86,6 +88,56 @@ def cds_request(
         cds_var_names,
         overwrite,
     )
+
+
+def cds_request_land_cover(
+    dataset: str,
+    time_bounds: TimeBounds,
+    path: Path,
+    overwrite: bool,
+) -> None:
+    """Download land cover data via CDS API.
+
+    To raise a request via CDS API using `zampy`, user needs to set up the
+    zampy configuration file `zampy_config.yml` following the instructions on
+    https://github.com/EcoExtreML/zampy/blob/main/README.md#instructions-for-cds-datasets-eg-era5.
+
+    Args:
+        dataset: Dataset name for retrieval via `cdsapi`.
+        time_bounds: Zampy time bounds object.
+        path: File path to which the data should be saved.
+        overwrite: If an existing file (of the same size!) should be overwritten.
+    """
+    fname = PRODUCT_FNAME[dataset]
+
+    url, api_key = cds_api_key(fname)
+
+    c = cdsapi.Client(
+        url=url,
+        key=api_key,
+        verify=True,
+        quiet=True,
+    )
+
+    years_months = time_bounds_to_year_month(time_bounds)
+    years = {year for (year, _) in years_months}
+
+    for year in tqdm(years):
+        if int(year) < 2016:
+            version = "v2.0.7cds"
+        else:
+            version = "v2.1.1"
+        r = c.retrieve(
+            dataset,
+            {
+                "variable": "all",
+                "format": "zip",
+                "year": year,
+                "version": version,
+            },
+        )
+        fpath = path / f"{fname}_LCCS_MAP_300m_{year}.zip"
+        _check_and_download(r, fpath, overwrite)
 
 
 def cds_api_key(product_name: str) -> tuple[str, str]:

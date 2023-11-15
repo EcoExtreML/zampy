@@ -17,6 +17,7 @@ def unit_registration() -> UnitRegistry:
         "kilogram_per_square_meter_second = kilogram/(meter**2*second)"
     )
     unit_registry.define("milimeter_per_second = watt/meter**2")
+    unit_registry.define("dimensionless = []")
     return unit_registry
 
 
@@ -54,6 +55,7 @@ VARIABLE_REFERENCE = (
     Variable("longitude", unit=unit_registry.degree_east),
     Variable("elevation", unit=unit_registry.meter),
     Variable("leaf_area_index", unit=unit_registry.fraction),
+    Variable("land_cover", unit=unit_registry.dimensionless),
 )
 
 VARIABLE_REFERENCE_LOOKUP = {var.name: var for var in VARIABLE_REFERENCE}

@@ -5,6 +5,7 @@ from zampy.datasets.era5 import ERA5
 from zampy.datasets.era5 import ERA5Land
 from zampy.datasets.eth_canopy_height import EthCanopyHeight
 from zampy.datasets.fapar_lai import FaparLAI
+from zampy.datasets.land_cover import LandCover
 from zampy.datasets.prism_dem import PrismDEM30
 from zampy.datasets.prism_dem import PrismDEM90
 
@@ -19,4 +20,5 @@ DATASETS: dict[str, type[dataset_protocol.Dataset]] = {
     "prism_dem_30": PrismDEM30,
     "prism_dem_90": PrismDEM90,
     "fapar_lai": FaparLAI,
+    "land_cover": LandCover,
 }

@@ -1,7 +1,6 @@
 """ETH canopy height dataset."""
 import gzip
 from pathlib import Path
-from typing import Union
 import numpy as np
 import xarray as xr
 from zampy.datasets import converter
@@ -109,7 +108,7 @@ class EthCanopyHeight:  # noqa: D101
         sd_files = list(download_folder.glob(sd_file_pattern))
         is_sd_file = len(data_files) * [False] + len(sd_files) * [True]
 
-        for file, sd_file in zip(data_files + sd_files, is_sd_file):
+        for file, sd_file in zip(data_files + sd_files, is_sd_file, strict=True):
             convert_tiff_to_netcdf(
                 ingest_folder,
                 file=file,
@@ -144,7 +143,7 @@ class EthCanopyHeight:  # noqa: D101
     def convert(
         self,
         ingest_dir: Path,
-        convention: Union[str, Path],
+        convention: str | Path,
     ) -> bool:
         converter.check_convention(convention)
         ingest_folder = ingest_dir / self.name
@@ -188,7 +187,7 @@ def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> list[str]:
 
     fnames = [""] * len(lats)
 
-    for i, (lat, lon) in enumerate(zip(lats, lons)):
+    for i, (lat, lon) in enumerate(zip(lats, lons, strict=True)):
         lat_ = int(lat // step * step)
         lon_ = int(lon // step * step)
 

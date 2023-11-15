@@ -80,5 +80,9 @@
     "leaf_area_index": {
         "variable": "LAI",
         "units": "fraction"
+    },
+    "land_cover": {
+        "variable": "land_cover",
+        "units": ""
     }
 }

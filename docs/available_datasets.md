@@ -39,3 +39,8 @@ You can add these yourself by creating a pull request, or open an issue to reque
     Note: model level is set to "60" and all steps are included for downloading.
 
     For more information, see [their webpage](https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-ghg-reanalysis-egg4).
+
+=== "Land cover classification gridded maps"
+    - `land_cover`
+
+    For more information, see [their webpage](https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-land-cover).
