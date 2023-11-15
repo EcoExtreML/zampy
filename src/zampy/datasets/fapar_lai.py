@@ -244,7 +244,7 @@ def download_fapar_lai(
 def ingest_ncfile(ncfile: Path, ingest_folder: Path) -> None:
     """Ingest the 'raw' netCDF file to the Zampy standard format."""
     print(f"Converting file {ncfile.name}...")
-    ds = xr.open_dataset(ncfile, decode_times=False)
+    ds = xr.open_dataset(ncfile, decode_times=False, chunks={"lat": 5000, "lon": 5000})
     ds = ds.rename(
         {
             "LAI": "leaf_area_index",
