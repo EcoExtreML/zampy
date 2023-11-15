@@ -195,10 +195,9 @@ def unzip_raw_to_netcdf(
 def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
     """Extract zipped data and convert to zampy format.
 
-    Since the original land cover field is too large to fit into
-    the memory in general, in this function the loaded land cover
-    data are regridded. They are regrid to a resoltuion of 0.25
-    degree, same as the native resolution of ERA5 data.
+    Since the native resolution of land cover field is too high
+    in general, in this function the loaded land cover data
+    are regridded. They are regrid to a resoltuion of 0.05 degree.
 
     Args:
         file: Path to the land cover .zip archive.
@@ -219,7 +218,6 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
             var_list.remove(raw_variable)
             ds = ds.drop_vars(var_list)  # noqa: PLW2901
 
-            # coarsen to fit into memory
             ds = ds.sortby(["lat", "lon"])  # noqa: PLW2901
             ds = ds.rename({"lat": "latitude", "lon": "longitude"})  # noqa: PLW2901
             new_grid = xarray_regrid.Grid(
