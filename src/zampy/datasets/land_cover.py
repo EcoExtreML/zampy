@@ -164,13 +164,9 @@ class LandCover:
         data_files = list(ingest_folder.glob(data_file_pattern))
 
         for file in data_files:
-            # start conversion process
             print(f"Start processing file `{file.name}`.")
             ds = xr.open_dataset(file)
             ds = converter.convert(ds, dataset=self, convention=convention)
-            # TODO: support derived variables
-            # TODO: other calculations
-            # call ds.compute()
 
         return True
 
@@ -231,8 +227,8 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
                 east=180,
                 south=-90,
                 west=-180,
-                resolution_lat=0.25,  # same as resolution of ERA5
-                resolution_lon=0.25,
+                resolution_lat=0.05,
+                resolution_lon=0.05,
             )
 
             target_dataset = xarray_regrid.create_regridding_dataset(new_grid)
