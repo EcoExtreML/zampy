@@ -54,6 +54,7 @@ VARIABLE_REFERENCE = (
     Variable("latitude", unit=unit_registry.degree_north),
     Variable("longitude", unit=unit_registry.degree_east),
     Variable("elevation", unit=unit_registry.meter),
+    Variable("leaf_area_index", unit=unit_registry.fraction),
     Variable("land_cover", unit=unit_registry.dimensionless),
 )
 

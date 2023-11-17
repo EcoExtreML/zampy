@@ -77,6 +77,10 @@
         "variable": "CO2air",
         "units": "kilogram/kilogram"
     },
+    "leaf_area_index": {
+        "variable": "LAI",
+        "units": "fraction"
+    },
     "land_cover": {
         "variable": "land_cover",
         "units": ""

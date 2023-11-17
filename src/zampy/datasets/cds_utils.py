@@ -24,6 +24,7 @@ PRODUCT_FNAME = {
 SERVER_API = {
     "era5": "cdsapi",
     "era5-land": "cdsapi",
+    "fapar-lai": "cdsapi",
     "cams": "adsapi",
     "land-cover": "cdsapi",
 }
