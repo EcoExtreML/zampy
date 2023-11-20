@@ -1,5 +1,5 @@
 # zampy
-Tool for downloading Land Surface Model input data.
+Tool for downloading Land Surface Model (LSM) input data.
 
 Named after *Zam*; [the Avestan language term for the Zoroastrian concept of "earth"](https://en.wikipedia.org/wiki/Zam).
 
@@ -73,7 +73,7 @@ A "recipe" is a file with yml extension, it defines:
   - datasets to be downloaded
     - variables within datasets
 - data conversion
-  - convention
+  - convert to desired [conventions](./src/zampy/conventions/)
   - output frequency
   - output resolution
 
