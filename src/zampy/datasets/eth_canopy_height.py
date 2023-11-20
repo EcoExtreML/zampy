@@ -202,7 +202,7 @@ def get_filenames(bounds: SpatialBounds, sd_file: bool = False) -> list[str]:
 
 
 def get_valid_filenames(filenames: list[str]) -> list[str]:
-    """Returns a new list with only the valid filenames."""
+    """Return a new list with only the valid filenames."""
     valid_name_file = (
         Path(__file__).parent / "assets" / "h_canopy_filenames_compressed.txt.gz"
     )
