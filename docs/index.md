@@ -6,6 +6,7 @@ Named after *Zam*; [the Avestan language term for the Zoroastrian concept of "ea
 
 ## Why using Zampy
 `zampy` is designed to retrieve data for LSM model input. It can help you prepare the data within the following steps:
+
 1. **Download** the data for the specified location(s) / geographical area.
 2. **Ingest** data into unified (zampy) format.
 3. **Load** the variables in a standardized way (standardized names & standardized units).

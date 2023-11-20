@@ -49,3 +49,5 @@ You can add these yourself by creating a pull request, or open an issue to reque
     - `leaf_area_index`
 
     For more info see [their webpage](https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-lai-fapar).
+
+If you want to add more datasets to the collection, or support more conventions, please check the [contributing guide](CONTRIBUTING.md) and [readme for developers]() before starting.
