@@ -77,7 +77,7 @@ A "recipe" is a file with yml extension, it defines:
   - output frequency
   - output resolution
 
-A sample recipe can be found [here](./docs/using_zampy.md).
+A sample recipe can be found in the [documentation](https://zampy.readthedocs.io/en/latest/#how-to-use-zampy).
 
 When you have your reciped created and saved on your disk, you can execute your recipe by running the following code in your shell:
 
