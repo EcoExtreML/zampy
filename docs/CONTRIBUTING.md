@@ -41,36 +41,3 @@ If you want to make some kind of change to the code base, for instance, adding m
 1. create the pull request.
 
 In case you feel like you've made a valuable contribution, but you don't know how to write or run tests for it, or how to generate the documentation: don't let this discourage you from making the pull request; we can help you! Just go ahead and submit the pull request, but keep in mind that you might be asked to append additional commits to your pull request.
-
-## You want to make a release
-This section is for maintainers of the package.
-
-1. Checkout ``HEAD`` of ``main`` branch with ``git checkout main`` and ``git pull``.
-2. Determine what new version (major, minor or patch) to use. Package uses `semantic versioning <https://semver.org>`.
-3. Run ``bump2version <major|minor|patch>`` to update version in package files.
-4. Update CHANGELOG.md with changes between current and new version.
-5. Make sure pre-commit hooks are green for all files by running ``pre-commit run --all-files``.
-6. Commit & push changes to GitHub.
-7. Wait for [GitHub
-    actions](https://github.com/EcoExtreML/zampy/actions?query=branch%3Amain+)
-    to be completed and green.
-
-8. Create a [GitHub release](https://github.com/EcoExtreML/zampy/releases/new)
-
-    - Use version as title and tag version.
-    - As description use intro text from README.md (to give context to
-        Zenodo record) and changes from CHANGELOG.md
-
-9. Create a PyPI release.
-
-    1. Create distribution archives with `hatch build`.
-    2. Upload archives to PyPI with `hatch publish` (use your
-        personal PyPI account).
-
-10. Verify
-
-    1. Has [latest](https://zampy.readthedocs.io/en/latest/) ReadTheDocs been updated?
-    2. Can new version be installed with pip using
-        `python3 -m pip install zampy==<new version>`?
-
-11. Celebrate

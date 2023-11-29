@@ -74,12 +74,12 @@ The documentation will be in `docs/_build/html`.
 
 ## Versioning
 
-Bumping the version across all files is done with [bumpversion](https://github.com/c4urself/bump2version), e.g.
+Bumping the version across all files is done with [bump-my-version](https://github.com/callowayproject/bump-my-version), e.g.
 
 ```shell
-bumpversion major
-bumpversion minor
-bumpversion patch
+bumpversion bump major
+bumpversion bump minor
+bumpversion bump patch
 ```
 
 ## Making a release

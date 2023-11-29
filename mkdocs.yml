@@ -6,6 +6,7 @@ nav:
   - Getting started: index.md
   - Configuration: configuration.md
   - Available datasets: available_datasets.md
+  - For developers : README.dev.md
 
 theme:
   name: material
