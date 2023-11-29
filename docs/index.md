@@ -18,20 +18,21 @@ Named after *Zam*; [the Avestan language term for the Zoroastrian concept of "ea
 
 ## How to use Zampy
 
-To install `zampy`, check [this guide](configuration.md). Please also make sure that you have it properly configured following the guidelines.
+To install and configure`zampy`, fist check [this guide](configuration.md) before continuing. Please also make sure that you have properly configured it following the guidelines.
 
 We recommend our users to use `zampy` with recipes.
 
 A "recipe" is a file with yml extension, it defines:
-- data downloading
-  - time extent.
-  - spatial location / bounding box.
-  - datasets to be downloaded
-    - variables within datasets
-- data conversion
-  - convert to desired [conventions](https://github.com/EcoExtreML/zampy/tree/main/src/zampy/conventions)
-  - output frequency
-  - output resolution
+
+- which data to download:
+  - the time extent
+  - a spatial bounding box
+  - the datasets to be downloaded
+    - the variables within each dataset
+- and data conversion to the desired:
+  - [convention](https://github.com/EcoExtreML/zampy/tree/main/src/zampy/conventions)
+  - time frequency
+  - spatial resolution
 
 A sample recipe is shown below:
 
@@ -68,7 +69,9 @@ zampy /path_to_recipe/sample_recipe.yml
 
 ### Interact with `zampy` in notebooks
 
-Although it is not recommended, you could intereact with `zampy` via Python APIs. You can find the example notebooks for each supported dataset [here](https://github.com/EcoExtreML/zampy/tree/main/demo).
+It is possible to use `zampy` directly in Python via its Python API. This is not recommended, as it is more difficult to reproduce the workflow if there is no recipe.
+As it is an internal API, python code can break without warning on new versions of Zampy.
+An example notebooks for each supported dataset is available [here](https://github.com/EcoExtreML/zampy/tree/main/demo).
 
 ## Acknowledgements
 

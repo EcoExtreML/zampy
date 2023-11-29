@@ -98,7 +98,7 @@ This section describes how to make a release in 3 parts: preparation, release an
 Make a release and tag on GitHub.com. This will:
 
  - trigger Zenodo into making a snapshot of your repository and sticking a DOI on it.
- - start a GitHub action that builds and uploads the new version to [PyPI](https://pypi.org/project/lilio/).
+ - start a GitHub action that builds and uploads the new version to [PyPI](https://pypi.org/project/zampy/).
 
 ### Validation
 
