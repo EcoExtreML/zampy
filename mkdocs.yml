@@ -1,4 +1,13 @@
 site_name: Zampy Documentation
+repo_url: https://github.com/EcoExtreML/zampy
+repo_name: zampy
+
+nav:
+  - Getting started: index.md
+  - Configuration: configuration.md
+  - Available datasets: available_datasets.md
+  - For developers : README.dev.md
+  - Contributing : CONTRIBUTING.md
 
 theme:
   name: material

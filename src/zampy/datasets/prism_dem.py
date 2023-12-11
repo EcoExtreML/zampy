@@ -314,7 +314,7 @@ def get_archive_filenames(
 
 
 def get_valid_filenames(filenames: list[str]) -> list[str]:
-    """Returns a new list with only the valid filenames."""
+    """Return a new list with only the valid filenames."""
     valid_filenames = ""
 
     for valid_name_file in VALID_NAME_FILES:

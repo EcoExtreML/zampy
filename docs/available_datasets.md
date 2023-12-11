@@ -12,7 +12,7 @@ You can add these yourself by creating a pull request, or open an issue to reque
 
     Note: all hours in a day are covered and all days for the given month are included for downloading.
 
-    Fore more information, see [the ECMWF website](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels).
+    For more information, see [the ECMWF website](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels).
 
 === "ERA5-land"
     - `2m_temperature`
@@ -20,7 +20,7 @@ You can add these yourself by creating a pull request, or open an issue to reque
 
     Note: all hours in a day are covered and all days for the given month are included for downloading.
 
-    Fore more information, see [the ECMWF website](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land).
+    For more information, see [the ECMWF website](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land).
 
 === "ETH canopy height"
     - `height_of_vegetation`
@@ -40,12 +40,15 @@ You can add these yourself by creating a pull request, or open an issue to reque
 
     For more information, see [their webpage](https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-ghg-reanalysis-egg4).
 
-=== "Land cover classification gridded maps"
+=== "Land cover classification maps"
     - `land_cover`
 
     For more information, see [their webpage](https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-land-cover).
 
-=== FAPAR Leaf Area Index
+=== "FAPAR Leaf Area Index"
     - `leaf_area_index`
 
     For more info see [their webpage](https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-lai-fapar).
+
+
+If you want to add more datasets to the collection, or support more conventions, please check the [contributing guide](CONTRIBUTING.md) and [readme for developers](README.dev.md) before starting.
