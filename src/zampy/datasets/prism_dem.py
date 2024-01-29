@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Literal
 import numpy as np
 import xarray as xr
+import xarray_regrid
 from rasterio.io import MemoryFile
 from zampy.datasets import converter
 from zampy.datasets import utils
@@ -16,7 +17,6 @@ from zampy.datasets.dataset_protocol import copy_properties_file
 from zampy.datasets.dataset_protocol import write_properties_file
 from zampy.reference.variables import VARIABLE_REFERENCE_LOOKUP
 from zampy.reference.variables import unit_registry
-from zampy.utils import regrid
 
 
 VALID_NAME_FILES = [
@@ -127,7 +127,6 @@ class PrismDEM:
         time_bounds: TimeBounds,  # Unused in PrismDEM
         spatial_bounds: SpatialBounds,
         resolution: float,
-        regrid_method: str,
         variable_names: list[str],
     ) -> xr.Dataset:
         for var in variable_names:
@@ -145,7 +144,11 @@ class PrismDEM:
             return ds.isel(latitude=slice(None, -1), longitude=slice(None, -1))
 
         ds = xr.open_mfdataset(files, preprocess=preproc)
-        ds = regrid.regrid_data(ds, spatial_bounds, resolution, regrid_method)
+
+        grid = xarray_regrid.create_regridding_dataset(
+            utils.make_grid(spatial_bounds, resolution)
+        )
+        ds = ds.regrid.linear(grid)
 
         return ds
 

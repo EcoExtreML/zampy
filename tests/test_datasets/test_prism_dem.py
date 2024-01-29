@@ -85,7 +85,6 @@ class TestPrismDEM:
             spatial_bounds=bbox,
             variable_names=variable,
             resolution=0.25,
-            regrid_method="flox",
         )
 
         # we assert the regridded coordinates

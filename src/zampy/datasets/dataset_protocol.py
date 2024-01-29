@@ -130,7 +130,6 @@ class Dataset(Protocol):
         time_bounds: TimeBounds,
         spatial_bounds: SpatialBounds,
         resolution: float,
-        regrid_method: str,
         variable_names: list[str],
     ) -> xr.Dataset:
         """Get the dataset as an xarray Dataset.
@@ -142,9 +141,6 @@ class Dataset(Protocol):
                 loaded.
             resolution: The desired resolution of the loaded data. The ingested data
                 will be regridded to match this resolution.
-            regrid_method: Which routines to use to resample. Either "flox" (default) or
-                "esmf". Of these two, esmf is the more robust and accurate regridding
-                method, however it can be difficult to install.
 
             variable_names: Which variables should be loaded.
 

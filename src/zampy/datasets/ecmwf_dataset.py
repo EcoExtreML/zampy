@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import xarray as xr
+import xarray_regrid  # noqa: F401
 from zampy.datasets import cds_utils
 from zampy.datasets import converter
 from zampy.datasets import validation
@@ -10,7 +11,7 @@ from zampy.datasets.dataset_protocol import TimeBounds
 from zampy.datasets.dataset_protocol import Variable
 from zampy.datasets.dataset_protocol import copy_properties_file
 from zampy.datasets.dataset_protocol import write_properties_file
-from zampy.utils import regrid
+from zampy.datasets.utils import make_grid
 
 
 ## Ignore missing class/method docstrings: they are implemented in the Dataset class.
@@ -111,7 +112,6 @@ class ECMWFDataset:  # noqa: D101
         time_bounds: TimeBounds,
         spatial_bounds: SpatialBounds,
         resolution: float,
-        regrid_method: str,
         variable_names: list[str],
     ) -> xr.Dataset:
         files: list[Path] = []
@@ -121,7 +121,11 @@ class ECMWFDataset:  # noqa: D101
 
         ds = xr.open_mfdataset(files, chunks={"latitude": 200, "longitude": 200})
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
-        ds = regrid.regrid_data(ds, spatial_bounds, resolution, regrid_method)
+
+        grid = xarray_regrid.create_regridding_dataset(
+            make_grid(spatial_bounds, resolution)
+        )
+        ds = ds.regrid.linear(grid)
 
         return ds
 

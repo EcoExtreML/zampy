@@ -21,7 +21,7 @@ disable = true  # Requires confirmation when publishing to pypi.
 name = "zampy"
 description = "python package for getting Land Surface Model input data."
 readme = "README.md"
-license = "Apache-2.0"
+license = "Apache 2.0"
 requires-python = ">=3.10, <3.12"
 authors = [
   {email = "b.schilperoort@esciencecenter.nl"},
@@ -62,9 +62,8 @@ dependencies = [
   "pint",
   "cf_xarray",  # required to auto-pint CF compliant datasets.
   "pint-xarray",
-  "flox",  # For better groupby methods.
   "cdsapi",
-  "xarray-regrid", # for land cover data regridding
+  "xarray-regrid", # for regridding
 ]
 dynamic = ["version"]
 
@@ -119,16 +118,6 @@ features = ["docs"]
 [tool.hatch.envs.docs.scripts]
 build = ["mkdocs build"]
 serve = ["mkdocs serve"]
-
-# [tool.hatch.envs.conda]
-# type = "conda"
-# python = "3.10"
-# command = "micromamba"
-# environment-file = "environment.yml"
-# extra-dependencies = ["pytest", "pytest-cov"]
-
-# [tool.hatch.envs.conda.scripts]
-# test = ["pytest ./tests/",]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -8,6 +8,7 @@ import xarray as xr
 import xarray_regrid
 from zampy.datasets import cds_utils
 from zampy.datasets import converter
+from zampy.datasets import utils
 from zampy.datasets import validation
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
@@ -121,7 +122,6 @@ class LandCover:
         time_bounds: TimeBounds,
         spatial_bounds: SpatialBounds,
         resolution: float,
-        regrid_method: str,  # Unused in land-cover dataset
         variable_names: list[str],
     ) -> xr.Dataset:
         files: list[Path] = []
@@ -137,19 +137,13 @@ class LandCover:
 
         ds = xr.open_mfdataset(files, chunks={"latitude": 200, "longitude": 200})
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
-        new_grid = xarray_regrid.Grid(
-            north=spatial_bounds.north,
-            east=spatial_bounds.east,
-            south=spatial_bounds.south,
-            west=spatial_bounds.west,
-            resolution_lat=resolution,
-            resolution_lon=resolution,
+
+        grid = xarray_regrid.create_regridding_dataset(
+            utils.make_grid(spatial_bounds, resolution)
         )
-        target_dataset = xarray_regrid.create_regridding_dataset(new_grid)
+        ds = ds.regrid.most_common(grid, time_dim="time", max_mem=1e9)
 
-        ds_regrid = ds.regrid.most_common(target_dataset, time_dim="time", max_mem=1e9)
-
-        return ds_regrid
+        return ds
 
     def convert(
         self,

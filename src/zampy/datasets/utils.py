@@ -2,7 +2,9 @@
 import urllib.request
 from pathlib import Path
 import requests
+import xarray_regrid
 from tqdm import tqdm
+from zampy.datasets.dataset_protocol import SpatialBounds
 
 
 class TqdmUpdate(tqdm):
@@ -52,3 +54,15 @@ def get_file_size(fpath: Path) -> int:
         return 0
     else:
         return fpath.stat().st_size
+
+
+def make_grid(spatial_bounds: SpatialBounds, resolution: float) -> xarray_regrid.Grid:
+    """MAke a regridding grid for passing to xarray-regrid."""
+    return xarray_regrid.Grid(
+        north=spatial_bounds.north,
+        east=spatial_bounds.east,
+        south=spatial_bounds.south,
+        west=spatial_bounds.west,
+        resolution_lat=resolution,
+        resolution_lon=resolution,
+    )
