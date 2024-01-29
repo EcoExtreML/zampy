@@ -21,7 +21,7 @@ disable = true  # Requires confirmation when publishing to pypi.
 name = "zampy"
 description = "python package for getting Land Surface Model input data."
 readme = "README.md"
-license = "Apache 2.0"
+license = "Apache-2.0"
 requires-python = ">=3.10, <3.12"
 authors = [
   {email = "b.schilperoort@esciencecenter.nl"},
