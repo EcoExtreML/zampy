@@ -15,7 +15,6 @@ convert:
   standard: ALMA-PLUMBER2
   frequency: 1H  # outputs at 1 hour frequency. Pandas-like freq-keyword.
   resolution: 0.01  # output resolution in degrees.
-  conversion-method: "flox"  # Either flox or xesmf. xesmf requires conda + linux.
 
   additional_variables:  # Possible future addition
     saturation_vapor_pressure:

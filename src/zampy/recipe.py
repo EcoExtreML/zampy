@@ -113,7 +113,6 @@ class RecipeManager:
                 spatial_bounds=self.spatialbounds,
                 variable_names=variables,
                 resolution=self.resolution,
-                regrid_method="flox",
             )
 
             ds = converter.convert(ds, dataset, convention=self.convention)

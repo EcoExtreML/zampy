@@ -3,6 +3,7 @@ import gzip
 from pathlib import Path
 import numpy as np
 import xarray as xr
+import xarray_regrid
 from zampy.datasets import converter
 from zampy.datasets import utils
 from zampy.datasets import validation
@@ -13,7 +14,6 @@ from zampy.datasets.dataset_protocol import copy_properties_file
 from zampy.datasets.dataset_protocol import write_properties_file
 from zampy.reference.variables import VARIABLE_REFERENCE_LOOKUP
 from zampy.reference.variables import unit_registry
-from zampy.utils import regrid
 
 
 VALID_NAME_FILE = (
@@ -126,7 +126,6 @@ class EthCanopyHeight:  # noqa: D101
         time_bounds: TimeBounds,
         spatial_bounds: SpatialBounds,
         resolution: float,
-        regrid_method: str,
         variable_names: list[str],
     ) -> xr.Dataset:
         files: list[Path] = []
@@ -137,7 +136,11 @@ class EthCanopyHeight:  # noqa: D101
 
         ds = xr.open_mfdataset(files, chunks={"latitude": 2000, "longitude": 2000})
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
-        ds = regrid.regrid_data(ds, spatial_bounds, resolution, regrid_method)
+
+        grid = xarray_regrid.create_regridding_dataset(
+            utils.make_grid(spatial_bounds, resolution)
+        )
+        ds = ds.regrid.linear(grid)
         return ds
 
     def convert(

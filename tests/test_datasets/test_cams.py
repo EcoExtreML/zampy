@@ -113,7 +113,6 @@ class TestCAMS:
             spatial_bounds=bbox,
             variable_names=variable,
             resolution=1.0,
-            regrid_method="flox",
         )
 
         # we assert the regridded coordinates

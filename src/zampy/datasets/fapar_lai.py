@@ -13,6 +13,7 @@ import xarray_regrid
 from tqdm import tqdm
 from zampy.datasets import cds_utils
 from zampy.datasets import converter
+from zampy.datasets import utils
 from zampy.datasets import validation
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
@@ -141,7 +142,6 @@ class FaparLAI:  # noqa: D101
         time_bounds: TimeBounds,
         spatial_bounds: SpatialBounds,
         resolution: float,
-        regrid_method: str,  # should be deprecated.
         variable_names: list[str],
     ) -> xr.Dataset:
         files = list((ingest_dir / self.name).glob("*.nc"))
@@ -149,8 +149,10 @@ class FaparLAI:  # noqa: D101
         ds = xr.open_mfdataset(files, parallel=True)
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
 
-        target_dataset = create_regridding_ds(spatial_bounds, resolution)
-        ds = ds.regrid.linear(target_dataset)
+        grid = xarray_regrid.create_regridding_dataset(
+            utils.make_grid(spatial_bounds, resolution)
+        )
+        ds = ds.regrid.linear(grid)
 
         return ds
 
@@ -173,29 +175,6 @@ class FaparLAI:  # noqa: D101
             ds = converter.convert(ds, dataset=self, convention=convention)
 
         return True
-
-
-def create_regridding_ds(
-    spatial_bounds: SpatialBounds, resolution: float
-) -> xr.Dataset:
-    """Create dataset to use with xarray-regrid regridding.
-
-    Args:
-        spatial_bounds: Spatial bounds of the new dataset.
-        resolution: Latitude and longitude resolution of the new dataset.
-
-    Returns:
-        The dataset ready to be used in regridding.
-    """
-    new_grid = xarray_regrid.Grid(
-        north=spatial_bounds.north,
-        east=spatial_bounds.east,
-        south=spatial_bounds.south,
-        west=spatial_bounds.west,
-        resolution_lat=resolution,
-        resolution_lon=resolution,
-    )
-    return xarray_regrid.create_regridding_dataset(new_grid)
 
 
 def get_year_month_pairs(time_bounds: TimeBounds) -> list[tuple[int, int]]:
