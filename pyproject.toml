@@ -74,8 +74,7 @@ zampy="zampy.cli:run_recipe"
 dev = [
   "bump2version",
   "hatch",
-  "ruff",
-  "black",
+  "ruff>0.1.2",  # Ruff with formatter is required
   "mypy",
   "types-requests", # type stubs for request lib
   "types-urllib3", # type stubs for url lib
@@ -100,10 +99,10 @@ features = ["dev"]
 lint = [
   "ruff check src/ tests/",
   "mypy src/",
-  "black --check --diff src/ tests/",
+  "ruff format --check --diff src/ tests/",
 ]
 format = [
-  "black src/ tests/",
+  "ruff format src/ tests/",
   "ruff check src/ tests/ --fix --exit-non-zero-on-fix",
   "lint",
 ]
@@ -126,11 +125,6 @@ testpaths = ["tests"]
 ignore_missing_imports = true
 disallow_untyped_defs = true
 python_version = "3.10"
-
-[tool.black]
-line-length = 88
-target-version = ['py310', 'py311']
-include = '\.pyi?$'
 
 [tool.ruff]
 select = [

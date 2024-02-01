@@ -17,7 +17,9 @@ RECIPE_FILE = Path(__file__).parent / "recipes" / "era5_recipe.yml"
 
 
 def test_recipe(tmp_path: Path, mocker):
-    with (patch.object(DATASETS["era5"], "download"),):
+    with (
+        patch.object(DATASETS["era5"], "download"),
+    ):
         mocker.patch(
             "zampy.recipe.config_loader",
             return_value={"working_directory": str(tmp_path.absolute())},
