@@ -34,7 +34,9 @@ jobs:
       - name: Upgrade pip and install hatch
         run: |
           python3 -m pip install --upgrade pip hatch
-      - name: Run unit tests
+      - name: Run fast tests first
+        run: hatch run test
+      - name: Run full test suite & coverage
         run: hatch run test
       - name: Verify that we can build the package
         run: hatch build

@@ -106,7 +106,10 @@ format = [
   "ruff check src/ tests/ --fix --exit-non-zero-on-fix",
   "lint",
 ]
-test = ["pytest ./src/zampy/ ./tests/ --doctest-modules --doctest-ignore-import-errors",]
+fast-test = ["pytest -m 'not slow'"]
+test = [
+  "pytest ./src/zampy/ ./tests/ --doctest-modules --doctest-ignore-import-errors",
+]
 coverage = [
   "pytest --cov --cov-report term --cov-report xml --junitxml=xunit-result.xml tests/",
 ]
