@@ -82,6 +82,7 @@ class TestFaparLAI:
                 # check property
                 assert json_dict["variable_names"] == variable
 
+    @pytest.mark.slow
     def test_ingest(self, dummy_dir):
         """Test ingest function."""
         ingest_dir = Path(dummy_dir) / "ingest"
