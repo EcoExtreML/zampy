@@ -4,6 +4,7 @@ from pathlib import Path
 import numpy as np
 import xarray as xr
 
+
 if __name__ == "__main__":
     download_path = Path("download")
     ingest_path = Path("ingest")
@@ -45,7 +46,6 @@ if __name__ == "__main__":
 
         ds.to_netcdf(fname, encoding=encoding)
         fnames.append(Path(fname))
-
 
     # Zip em up
     zip_fname = "satellite-lai-fapar_2019-1.zip"
