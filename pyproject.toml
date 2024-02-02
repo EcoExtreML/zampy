@@ -123,6 +123,9 @@ serve = ["mkdocs serve"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "slow: mark a test to be slow.",
+]
 
 [tool.mypy]
 ignore_missing_imports = true
