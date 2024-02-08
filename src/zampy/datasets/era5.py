@@ -47,15 +47,30 @@ class ERA5Land(ECMWFDataset):  # noqa: D101
     raw_variables = [
         Variable(name="t2m", unit=unit_registry.kelvin),
         Variable(name="d2m", unit=unit_registry.kelvin),
+        Variable(name="st", unit=unit_registry.kelvin),
+        Variable(name="swvl", unit=unit_registry.fraction),
     ]
 
     # variable names used in cdsapi downloading request
     cds_var_names = {
         "air_temperature": "2m_temperature",
         "dewpoint_temperature": "2m_dewpoint_temperature",
+        "soil_temperature_level_1": "soil_temperature_level_1",  # Note: split variables
+        "soil_temperature_level_2": "soil_temperature_level_2",
+        "soil_temperature_level_3": "soil_temperature_level_3",
+        "soil_temperature_level_4": "soil_temperature_level_4",
+        "volumetric_soil_water_layer_1": "volumetric_soil_water_layer_1",
+        "volumetric_soil_water_layer_2": "volumetric_soil_water_layer_2",
+        "volumetric_soil_water_layer_3": "volumetric_soil_water_layer_3",
+        "volumetric_soil_water_layer_4": "volumetric_soil_water_layer_4",
     }
 
-    variable_names = list(cds_var_names.keys())
+    variable_names = [
+        "air_temperature",
+        "dewpoint_temperature",
+        "soil_temperature",
+        "soil_moisture",
+    ]
 
     variables = [VARIABLE_REFERENCE_LOOKUP[var] for var in variable_names]
 
