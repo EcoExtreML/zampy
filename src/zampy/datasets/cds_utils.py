@@ -1,5 +1,6 @@
 """CDS utilities used by ECMWF datasets."""
 
+from copy import copy
 from pathlib import Path
 import cdsapi
 import numpy as np
@@ -43,6 +44,21 @@ ALL_HOURS = [
     "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00",
     "21:00", "22:00", "23:00",
 ]  # fmt: skip
+
+SPLIT_VARIABLES = {
+    "soil_temperature": (
+        "soil_temperature_level_1",
+        "soil_temperature_level_2",
+        "soil_temperature_level_3",
+        "soil_temperature_level_4",
+    ),
+    "soil_moisture": (
+        "volumetric_soil_water_layer_1",
+        "volumetric_soil_water_layer_2",
+        "volumetric_soil_water_layer_3",
+        "volumetric_soil_water_layer_4",
+    ),
+}
 
 
 def cds_request(
@@ -226,6 +242,12 @@ def retrieve_era5(
     # create list of year/month pairs
     year_month_pairs = time_bounds_to_year_month(time_bounds)
 
+    variables = copy(variables)  # Prevent original input from being modified in-place
+    for split_var in SPLIT_VARIABLES:
+        if split_var in variables:
+            variables.remove(split_var)
+            variables.extend(SPLIT_VARIABLES[split_var])
+
     for (year, month), variable in product(
         year_month_pairs, variables, position=0, leave=True
     ):
@@ -354,7 +376,8 @@ def convert_to_zampy(
         print(f"File '{ncfile.name}' already exists, skipping...")
     else:
         ds = parse_nc_file(file)
-
+        # Rename the vswl data:
+        ncfile = Path(str(ncfile).replace("volumetric_soil_water", "soil_moisture"))
         ds.to_netcdf(path=ncfile)
 
 
@@ -371,6 +394,28 @@ var_reference_ecmwf_to_zampy = {
     "d2m": "dewpoint_temperature",
     # cams variables
     "co2": "co2_concentration",
+}
+
+VAR_REFERENCE_MULTI_LAYER = {
+    "stl1": "soil_temperature",
+    "stl2": "soil_temperature",
+    "stl3": "soil_temperature",
+    "stl4": "soil_temperature",
+    "swvl1": "soil_moisture",
+    "swvl2": "soil_moisture",
+    "swvl3": "soil_moisture",
+    "swvl4": "soil_moisture",
+}
+
+LAYER_BOUNDS = {
+    "stl1": [[0.0, 7.0]],
+    "stl2": [[7.0, 28.0]],
+    "stl3": [[28.0, 100.0]],
+    "stl4": [[100.0, 289.0]],
+    "swvl1": [[0.0, 7.0]],
+    "swvl2": [[7.0, 28.0]],
+    "swvl3": [[28.0, 100.0]],
+    "swvl4": [[100.0, 289.0]],
 }
 
 WATER_DENSITY = 997.0  # kg/m3
@@ -415,6 +460,33 @@ def parse_nc_file(file: Path) -> xr.Dataset:
             ds[variable_name].attrs["description"] = VARIABLE_REFERENCE_LOOKUP[
                 variable_name
             ].desc
+
+        if variable in VAR_REFERENCE_MULTI_LAYER:
+            if (  # Soil temperature/moisture routine
+                str(variable).startswith("stl") or str(variable).startswith("swvl")
+            ):
+                if str(variable).startswith("swvl"):
+                    varname = "soil_moisture"
+                    standard_name = "moisture_content_of_soil_layer"
+                    ds[variable] *= WATER_DENSITY
+                    ds[variable].attrs.update({"units": "kg m**-3"})
+                else:
+                    varname = "soil_temperature"
+                    standard_name = "temperature_in_ground"
+
+                da = ds[variable]
+                name = str(da.name)
+                da = da.expand_dims({"depth": [np.mean(LAYER_BOUNDS[name])]})
+                da = da.rename(varname)
+                da.attrs.update(
+                    {
+                        "long_name": varname.replace("_", " "),
+                        "standard_name": standard_name,
+                    }
+                )
+
+                ds = da.to_dataset()
+                ds["depth_bounds"] = (("depth", "nv"), LAYER_BOUNDS[name])
 
     # TODO: add dataset attributes.
 

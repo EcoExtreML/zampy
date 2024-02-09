@@ -84,5 +84,13 @@
     "land_cover": {
         "variable": "land_cover",
         "units": ""
+    },
+    "soil_temperature": {
+        "variable": "SoilTemp",
+        "units": "kelvin"
+    },
+    "soil_moisture": {
+        "variable": "SoilMoist",
+        "units": "kilogram/meter**3"
     }
 }

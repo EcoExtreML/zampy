@@ -13,6 +13,7 @@ def unit_registration() -> UnitRegistry:
     unit_registry.define("degree_east = degree = degree_E = degreeE")
     unit_registry.define("watt_per_square_meter = watt/meter**2")
     unit_registry.define("joule_per_square_meter = joule/meter**2")
+    unit_registry.define("kilogram_per_square_meter = kilogram/(meter**2)")
     unit_registry.define(
         "kilogram_per_square_meter_second = kilogram/(meter**2*second)"
     )
@@ -56,6 +57,8 @@ VARIABLE_REFERENCE = (
     Variable("elevation", unit=unit_registry.meter),
     Variable("leaf_area_index", unit=unit_registry.fraction),
     Variable("land_cover", unit=unit_registry.dimensionless),
+    Variable("soil_temperature", unit=unit_registry.kelvin),
+    Variable("soil_moisture", unit=unit_registry.kilogram_per_square_meter),
 )
 
 VARIABLE_REFERENCE_LOOKUP = {var.name: var for var in VARIABLE_REFERENCE}

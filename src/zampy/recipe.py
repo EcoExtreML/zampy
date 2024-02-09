@@ -31,8 +31,8 @@ def recipe_loader(recipe_path: Path) -> dict:
         for key in ["convention", "frequency", "resolution"]
     ):
         msg = (
-            "One of the following items are missing from the recipe:\n"
-            "name, download, convert."
+            "One of the following 'convert' items are missing from the recipe:\n"
+            "convention, frequency, resolution."
         )
         raise ValueError(msg)
 
