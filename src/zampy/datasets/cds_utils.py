@@ -52,7 +52,7 @@ SPLIT_VARIABLES = {
         "soil_temperature_level_3",
         "soil_temperature_level_4",
     ),
-    "moisture_content_of_soil_layer": (
+    "soil_moisture": (
         "volumetric_soil_water_layer_1",
         "volumetric_soil_water_layer_2",
         "volumetric_soil_water_layer_3",
