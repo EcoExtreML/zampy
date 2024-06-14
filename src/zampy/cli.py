@@ -1,6 +1,7 @@
 """Implements CLI interface for Zampy."""
 from pathlib import Path
 import click
+import dask.distributed
 from zampy.recipe import RecipeManager
 
 
@@ -14,4 +15,5 @@ def run_recipe(recipe: Path) -> None:
 
 
 if __name__ == "__main__":
+    dask.distributed.Client()
     run_recipe()
