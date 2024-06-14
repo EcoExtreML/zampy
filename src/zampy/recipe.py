@@ -8,6 +8,7 @@ from zampy.datasets import converter
 from zampy.datasets.dataset_protocol import Dataset
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
+from zampy.datasets.validation import validate_download_request
 
 
 def recipe_loader(recipe_path: Path) -> dict:
@@ -92,9 +93,22 @@ class RecipeManager:
 
     def run(self) -> None:
         """Run the full recipe."""
+        # First validate all inputs (before downloading, processing...)
         for dataset_name in self.datasets:
             _dataset = DATASETS[dataset_name.lower()]
             dataset: Dataset = _dataset()
+
+            validate_download_request(
+                dataset,
+                self.download_dir,
+                self.timebounds,
+                self.spatialbounds,
+                self.datasets[dataset_name]["variables"],
+            )
+
+        for dataset_name in self.datasets:
+            _dataset = DATASETS[dataset_name.lower()]
+            dataset = _dataset()
             variables: list[str] = self.datasets[dataset_name]["variables"]
 
             # Download datset
