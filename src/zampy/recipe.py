@@ -141,6 +141,7 @@ class RecipeManager:
             # e.g. "era5_2010-2020.nc"
             fname = f"{dataset_name.lower()}_{time_start}-{time_end}.nc"
             ds.to_netcdf(path=self.data_dir / fname, encoding=encoding)
+            del ds
 
         print(
             "Finished running the recipe. Output data can be found at:\n"
