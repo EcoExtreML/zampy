@@ -1,4 +1,5 @@
-""""All functionality to read and execute Zampy recipes."""
+""" "All functionality to read and execute Zampy recipes."""
+
 from pathlib import Path
 from typing import Any
 import numpy as np

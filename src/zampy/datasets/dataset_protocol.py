@@ -1,4 +1,5 @@
 """Outline of the dataset protocol."""
+
 import json
 import shutil
 from dataclasses import dataclass

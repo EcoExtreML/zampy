@@ -1,4 +1,5 @@
 """Implements CLI interface for Zampy."""
+
 from pathlib import Path
 import click
 import dask.distributed

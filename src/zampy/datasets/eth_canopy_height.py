@@ -1,4 +1,5 @@
 """ETH canopy height dataset."""
+
 import gzip
 from pathlib import Path
 import numpy as np

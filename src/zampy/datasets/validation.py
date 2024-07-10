@@ -1,4 +1,5 @@
 """Checks for user input validation."""
+
 from pathlib import Path
 from zampy.datasets.dataset_protocol import Dataset
 from zampy.datasets.dataset_protocol import SpatialBounds

@@ -1,4 +1,5 @@
 """Variable reference for Zampy."""
+
 from pint import UnitRegistry
 from zampy.datasets.dataset_protocol import Variable
 

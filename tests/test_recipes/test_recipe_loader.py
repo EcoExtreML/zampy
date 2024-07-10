@@ -1,4 +1,5 @@
 """Test the recipe loader."""
+
 import pytest
 from zampy.recipe import recipe_loader
 

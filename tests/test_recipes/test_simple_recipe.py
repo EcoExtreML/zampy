@@ -1,4 +1,5 @@
 """Testing a simple recipe."""
+
 from pathlib import Path
 from unittest.mock import patch
 import generate_test_data

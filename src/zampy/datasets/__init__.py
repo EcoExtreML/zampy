@@ -1,4 +1,5 @@
 """Datasets implementations."""
+
 from zampy.datasets import dataset_protocol
 from zampy.datasets import validation
 from zampy.datasets.catalog import DATASETS

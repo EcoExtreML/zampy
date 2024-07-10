@@ -1,4 +1,5 @@
 """Catalog of datasets."""
+
 from zampy.datasets import dataset_protocol
 from zampy.datasets.cams import CAMS
 from zampy.datasets.era5 import ERA5
