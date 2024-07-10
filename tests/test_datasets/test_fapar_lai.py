@@ -10,6 +10,7 @@ from zampy.datasets.catalog import FaparLAI
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
 from . import data_folder
+import dask.distributed
 
 
 @pytest.fixture(scope="function")
@@ -86,6 +87,8 @@ class TestFaparLAI:
     @pytest.mark.slow
     def test_ingest(self, dummy_dir):
         """Test ingest function."""
+        dask.distributed.Client()
+
         ingest_dir = Path(dummy_dir) / "ingest"
         ingest_dir.mkdir()
 
