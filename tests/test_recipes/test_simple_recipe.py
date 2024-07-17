@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from unittest.mock import patch
+import dask.distributed
 import generate_test_data
 import numpy as np
 import pytest
@@ -12,8 +13,6 @@ from zampy.datasets.dataset_protocol import TimeBounds
 from zampy.datasets.dataset_protocol import write_properties_file
 from zampy.recipe import RecipeManager
 from zampy.recipe import convert_time
-import dask.distributed
-
 
 
 RECIPE_FILE = Path(__file__).parent / "recipes" / "era5_recipe.yml"

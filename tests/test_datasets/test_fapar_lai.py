@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 from unittest.mock import patch
+import dask.distributed
 import numpy as np
 import pytest
 import xarray as xr
@@ -10,7 +11,6 @@ from zampy.datasets.catalog import FaparLAI
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
 from . import data_folder
-import dask.distributed
 
 
 @pytest.fixture(scope="function")

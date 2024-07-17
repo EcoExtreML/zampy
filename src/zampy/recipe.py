@@ -1,4 +1,4 @@
-""" "All functionality to read and execute Zampy recipes."""
+"""All functionality to read and execute Zampy recipes."""
 
 from pathlib import Path
 from typing import Any
@@ -138,8 +138,8 @@ class RecipeManager:
                 freq = xr.infer_freq(ds["time"])
                 if freq is None:  # fallback:
                     freq = (
-                        ds["time"].isel(time=1).to_numpy() -
-                        ds["time"].isel(time=0).to_numpy()
+                        ds["time"].isel(time=1).to_numpy()
+                        - ds["time"].isel(time=0).to_numpy()
                     )
                 data_freq = pd.to_timedelta(pd.tseries.frequencies.to_offset(freq))
 
