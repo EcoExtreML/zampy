@@ -64,10 +64,11 @@ def config_loader() -> dict:
 class RecipeManager:
     """The recipe manager is used to get the required info, and then run the recipe."""
 
-    def __init__(self, recipe_path: Path) -> None:
+    def __init__(self, recipe_path: Path, skip_download: bool = False) -> None:
         """Instantiate the recipe manager, using a prepared recipe."""
         # Load & parse recipe
         recipe = recipe_loader(recipe_path)
+        self.skip_download = skip_download
 
         self.start_time, self.end_time = recipe["download"]["time"]
         self.timebounds = TimeBounds(
@@ -114,13 +115,14 @@ class RecipeManager:
             dataset = _dataset()
             variables: list[str] = self.datasets[dataset_name]["variables"]
 
-            # Download datset
-            dataset.download(
-                download_dir=self.download_dir,
-                time_bounds=self.timebounds,
-                spatial_bounds=self.spatialbounds,
-                variable_names=variables,
-            )
+            # Download dataset
+            if not self.skip_download:
+                dataset.download(
+                    download_dir=self.download_dir,
+                    time_bounds=self.timebounds,
+                    spatial_bounds=self.spatialbounds,
+                    variable_names=variables,
+                )
 
             dataset.ingest(self.download_dir, self.ingest_dir)
 
