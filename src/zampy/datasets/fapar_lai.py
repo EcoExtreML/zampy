@@ -257,6 +257,7 @@ def ingest_ncfile(ncfile: Path, ingest_folder: Path) -> None:
         path=ingest_folder / ncfile.name,
         encoding={"leaf_area_index": {"zlib": True, "complevel": 3}},
     )
+    ds.close()  # explicitly close to release file to system (for Windows)
 
 
 def extract_fapar_zip(
