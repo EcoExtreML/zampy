@@ -87,15 +87,19 @@ class TestFaparLAI:
     @pytest.mark.slow
     def test_ingest(self, dummy_dir):
         """Test ingest function."""
-        dask.distributed.Client()
+        c = dask.distributed.Client()
 
         ingest_dir = Path(dummy_dir) / "ingest"
         ingest_dir.mkdir()
 
-        lai_dataset = FaparLAI()
-        lai_dataset.ingest(
-            download_dir=data_folder / "fapar-lai" / "download", ingest_dir=ingest_dir
-        )
+        def ingest_lai():
+            lai_dataset = FaparLAI()
+            lai_dataset.ingest(
+                download_dir=data_folder / "fapar-lai" / "download", ingest_dir=ingest_dir
+            )
+        f = c.submit(ingest_lai)
+        f.result()
+
         ds = xr.open_mfdataset((ingest_dir / "fapar-lai").glob("*.nc"))
         assert isinstance(ds, xr.Dataset)
 
