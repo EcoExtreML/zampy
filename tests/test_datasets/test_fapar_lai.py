@@ -103,6 +103,9 @@ class TestFaparLAI:
         with xr.open_mfdataset((ingest_dir / "fapar-lai").glob("*.nc")) as ds:
             assert isinstance(ds, xr.Dataset)
 
+        for file in (ingest_dir / "fapar-lai").glob("*.nc"):
+            file.unlink()
+
     def test_load(self):
         """Test load function."""
         times = TimeBounds(np.datetime64("2019-01-01"), np.datetime64("2019-01-31"))
