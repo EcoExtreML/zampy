@@ -100,8 +100,8 @@ class TestFaparLAI:
         f = c.submit(ingest_lai)
         f.result()
 
-        ds = xr.open_mfdataset((ingest_dir / "fapar-lai").glob("*.nc"))
-        assert isinstance(ds, xr.Dataset)
+        with xr.open_mfdataset((ingest_dir / "fapar-lai").glob("*.nc")) as ds:
+            assert isinstance(ds, xr.Dataset)
 
     def test_load(self):
         """Test load function."""
