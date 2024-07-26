@@ -122,6 +122,7 @@ class FaparLAI:  # noqa: D101
         for file in zip_files:
             with tempfile.TemporaryDirectory(
                 dir=tmp_path,
+                # cleanup fails on windows. No clear idea on how to fix this.
                 ignore_cleanup_errors=True if os.name == "nt" else False,
             ) as _tmpdir:
                 tmpdir = Path(_tmpdir)
