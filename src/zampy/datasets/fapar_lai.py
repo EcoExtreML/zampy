@@ -1,5 +1,6 @@
 """Implementation of the FAPAR LAI dataset."""
 
+import os
 import shutil
 import tempfile
 import zipfile
@@ -119,7 +120,10 @@ class FaparLAI:  # noqa: D101
 
         # netCDF files follow CF-1.6, only unpacking the archives is required.
         for file in zip_files:
-            with tempfile.TemporaryDirectory(dir=tmp_path) as _tmpdir:
+            with tempfile.TemporaryDirectory(
+                dir=tmp_path,
+                ignore_cleanup_errors=True if os.name == "nt" else False,
+            ) as _tmpdir:
                 tmpdir = Path(_tmpdir)
 
                 extract_fapar_zip(
