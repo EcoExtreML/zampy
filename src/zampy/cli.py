@@ -8,7 +8,7 @@ from zampy.recipe import RecipeManager
 
 @click.command()
 @click.argument("recipe", type=click.Path(exists=True, path_type=Path))
-@click.option('--skip-download', is_flag=True)
+@click.option("--skip-download", is_flag=True)
 def run_recipe(recipe: Path, skip_download: bool) -> None:
     """Run the recipe using the CLI."""
     click.echo(f"Executing recipe: {recipe}")

@@ -1,0 +1,41 @@
+# config (folder, login info etc goes to a ~/.zampy/config file)
+name: "STEMMUS_SCOPE_input"
+
+download:
+  time: ["2020-01-01", "2020-06-30"]
+  bbox: [60, 10, 50, 0] # NESW
+  datasets:
+    era5_land:
+      variables:
+        - air_temperature
+        - dewpoint_temperature
+        - soil_temperature
+        - soil_moisture
+    era5:
+      variables:
+        - total_precipitation
+        - surface_thermal_radiation_downwards
+        - surface_solar_radiation_downwards
+        - surface_pressure
+        - eastward_component_of_wind
+        - northward_component_of_wind
+    eth_canopy_height:
+      variables:
+        - height_of_vegetation
+    fapar_lai:
+      variables:
+        - leaf_area_index
+    land_cover:
+      variables:
+        - land_cover
+    prism_dem_90:
+      variables:
+        - elevation
+    cams:
+      variables:
+        - co2_concentration
+
+convert:
+  convention: ALMA
+  frequency: 1H  # outputs at 1 hour frequency. Pandas-like freq-keyword.
+  resolution: 0.25  # output resolution in degrees.
