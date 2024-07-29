@@ -106,7 +106,7 @@ format = [
   "ruff check src/ tests/ --fix --exit-non-zero-on-fix",
   "lint",
 ]
-fast-test = ["pytest -m 'not slow'"]
+fast-test = ["pytest -m \"not slow\""]
 test = [
   "pytest ./src/zampy/ ./tests/ --doctest-modules --doctest-ignore-import-errors",
 ]
