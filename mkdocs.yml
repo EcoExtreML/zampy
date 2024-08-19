@@ -6,6 +6,7 @@ nav:
   - Getting started: index.md
   - Configuration: configuration.md
   - Available datasets: available_datasets.md
+  - Available recipes: available_recipes.md
   - For developers : README.dev.md
   - Contributing : CONTRIBUTING.md
 
