@@ -69,7 +69,7 @@ class TestPrismDEM:
         """Test ingest function."""
         ds, _ = self.ingest_dummy_data(dummy_dir)
 
-        assert type(ds) == xr.Dataset
+        assert isinstance(ds, xr.Dataset)
 
     def test_load(self, dummy_dir):
         """Test load function."""

@@ -1,4 +1,5 @@
 """Generate fake data for the fapar-lai tests."""
+
 import zipfile
 from pathlib import Path
 import numpy as np

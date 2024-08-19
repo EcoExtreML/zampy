@@ -1,7 +1,9 @@
 """Unit tests for the FAPAR-LAI dataset."""
+
 import json
 from pathlib import Path
 from unittest.mock import patch
+import dask.distributed
 import numpy as np
 import pytest
 import xarray as xr
@@ -85,6 +87,8 @@ class TestFaparLAI:
     @pytest.mark.slow
     def test_ingest(self, dummy_dir):
         """Test ingest function."""
+        dask.distributed.Client()
+
         ingest_dir = Path(dummy_dir) / "ingest"
         ingest_dir.mkdir()
 
@@ -92,9 +96,11 @@ class TestFaparLAI:
         lai_dataset.ingest(
             download_dir=data_folder / "fapar-lai" / "download", ingest_dir=ingest_dir
         )
-        ds = xr.open_mfdataset((ingest_dir / "fapar-lai").glob("*.nc"))
-        assert isinstance(ds, xr.Dataset)
 
+        with xr.open_mfdataset((ingest_dir / "fapar-lai").glob("*.nc")) as ds:
+            assert isinstance(ds, xr.Dataset)
+
+    @pytest.mark.slow  # depends on ingested data being available
     def test_load(self):
         """Test load function."""
         times = TimeBounds(np.datetime64("2019-01-01"), np.datetime64("2019-01-31"))
@@ -118,6 +124,7 @@ class TestFaparLAI:
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)
 
+    @pytest.mark.slow  # depends on ingested data being available
     def test_convert(self):
         """Test convert function."""
         lai_dataset = FaparLAI()

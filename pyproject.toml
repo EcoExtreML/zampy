@@ -106,7 +106,7 @@ format = [
   "ruff check src/ tests/ --fix --exit-non-zero-on-fix",
   "lint",
 ]
-fast-test = ["pytest -m 'not slow'"]
+fast-test = ["pytest -m \"not slow\""]
 test = [
   "pytest ./src/zampy/ ./tests/ --doctest-modules --doctest-ignore-import-errors",
 ]
@@ -131,10 +131,11 @@ markers = [
 ignore_missing_imports = true
 disallow_untyped_defs = true
 python_version = "3.10"
+exclude = "tests"
 
 [tool.ruff]
 line-length = 88
-exclude = ["docs", "build"]
+exclude = ["docs", "build", "tests"]
 target-version = "py310"
 
 [tool.ruff.lint]

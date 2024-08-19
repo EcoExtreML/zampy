@@ -1,6 +1,8 @@
 """Testing a simple recipe."""
+
 from pathlib import Path
 from unittest.mock import patch
+import dask.distributed
 import generate_test_data
 import numpy as np
 import pytest
@@ -20,6 +22,8 @@ def test_recipe(tmp_path: Path, mocker):
     with (
         patch.object(DATASETS["era5"], "download"),
     ):
+        dask.distributed.Client()
+
         mocker.patch(
             "zampy.recipe.config_loader",
             return_value={"working_directory": str(tmp_path.absolute())},

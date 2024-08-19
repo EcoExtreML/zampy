@@ -1,13 +1,17 @@
-""""All functionality to read and execute Zampy recipes."""
+"""All functionality to read and execute Zampy recipes."""
+
 from pathlib import Path
 from typing import Any
 import numpy as np
+import pandas as pd
+import xarray as xr
 import yaml
 from zampy.datasets import DATASETS
 from zampy.datasets import converter
 from zampy.datasets.dataset_protocol import Dataset
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
+from zampy.datasets.validation import validate_download_request
 
 
 def recipe_loader(recipe_path: Path) -> dict:
@@ -31,8 +35,8 @@ def recipe_loader(recipe_path: Path) -> dict:
         for key in ["convention", "frequency", "resolution"]
     ):
         msg = (
-            "One of the following items are missing from the recipe:\n"
-            "name, download, convert."
+            "One of the following 'convert' items are missing from the recipe:\n"
+            "convention, frequency, resolution."
         )
         raise ValueError(msg)
 
@@ -60,10 +64,11 @@ def config_loader() -> dict:
 class RecipeManager:
     """The recipe manager is used to get the required info, and then run the recipe."""
 
-    def __init__(self, recipe_path: Path) -> None:
+    def __init__(self, recipe_path: Path, skip_download: bool = False) -> None:
         """Instantiate the recipe manager, using a prepared recipe."""
         # Load & parse recipe
         recipe = recipe_loader(recipe_path)
+        self.skip_download = skip_download
 
         self.start_time, self.end_time = recipe["download"]["time"]
         self.timebounds = TimeBounds(
@@ -92,18 +97,32 @@ class RecipeManager:
 
     def run(self) -> None:
         """Run the full recipe."""
+        # First validate all inputs (before downloading, processing...)
         for dataset_name in self.datasets:
             _dataset = DATASETS[dataset_name.lower()]
             dataset: Dataset = _dataset()
+
+            validate_download_request(
+                dataset,
+                self.download_dir,
+                self.timebounds,
+                self.spatialbounds,
+                self.datasets[dataset_name]["variables"],
+            )
+
+        for dataset_name in self.datasets:
+            _dataset = DATASETS[dataset_name.lower()]
+            dataset = _dataset()
             variables: list[str] = self.datasets[dataset_name]["variables"]
 
-            # Download datset
-            dataset.download(
-                download_dir=self.download_dir,
-                time_bounds=self.timebounds,
-                spatial_bounds=self.spatialbounds,
-                variable_names=variables,
-            )
+            # Download dataset
+            if not self.skip_download:
+                dataset.download(
+                    download_dir=self.download_dir,
+                    time_bounds=self.timebounds,
+                    spatial_bounds=self.spatialbounds,
+                    variable_names=variables,
+                )
 
             dataset.ingest(self.download_dir, self.ingest_dir)
 
@@ -118,7 +137,18 @@ class RecipeManager:
             ds = converter.convert(ds, dataset, convention=self.convention)
 
             if "time" in ds.dims:  # Dataset with only DEM (e.g.) has no time dim.
-                ds = ds.resample(time=self.frequency).mean()
+                freq = xr.infer_freq(ds["time"])
+                if freq is None:  # fallback:
+                    freq = (
+                        ds["time"].isel(time=1).to_numpy()
+                        - ds["time"].isel(time=0).to_numpy()
+                    )
+                data_freq = pd.to_timedelta(pd.tseries.frequencies.to_offset(freq))
+
+                if data_freq < pd.Timedelta(self.frequency):
+                    ds = ds.resample(time=self.frequency).mean()
+                elif data_freq > pd.Timedelta(self.frequency):
+                    ds = ds.resample(time=self.frequency).interpolate("nearest")
 
             comp = dict(zlib=True, complevel=5)
             encoding = {var: comp for var in ds.data_vars}
@@ -127,6 +157,7 @@ class RecipeManager:
             # e.g. "era5_2010-2020.nc"
             fname = f"{dataset_name.lower()}_{time_start}-{time_end}.nc"
             ds.to_netcdf(path=self.data_dir / fname, encoding=encoding)
+            del ds
 
         print(
             "Finished running the recipe. Output data can be found at:\n"

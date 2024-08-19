@@ -1,4 +1,5 @@
 """ETH canopy height dataset."""
+
 import gzip
 from pathlib import Path
 import numpy as np
@@ -269,10 +270,17 @@ def parse_tiff_file(file: Path, sd_file: bool = False) -> xr.Dataset:
     da = da.isel(band=0)  # get rid of band dim
     da = da.drop_vars(["band", "spatial_ref"])  # drop unnecessary coords
     ds = da.to_dataset()
-    ds = ds.assign_coords(  # halfway in the year
-        {"time": np.datetime64("2020-07-01").astype("datetime64[ns]")}
+    ds = xr.concat(  # Cover entirety of 2020
+        (
+            ds.assign_coords(
+                {"time": np.datetime64("2020-01-01").astype("datetime64[ns]")}
+            ),
+            ds.assign_coords(
+                {"time": np.datetime64("2021-01-01").astype("datetime64[ns]")}
+            ),
+        ),
+        dim="time",
     )
-    ds = ds.expand_dims("time")
     ds = ds.rename(
         {
             "band_data": "height_of_vegetation_standard_deviation"

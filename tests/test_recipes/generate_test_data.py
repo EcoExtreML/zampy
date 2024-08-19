@@ -1,4 +1,5 @@
 """Generates test data for running the recipe tests."""
+
 from pathlib import Path
 import numpy as np
 import pandas as pd

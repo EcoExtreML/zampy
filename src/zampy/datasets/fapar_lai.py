@@ -1,5 +1,6 @@
 """Implementation of the FAPAR LAI dataset."""
 
+import os
 import shutil
 import tempfile
 import zipfile
@@ -119,7 +120,11 @@ class FaparLAI:  # noqa: D101
 
         # netCDF files follow CF-1.6, only unpacking the archives is required.
         for file in zip_files:
-            with tempfile.TemporaryDirectory(dir=tmp_path) as _tmpdir:
+            with tempfile.TemporaryDirectory(
+                dir=tmp_path,
+                # cleanup fails on windows. No clear idea on how to fix this.
+                ignore_cleanup_errors=True if os.name == "nt" else False,
+            ) as _tmpdir:
                 tmpdir = Path(_tmpdir)
 
                 extract_fapar_zip(
@@ -257,6 +262,7 @@ def ingest_ncfile(ncfile: Path, ingest_folder: Path) -> None:
         path=ingest_folder / ncfile.name,
         encoding={"leaf_area_index": {"zlib": True, "complevel": 3}},
     )
+    ds.close()  # explicitly close to release file to system (for Windows)
 
 
 def extract_fapar_zip(

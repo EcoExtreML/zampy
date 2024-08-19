@@ -71,7 +71,7 @@ class TestEthCanopyHeight:
         """Test ingest function."""
         ds, _ = self.ingest_dummy_data(dummy_dir)
 
-        assert type(ds) == xr.Dataset
+        assert isinstance(ds, xr.Dataset)
 
     def test_load(self, dummy_dir):
         """Test load function."""
@@ -153,7 +153,7 @@ def test_parse_tiff_file():
             "ETH_GlobalCanopyHeight_10m_2020_N51E003_Map.tif",
         )
     )
-    assert type(dummy_ds) == xr.Dataset
+    assert isinstance(dummy_ds, xr.Dataset)
 
 
 def test_convert_tiff_to_netcdf(dummy_dir):
@@ -171,4 +171,4 @@ def test_convert_tiff_to_netcdf(dummy_dir):
     ds = xr.load_dataset(
         Path(dummy_dir, "ETH_GlobalCanopyHeight_10m_2020_N51E003_Map.nc")
     )
-    assert type(ds) == xr.Dataset
+    assert isinstance(ds, xr.Dataset)
