@@ -23,15 +23,25 @@ The configuration file should contain the `working_directory`, for instance:
 working_directory: /path_to_a_working_directory/  #for example: /home/bart/Zampy
 ```
 
-If you need access to data on CDS or ADS server, you should add your CDS or ADS credentials to `zampy_config.yml`:
+The old Climate Data Store (CDS) is shut down on 3 September 2024. For more
+information see:
+[the-new-climate-data-store-beta](https://forum.ecmwf.int/t/the-new-climate-data-store-beta-cds-beta-is-now-live/3315).
+To use the new CDS/ADS, you need to have an ECMWF account, your existing CDS/ADS
+credentials does not work.
+
+If you need access to data on CDS or ADS server, you should add your CDS/ADS
+credentials to `zampy_config.yml`. To find your key, go to [CDS how to
+api](https://cds.climate.copernicus.eu/how-to-api), or [ADS how to
+api](https://ads.atmosphere.copernicus.eu/how-to-api). You can skip the steps
+related to `.cdsapirc` and simply add the key to `zampy_config.yml`:
 
 ```yaml
 cdsapi:
-  url:  # for example https://cds.climate.copernicus.eu/api/v2
-  key:  # for example 12345:xhashd-232jcsha-dsaj429-cdjajd29319
+  url:  # for example https://cds.climate.copernicus.eu/api
+  key:  # for example xhashd-232jcsha-dsaj429-cdjajd29319
 adsapi:
-  url:  # for example https://ads.atmosphere.copernicus.eu/api/v2
-  key:  # for example 12345:xhashd-232jcsha-dsaj429-cdjajd29319
+  url:  # for example https://ads.atmosphere.copernicus.eu/api
+  key:  # for example xhashd-232jcsha-dsaj429-cdjajd29319
 ```
 
 ## Instructions for CDS/ADS datasets
@@ -45,9 +55,6 @@ To download the following datasets, users need access to CDS/ADS via `cdsapi`/`a
 - ADS
   - CAMS EGG4 (e.g. co2)
 
-To generate these API keys, you need to be a registered user on *CDS* via the [registration page](https://cds.climate.copernicus.eu/user/register?destination=%2F%23!%2Fhome), or on *ADS* via the [registration page](https://ads.atmosphere.copernicus.eu/user/register?destination=%2F%23!%2Fhome).
-
-Before submitting any request with `zampy`, please put your `cdsapi`/`adsapi` credentials in `zampy_config.yml`. Here is a short [instruction](https://cds.climate.copernicus.eu/api-how-to) about how to find your CDS/ADS API key. You can skip the steps related to `.cdsapirc` and simply add the key to `zampy_config.yml`.
 
 ### Agree to the Terms of Use on CDS/ADS
 

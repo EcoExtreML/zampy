@@ -52,7 +52,7 @@ download:
     cams:
       variables:
         - co2_concentration
-    
+
 convert:
   convention: ALMA
   frequency: 1H  # outputs at 1 hour frequency. Pandas-like freq-keyword.
@@ -66,6 +66,11 @@ When you have your reciped created and saved on your disk, you can execute your 
 ```py
 zampy /path_to_recipe/sample_recipe.yml
 ```
+
+>NOTE: You may recieve an error message from CDS/ADS if not all the required
+>licences have been accepted. Follow the instructions in the error message to
+>accept the licences and run the recipe again.
+
 
 ### Interact with `zampy` in notebooks
 
