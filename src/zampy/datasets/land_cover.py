@@ -141,7 +141,7 @@ class LandCover:
         grid = xarray_regrid.create_regridding_dataset(
             utils.make_grid(spatial_bounds, resolution)
         )
-        ds = ds.regrid.most_common(grid, time_dim="time", max_mem=1e9)
+        ds = ds.regrid.most_common(grid)
 
         return ds
 
@@ -225,9 +225,7 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
 
             target_dataset = xarray_regrid.create_regridding_dataset(new_grid)
 
-            ds_regrid = ds.regrid.most_common(
-                target_dataset, time_dim="time", max_mem=1e9
-            )
+            ds_regrid = ds.regrid.most_common(target_dataset)
 
         # rename variable to follow the zampy convention
         variable_name = "land_cover"
