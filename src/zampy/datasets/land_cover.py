@@ -248,7 +248,6 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
             else:
                 regrid_values = np.unique(da.values)
 
-
             da_regrid = da.regrid.most_common(target_dataset, values=regrid_values)
 
             # make sure dtype is the same
