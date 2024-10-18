@@ -120,8 +120,12 @@ class ECMWFDataset:  # noqa: D101
                 files += (ingest_dir / self.name).glob(f"{self.name}_{var}*.nc")
 
         ds = xr.open_mfdataset(files, chunks={"latitude": 200, "longitude": 200})
-        ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
 
+        # rename valid_time to time
+        if "valid_time" in ds.dims:
+            ds = ds.rename({"valid_time": "time"})
+
+        ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
         grid = xarray_regrid.create_regridding_dataset(
             make_grid(spatial_bounds, resolution)
         )
