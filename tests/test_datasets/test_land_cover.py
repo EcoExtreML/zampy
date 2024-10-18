@@ -61,7 +61,7 @@ class TestLandCover:
                     "variable": "all",
                     "format": "zip",
                     "year": "1996",
-                    "version": "v2.0.7cds",
+                    "version": "v2_0_7cds",
                 },
             )
 
