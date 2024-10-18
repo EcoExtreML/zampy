@@ -129,6 +129,10 @@ class ECMWFDataset:  # noqa: D101
         grid = xarray_regrid.create_regridding_dataset(
             make_grid(spatial_bounds, resolution)
         )
+
+        # this is needed before regrid
+        ds = ds.unify_chunks()
+
         ds = ds.regrid.linear(grid)
 
         return ds
