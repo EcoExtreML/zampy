@@ -139,7 +139,7 @@ def test_cds_request_land_cover(mock_retrieve, valid_path_config):
             "variable": "all",
             "format": "zip",
             "year": "1996",
-            "version": "v2.0.7cds",
+            "version": "v2_0_7cds",
         },
     )
 
