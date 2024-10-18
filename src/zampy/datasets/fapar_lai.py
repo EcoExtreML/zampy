@@ -223,7 +223,7 @@ def download_fapar_lai(
         "format": "zip",
         "variable": "lai",
         "horizontal_resolution": "1km",
-        "product_version": "V3",
+        "product_version": "v3",
         "satellite": "spot" if year < 2014 else "proba",
         "sensor": "vgt",
         "month": f"{month:0>2}",
