@@ -82,6 +82,7 @@ class LandCover:
         cds_utils.cds_request_land_cover(
             dataset=self.cds_dataset,
             time_bounds=time_bounds,
+            spatial_bounds=spatial_bounds,
             path=download_folder,
             overwrite=overwrite,
         )
@@ -229,10 +230,10 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
             ds = ds.sortby(["lat", "lon"])  # noqa: PLW2901
             ds = ds.rename({"lat": "latitude", "lon": "longitude"})  # noqa: PLW2901
             new_grid = xarray_regrid.Grid(
-                north=90,
-                east=180,
-                south=-90,
-                west=-180,
+                north=ds["latitude"].max(),
+                east=ds["longitude"].max(),
+                south=ds["latitude"].min(),
+                west=ds["longitude"].min(),
                 resolution_lat=0.05,
                 resolution_lon=0.05,
             )

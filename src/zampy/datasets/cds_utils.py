@@ -2,8 +2,6 @@
 
 from copy import copy
 from pathlib import Path
-
-import requests
 import cdsapi
 import numpy as np
 import pandas as pd
@@ -126,7 +124,8 @@ def cds_request_land_cover(
     dataset: str,
     time_bounds: TimeBounds,
     path: Path,
-    overwrite: bool,
+    spatial_bounds: SpatialBounds | None = None,
+    overwrite: bool = False,
 ) -> None:
     """Download land cover data via CDS API.
 
@@ -138,6 +137,7 @@ def cds_request_land_cover(
         dataset: Dataset name for retrieval via `cdsapi`.
         time_bounds: Zampy time bounds object.
         path: File path to which the data should be saved.
+        spatial_bounds: Zampy spatial bounds object.
         overwrite: If an existing file (of the same size!) should be overwritten.
     """
     fname = PRODUCT_FNAME[dataset]
@@ -154,6 +154,14 @@ def cds_request_land_cover(
     years_months = time_bounds_to_year_month(time_bounds)
     years = {year for (year, _) in years_months}
 
+    if spatial_bounds is not None:
+        area = [
+            spatial_bounds.north,
+            spatial_bounds.west,
+            spatial_bounds.south,
+            spatial_bounds.east,
+        ]
+
     for year in tqdm(years):
         if int(year) < 2016:
             version = "v2_0_7cds"
@@ -166,6 +174,7 @@ def cds_request_land_cover(
                 "format": "zip",
                 "year": year,
                 "version": version,
+                "area": area,
             },
         )
         fpath = path / f"{fname}_LCCS_MAP_300m_{year}.zip"

@@ -62,6 +62,7 @@ class TestLandCover:
                     "format": "zip",
                     "year": "1996",
                     "version": "v2_0_7cds",
+                    "area": [54, 3, 1, 56],
                 },
             )
 
