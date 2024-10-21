@@ -230,10 +230,10 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
             ds = ds.sortby(["lat", "lon"])  # noqa: PLW2901
             ds = ds.rename({"lat": "latitude", "lon": "longitude"})  # noqa: PLW2901
             new_grid = xarray_regrid.Grid(
-                north=ds["latitude"].max(),
-                east=ds["longitude"].max(),
-                south=ds["latitude"].min(),
-                west=ds["longitude"].min(),
+                north=ds["latitude"].max().item(),
+                east=ds["longitude"].max().item(),
+                south=ds["latitude"].min().item(),
+                west=ds["longitude"].min().item(),
                 resolution_lat=0.05,
                 resolution_lon=0.05,
             )
