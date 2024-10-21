@@ -122,10 +122,9 @@ class TestLandCover:
         assert np.all(
             np.isin(
                 np.unique(ds.land_cover.values),
-                ingest_ds["land_cover"].attrs["flag_values"]
-                )
+                ingest_ds["land_cover"].attrs["flag_values"],
             )
-
+        )
 
     @pytest.mark.slow
     def test_convert(self, dummy_dir):
