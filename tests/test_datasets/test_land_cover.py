@@ -94,7 +94,7 @@ class TestLandCover:
         ds, _ = self.ingest_dummy_data(dummy_dir)
         assert isinstance(ds, xr.Dataset)
 
-    # @pytest.mark.slow
+    @pytest.mark.slow
     def test_load(self, dummy_dir):
         """Test load function."""
         times = TimeBounds(np.datetime64("1996-01-01"), np.datetime64("1996-12-31"))
