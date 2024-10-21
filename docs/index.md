@@ -71,6 +71,9 @@ zampy /path_to_recipe/sample_recipe.yml
 >licences have been accepted. Follow the instructions in the error message to
 >accept the licences and run the recipe again.
 
+When downloading process starts, you can also check the status of your requests
+in your CDS/ADS profile.
+
 
 ### Interact with `zampy` in notebooks
 
