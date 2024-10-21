@@ -128,6 +128,10 @@ class TestERA5:
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)
 
+        # check if valid_time not in the dataset
+        assert "valid_time" not in ds.dims
+
+
     def test_convert(self, dummy_dir):
         """Test convert function."""
         _, era5_dataset = self.ingest_dummy_data(dummy_dir)

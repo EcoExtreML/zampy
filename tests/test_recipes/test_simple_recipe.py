@@ -50,6 +50,8 @@ def test_recipe(tmp_path: Path, mocker):
 
         ds = xr.open_mfdataset(str(tmp_path / "output" / "era5_recipe" / "*.nc"))
         assert all(var in ds.data_vars for var in ["Psurf", "Wind_N"])
+        # Check if time frequency is correct
+        assert ds.time.diff("time").min() == np.timedelta64(1, "h")
 
 
 def test_invalid_time_format():
