@@ -37,5 +37,5 @@ download:
 
 convert:
   convention: ALMA
-  frequency: 1H  # outputs at 1 hour frequency. Pandas-like freq-keyword.
+  frequency: 1h  # outputs at 1 hour frequency. Pandas-like freq-keyword.
   resolution: 0.25  # output resolution in degrees.
