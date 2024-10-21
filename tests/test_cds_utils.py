@@ -130,6 +130,7 @@ def test_cds_request_land_cover(mock_retrieve, valid_path_config):
             dataset,
             time_bounds,
             path,
+            SpatialBounds(54, 56, 1, 3),
             overwrite,
         )
 
@@ -140,6 +141,7 @@ def test_cds_request_land_cover(mock_retrieve, valid_path_config):
             "format": "zip",
             "year": "1996",
             "version": "v2_0_7cds",
+            "area": [54, 3, 1, 56],
         },
     )
 
