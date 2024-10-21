@@ -97,11 +97,13 @@ def cds_request(
 
     url, api_key = cds_api_key(fname)
 
+    # TODO: expose timeout, see issue 64
     c = cdsapi.Client(
         url=url,
         key=api_key,
         verify=True,
         quiet=True,
+        timeout=300,
     )
     # choose retrieve function
     retrieve_func = RETRIEVE_FUNCTION[fname]
