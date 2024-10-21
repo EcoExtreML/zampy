@@ -61,7 +61,8 @@ class TestLandCover:
                     "variable": "all",
                     "format": "zip",
                     "year": "1996",
-                    "version": "v2.0.7cds",
+                    "version": "v2_0_7cds",
+                    "area": [54, 3, 1, 56],
                 },
             )
 
@@ -100,7 +101,7 @@ class TestLandCover:
         bbox = SpatialBounds(39, -107, 37, -109)
         variable = ["land_cover"]
 
-        _, land_cover_dataset = self.ingest_dummy_data(dummy_dir)
+        ingest_ds, land_cover_dataset = self.ingest_dummy_data(dummy_dir)
 
         ds = land_cover_dataset.load(
             ingest_dir=Path(dummy_dir),
@@ -116,6 +117,14 @@ class TestLandCover:
 
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)
+
+        # check if unique values of ds are a subset of ingest_ds
+        assert np.all(
+            np.isin(
+                np.unique(ds.land_cover.values),
+                ingest_ds["land_cover"].attrs["flag_values"],
+            )
+        )
 
     @pytest.mark.slow
     def test_convert(self, dummy_dir):

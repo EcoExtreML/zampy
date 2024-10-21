@@ -61,7 +61,7 @@ class TestFaparLAI:
                     "format": "zip",
                     "variable": "lai",
                     "horizontal_resolution": "1km",
-                    "product_version": "V3",
+                    "product_version": "v3",
                     "satellite": "proba",
                     "sensor": "vgt",
                     "month": "01",

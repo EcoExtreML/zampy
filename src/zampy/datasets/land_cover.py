@@ -82,6 +82,7 @@ class LandCover:
         cds_utils.cds_request_land_cover(
             dataset=self.cds_dataset,
             time_bounds=time_bounds,
+            spatial_bounds=spatial_bounds,
             path=download_folder,
             overwrite=overwrite,
         )
@@ -134,16 +135,30 @@ class LandCover:
                 )
                 raise ValueError(msg)
         files = list((ingest_dir / self.name).glob(f"{self.name}_*.nc"))
-
         ds = xr.open_mfdataset(files, chunks={"latitude": 200, "longitude": 200})
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
 
         grid = xarray_regrid.create_regridding_dataset(
             utils.make_grid(spatial_bounds, resolution)
         )
-        ds = ds.regrid.most_common(grid, time_dim="time", max_mem=1e9)
 
-        return ds
+        ds_regrid = {}
+        for variable in variable_names:
+            # select the variable to be regridded
+            da = ds[variable]
+
+            # get values for most common method
+            if "flag_values" in da.attrs:
+                regrid_values = da.attrs["flag_values"]
+            else:
+                regrid_values = np.unique(da.values)
+
+            da_regrid = da.regrid.most_common(grid, values=regrid_values)
+
+            # make sure dtype is the same
+            ds_regrid[variable] = da_regrid.astype(da.dtype)
+
+        return xr.Dataset(ds_regrid)
 
     def convert(
         self,
@@ -207,7 +222,7 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
 
         # only keep land cover class variable
         with xr.open_dataset(unzip_folder / zipped_file_name) as ds:
-            var_list = [var for var in ds.data_vars]
+            var_list = list(ds.data_vars)
             raw_variable = "lccs_class"
             var_list.remove(raw_variable)
             ds = ds.drop_vars(var_list)  # noqa: PLW2901
@@ -215,19 +230,32 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
             ds = ds.sortby(["lat", "lon"])  # noqa: PLW2901
             ds = ds.rename({"lat": "latitude", "lon": "longitude"})  # noqa: PLW2901
             new_grid = xarray_regrid.Grid(
-                north=90,
-                east=180,
-                south=-90,
-                west=-180,
+                north=ds["latitude"].max().item(),
+                east=ds["longitude"].max().item(),
+                south=ds["latitude"].min().item(),
+                west=ds["longitude"].min().item(),
                 resolution_lat=0.05,
                 resolution_lon=0.05,
             )
 
             target_dataset = xarray_regrid.create_regridding_dataset(new_grid)
 
-            ds_regrid = ds.regrid.most_common(
-                target_dataset, time_dim="time", max_mem=1e9
-            )
+            # select the variable to be regridded
+            da = ds[raw_variable]
+
+            # get values for most common method
+            if "flag_values" in da.attrs:
+                regrid_values = da.attrs["flag_values"]
+            else:
+                regrid_values = np.unique(da.values)
+
+            da_regrid = da.regrid.most_common(target_dataset, values=regrid_values)
+
+            # make sure dtype is the same
+            da_regrid = da_regrid.astype(da.dtype)
+
+            # convert dataarray to dataset
+            ds_regrid = da_regrid.to_dataset()
 
         # rename variable to follow the zampy convention
         variable_name = "land_cover"
