@@ -2,7 +2,7 @@
 name: "STEMMUS_SCOPE_input"
 
 download:
-  time: ["2020-01-01", "2020-06-30"]
+  time: ["2020-01-01", "2020-02-15"]
   bbox: [60, 10, 50, 0] # NESW
   datasets:
     era5_land:
