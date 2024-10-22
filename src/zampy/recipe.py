@@ -137,13 +137,19 @@ class RecipeManager:
             ds = converter.convert(ds, dataset, convention=self.convention)
 
             if "time" in ds.dims:  # Dataset with only DEM (e.g.) has no time dim.
-                freq = xr.infer_freq(ds["time"])
-                if freq is None:  # fallback:
-                    freq = (
+                data_freq = None
+
+                if len(ds["time"]) == 1:
+                    data_freq = pd.Timedelta(self.frequency)
+                elif len(ds["time"]) > 3:  # see pandas _FrequencyInferer
+                    freq = xr.infer_freq(ds["time"])
+                    data_freq = pd.to_timedelta(pd.tseries.frequencies.to_offset(freq))
+
+                if data_freq is None:  # fallback:
+                    data_freq = pd.Timedelta(
                         ds["time"].isel(time=1).to_numpy()
                         - ds["time"].isel(time=0).to_numpy()
                     )
-                data_freq = pd.to_timedelta(pd.tseries.frequencies.to_offset(freq))
 
                 if data_freq < pd.Timedelta(self.frequency):
                     ds = ds.resample(time=self.frequency).mean()

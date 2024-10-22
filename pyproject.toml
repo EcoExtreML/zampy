@@ -62,7 +62,7 @@ dependencies = [
   "pint",
   "cf_xarray",  # required to auto-pint CF compliant datasets.
   "pint-xarray",
-  "cdsapi",
+  "cdsapi>=0.7.2",
   "xarray-regrid", # for regridding
 ]
 dynamic = ["version"]
