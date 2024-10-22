@@ -53,6 +53,7 @@ def test_recipe(tmp_path: Path, mocker):
         # Check if time frequency is correct
         assert ds.time.diff("time").min() == np.timedelta64(1, "h")
 
+
 def test_recipe_with_lower_frequency(tmp_path: Path, mocker):
     with (
         patch.object(DATASETS["era5"], "download"),
@@ -88,6 +89,7 @@ def test_recipe_with_lower_frequency(tmp_path: Path, mocker):
         # check the lenght of the time dimension, mean values are used
         assert len(ds.time) == 4
 
+
 def test_recipe_with_higher_frequency(tmp_path: Path, mocker):
     with (
         patch.object(DATASETS["era5"], "download"),
@@ -122,6 +124,7 @@ def test_recipe_with_higher_frequency(tmp_path: Path, mocker):
         ds = xr.open_mfdataset(str(tmp_path / "output" / "era5_recipe" / "*.nc"))
         # check the lenght of the time dimension, data is interpolated
         assert len(ds.time) == 47
+
 
 def test_recipe_with_two_time_values(tmp_path: Path, mocker):
     with (
