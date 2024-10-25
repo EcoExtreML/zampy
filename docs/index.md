@@ -67,9 +67,11 @@ When you have your reciped created and saved on your disk, you can execute your 
 zampy /path_to_recipe/sample_recipe.yml
 ```
 
->NOTE: You may recieve an error message from CDS/ADS if not all the required
->licences have been accepted. Follow the instructions in the error message to
->accept the licences and run the recipe again.
+!!! note
+
+    You may recieve an error message from CDS/ADS if not all the required
+    licences have been accepted. Follow the instructions in the error message to
+    accept the licences and run the recipe again.
 
 When downloading process starts, you can also check the status of your requests
 in your CDS/ADS profile.
