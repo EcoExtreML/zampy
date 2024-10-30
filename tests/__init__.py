@@ -23,12 +23,12 @@ ALL_HOURS = [
 ]  # fmt: skip
 
 
-# Generate test data if it does not exist
-# it assumes that the recipe
-# zampy/recipes/STEMMUS_SCOPE_input.yml has been ran.
-config = config_loader()
-download_dir = Path(config["working_directory"]) / "download"
-
 if not data_folder.exists():
-   data_folder.mkdir(parents=True, exist_ok=True)
-   generate_test_data.generate_test_data(download_dir, data_folder)
+    # This should be run locally!
+    # Generate test data if it does not exist
+    # it assumes that the recipe
+    # zampy/recipes/STEMMUS_SCOPE_input.yml has been ran.
+    config = config_loader()
+    download_dir = Path(config["working_directory"]) / "download"
+    data_folder.mkdir(parents=True, exist_ok=True)
+    generate_test_data.generate_test_data(download_dir, data_folder)
