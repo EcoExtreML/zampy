@@ -361,7 +361,7 @@ def _check_and_download(
 
 def time_bounds_to_year_month(time_bounds: TimeBounds) -> list[tuple[str, str]]:
     """Return year/month pairs."""
-    date_range = pd.date_range(start=time_bounds.start, end=time_bounds.end, freq="M")
+    date_range = pd.date_range(start=time_bounds.start, end=time_bounds.end, freq="ME")
     year_month_pairs = [(str(date.year), str(date.month)) for date in date_range]
     return year_month_pairs
 
