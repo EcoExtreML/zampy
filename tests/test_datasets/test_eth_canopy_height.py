@@ -6,10 +6,10 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 import xarray as xr
+from tests import data_folder
 from zampy.datasets import eth_canopy_height
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
-from . import data_folder
 
 
 @pytest.fixture(scope="function")
@@ -27,8 +27,8 @@ class TestEthCanopyHeight:
 
         Here we mock the downloading and save property file to a fake path.
         """
-        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-12-31"))
-        bbox = SpatialBounds(54, 6, 51, 3)
+        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-02-15"))
+        bbox = SpatialBounds(60, 10, 50, 0)
         variable = ["height_of_vegetation"]
         download_dir = Path(dummy_dir, "download")
 
@@ -77,8 +77,8 @@ class TestEthCanopyHeight:
         """Test load function."""
         _, canopy_height_dataset = self.ingest_dummy_data(dummy_dir)
 
-        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-12-31"))
-        bbox = SpatialBounds(54, 6, 51, 3)
+        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-01-04"))
+        bbox = SpatialBounds(60.0, 0.3, 59.7, 0.0)
         variable = ["height_of_vegetation"]
 
         ds = canopy_height_dataset.load(
@@ -86,12 +86,12 @@ class TestEthCanopyHeight:
             time_bounds=times,
             spatial_bounds=bbox,
             variable_names=variable,
-            resolution=1.0,
+            resolution=0.1,
         )
 
         # we assert the regridded coordinates
-        expected_lat = [51.0, 52.0, 53.0, 54.0]
-        expected_lon = [3.0, 4.0, 5.0, 6.0]
+        expected_lat = [59.7, 59.8, 59.9]
+        expected_lon = [0. , 0.1, 0.2]
 
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)

@@ -6,10 +6,10 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 import xarray as xr
+from tests import data_folder
 from zampy.datasets.catalog import CAMS
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
-from . import data_folder
 
 
 @pytest.fixture(scope="function")
@@ -37,7 +37,7 @@ class TestCAMS:
         Here we mock the downloading and save property file to a fake path.
         """
         times = TimeBounds(np.datetime64("2003-01-02"), np.datetime64("2003-01-04"))
-        bbox = SpatialBounds(54, 56, 1, 3)
+        bbox = SpatialBounds(60, 10, 50, 0)
         variable = ["co2_concentration"]
         cds_var_names = ["carbon_dioxide"]
         download_dir = Path(dummy_dir, "download")
@@ -88,7 +88,7 @@ class TestCAMS:
             Path(
                 temp_dir,
                 "cams",
-                "cams_co2_concentration_2003_01_02-2003_01_04.nc",
+                "cams_co2_concentration_2020_01_01-2020_02_15.nc",
             )
         )
 
@@ -99,16 +99,17 @@ class TestCAMS:
         ds, _ = self.ingest_dummy_data(dummy_dir)
         assert isinstance(ds, xr.Dataset)
 
-    def test_load(self):
+    def test_load(self, dummy_dir):
         """Test load function."""
-        times = TimeBounds(np.datetime64("2003-01-02"), np.datetime64("2003-01-04"))
-        bbox = SpatialBounds(39, -107, 37, -109)
+        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-01-04"))
+        bbox = SpatialBounds(59.75, 2.25, 57.5, 0)
         variable = ["co2_concentration"]
 
         cams_dataset = CAMS()
+        cams_dataset.ingest(download_dir=data_folder, ingest_dir=Path(dummy_dir))
 
         ds = cams_dataset.load(
-            ingest_dir=Path(data_folder),
+            ingest_dir=Path(dummy_dir),
             time_bounds=times,
             spatial_bounds=bbox,
             variable_names=variable,
@@ -116,8 +117,8 @@ class TestCAMS:
         )
 
         # we assert the regridded coordinates
-        expected_lat = [37.0, 38.0, 39.0]
-        expected_lon = [-109.0, -108.0, -107.0]
+        expected_lat = [57.5, 58.5, 59.5]
+        expected_lon = [0., 1., 2.]
 
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)

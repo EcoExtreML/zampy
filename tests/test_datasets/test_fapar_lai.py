@@ -3,14 +3,13 @@
 import json
 from pathlib import Path
 from unittest.mock import patch
-import dask.distributed
 import numpy as np
 import pytest
 import xarray as xr
+from tests import data_folder
 from zampy.datasets.catalog import FaparLAI
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
-from . import data_folder
 
 
 @pytest.fixture(scope="function")
@@ -37,8 +36,8 @@ class TestFaparLAI:
         """Test download functionality.
         Here we mock the downloading and save property file to a fake path.
         """
-        times = TimeBounds(np.datetime64("2019-01-01"), np.datetime64("2019-01-31"))
-        bbox = SpatialBounds(54, 56, 1, 3)
+        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-01-31"))
+        bbox = SpatialBounds(60, 10, 50, 0)
         variable = ["leaf_area_index"]
         download_dir = Path(dummy_dir, "download")
 
@@ -66,7 +65,7 @@ class TestFaparLAI:
                     "sensor": "vgt",
                     "month": "01",
                     "nominal_day": ["10", "20", "31"],
-                    "year": "2019",
+                    "year": "2020",
                     "area": [
                         bbox.north,
                         bbox.west,
@@ -84,42 +83,39 @@ class TestFaparLAI:
                 # check property
                 assert json_dict["variable_names"] == variable
 
-    @pytest.mark.slow
     def test_ingest(self, dummy_dir):
         """Test ingest function."""
-        dask.distributed.Client()
-
-        ingest_dir = Path(dummy_dir) / "ingest"
-        ingest_dir.mkdir()
 
         lai_dataset = FaparLAI()
         lai_dataset.ingest(
-            download_dir=data_folder / "fapar-lai" / "download", ingest_dir=ingest_dir
+            download_dir=data_folder, ingest_dir=dummy_dir
         )
 
-        with xr.open_mfdataset((ingest_dir / "fapar-lai").glob("*.nc")) as ds:
-            assert isinstance(ds, xr.Dataset)
+        ds = xr.open_mfdataset((dummy_dir / "fapar-lai").glob("*.nc"))
+        assert isinstance(ds, xr.Dataset)
 
-    @pytest.mark.slow  # depends on ingested data being available
-    def test_load(self):
+    def test_load(self, dummy_dir):
         """Test load function."""
-        times = TimeBounds(np.datetime64("2019-01-01"), np.datetime64("2019-01-31"))
-        bbox = SpatialBounds(39, -107, 37, -109)
+        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-01-04"))
+        bbox = SpatialBounds(60.0, 0.3, 59.7, 0.0)
         variable = ["leaf_area_index"]
 
         lai_dataset = FaparLAI()
+        lai_dataset.ingest(
+            download_dir=data_folder, ingest_dir=dummy_dir
+        )
 
         ds = lai_dataset.load(
-            ingest_dir=data_folder / "fapar-lai" / "ingest",
+            ingest_dir=dummy_dir,
             time_bounds=times,
             spatial_bounds=bbox,
             variable_names=variable,
-            resolution=1.0,
+            resolution=0.1,
         )
 
         # we assert the regridded coordinates
-        expected_lat = [37.0, 38.0, 39.0]
-        expected_lon = [-109.0, -108.0, -107.0]
+        expected_lat = [59.7, 59.8, 59.9]
+        expected_lon = [0. , 0.1, 0.2]
 
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)

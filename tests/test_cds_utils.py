@@ -5,12 +5,12 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 import xarray as xr
-from test_datasets import ALL_DAYS
-from test_datasets import ALL_HOURS
-from test_datasets import data_folder
 from zampy.datasets import cds_utils
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
+from . import ALL_DAYS
+from . import ALL_HOURS
+from . import data_folder
 
 
 @pytest.fixture(scope="function")
@@ -118,7 +118,7 @@ def test_cds_request_land_cover(mock_retrieve, valid_path_config):
     """ "Test cds request for downloading data from CDS server."""
     dataset = "satellite-land-cover"
     time_bounds = TimeBounds(
-        np.datetime64("1996-01-01T00:00:00"), np.datetime64("1996-12-31T00:00:00")
+        np.datetime64("2020-01-01T00:00:00"), np.datetime64("2020-12-31T00:00:00")
     )
     path = Path(__file__).resolve().parent
     overwrite = True
@@ -139,8 +139,8 @@ def test_cds_request_land_cover(mock_retrieve, valid_path_config):
         {
             "variable": "all",
             "format": "zip",
-            "year": "1996",
-            "version": "v2_0_7cds",
+            "year": "2020",
+            "version": "v2_1_1",
             "area": [54, 3, 1, 56],
         },
     )
@@ -185,11 +185,11 @@ def test_convert_to_zampy(dummy_dir):
     ingest_folder = Path(data_folder, "era5")
     cds_utils.convert_to_zampy(
         ingest_folder=Path(dummy_dir),
-        file=Path(ingest_folder, "era5_northward_component_of_wind_1996-1.nc"),
+        file=Path(ingest_folder, "era5_northward_component_of_wind_2020-1.nc"),
         overwrite=True,
     )
 
-    ds = xr.load_dataset(Path(dummy_dir, "era5_northward_component_of_wind_1996-1.nc"))
+    ds = xr.load_dataset(Path(dummy_dir, "era5_northward_component_of_wind_2020-1.nc"))
 
     assert list(ds.data_vars)[0] == "northward_component_of_wind"
 
@@ -202,7 +202,7 @@ class TestParser:
         variables = ["northward_component_of_wind", "eastward_component_of_wind"]
         for variable in variables:
             ds = cds_utils.parse_nc_file(
-                data_folder / "era5" / f"era5_{variable}_1996-1.nc"
+                data_folder / "era5" / f"era5_{variable}_2020-1.nc"
             )
             expected_var_name = variable
             assert list(ds.data_vars)[0] == expected_var_name
@@ -216,10 +216,10 @@ class TestParser:
         }
         for variable in variables:
             ds_original = xr.load_dataset(
-                data_folder / "era5" / f"era5_{variable}_1996-1.nc"
+                data_folder / "era5" / f"era5_{variable}_2020-1.nc"
             )
             ds = cds_utils.parse_nc_file(
-                data_folder / "era5" / f"era5_{variable}_1996-1.nc"
+                data_folder / "era5" / f"era5_{variable}_2020-1.nc"
             )
 
             assert list(ds.data_vars)[0] == variable
@@ -233,10 +233,10 @@ class TestParser:
     def test_parse_nc_file_precipitation(self):
         """Test parsing netcdf file function with precipitation."""
         ds_original = xr.load_dataset(
-            data_folder / "era5" / "era5_total_precipitation_1996-1.nc"
+            data_folder / "era5" / "era5_total_precipitation_2020-1.nc"
         )
         ds = cds_utils.parse_nc_file(
-            data_folder / "era5" / "era5_total_precipitation_1996-1.nc"
+            data_folder / "era5" / "era5_total_precipitation_2020-1.nc"
         )
         expected_var_name = "total_precipitation"
 
@@ -251,7 +251,7 @@ class TestParser:
     def test_parse_nc_file_pressure(self):
         """Test parsing netcdf file function with surface pressure."""
         ds = cds_utils.parse_nc_file(
-            data_folder / "era5" / "era5_surface_pressure_1996-1.nc"
+            data_folder / "era5" / "era5_surface_pressure_2020-1.nc"
         )
         expected_var_name = "surface_pressure"
 
@@ -261,7 +261,7 @@ class TestParser:
     def test_parse_nc_file_air_temperature(self):
         """Test parsing netcdf file function with 2 meter temperature."""
         ds = cds_utils.parse_nc_file(
-            data_folder / "era5-land" / "era5-land_air_temperature_1996-1.nc"
+            data_folder / "era5-land" / "era5-land_air_temperature_2020-1.nc"
         )
         expected_var_name = "air_temperature"
 
@@ -271,7 +271,7 @@ class TestParser:
     def test_parse_nc_file_dew_temperature(self):
         """Test parsing netcdf file function with 2 meter dewpoint temperature."""
         ds = cds_utils.parse_nc_file(
-            data_folder / "era5-land" / "era5-land_dewpoint_temperature_1996-1.nc"
+            data_folder / "era5-land" / "era5-land_dewpoint_temperature_2020-1.nc"
         )
         expected_var_name = "dewpoint_temperature"
 
@@ -281,7 +281,7 @@ class TestParser:
     def test_parse_nc_file_co2_concentration(self):
         """Test parsing netcdf file function with co2 concentration."""
         ds = cds_utils.parse_nc_file(
-            data_folder / "cams" / "cams_co2_concentration_2003_01_02-2003_01_04.nc"
+            data_folder / "cams" / "cams_co2_concentration_2020_01_01-2020_02_15.nc"
         )
         expected_var_name = "co2_concentration"
 
