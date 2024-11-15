@@ -3,6 +3,7 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
+import dask.array
 import numpy as np
 import xarray as xr
 import xarray_regrid
@@ -148,16 +149,7 @@ class LandCover:
             da = ds[variable]
 
             # get values for most common method
-            if "flag_values" in da.attrs:
-                regrid_values = da.attrs["flag_values"]
-            else:
-                # Convert to Dask array if not already
-                if not isinstance(da.data, da.Array):
-                    dask_array = da.from_array(da.values, chunks="auto")
-                else:
-                    dask_array = da.data
-                # Use Dask's unique function
-                regrid_values = da.unique(dask_array).compute()
+            regrid_values = get_unique_values(da)
 
             da_regrid = da.regrid.most_common(grid, values=regrid_values)
 
@@ -251,16 +243,7 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
             da = ds[raw_variable]
 
             # get values for most common method
-            if "flag_values" in da.attrs:
-                regrid_values = da.attrs["flag_values"]
-            else:
-                # Convert to Dask array if not already
-                if not isinstance(da.data, da.Array):
-                    dask_array = da.from_array(da.values, chunks="auto")
-                else:
-                    dask_array = da.data
-                # Use Dask's unique function
-                regrid_values = da.unique(dask_array).compute()
+            regrid_values = get_unique_values(da)
 
             da_regrid = da.regrid.most_common(target_dataset, values=regrid_values)
 
@@ -281,3 +264,18 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
         ].desc
 
     return ds_regrid
+
+
+def get_unique_values(da: xr.DataArray) -> np.ndarray:
+    """Get unique values of a land cover DataArray."""
+    if "flag_values" in da.attrs:
+        unique_values = da.attrs["flag_values"]
+    else:
+        # Convert to Dask array if not already
+        if not isinstance(da.data, dask.array.Array):
+            dask_array = dask.array.from_array(da.values, chunks="auto")
+        else:
+            dask_array = da.data
+        # Use Dask's unique function
+        unique_values = dask.array.unique(dask_array).compute()
+    return unique_values

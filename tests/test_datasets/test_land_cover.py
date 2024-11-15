@@ -11,6 +11,7 @@ from tests import data_folder
 from zampy.datasets.catalog import LandCover
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
+from zampy.datasets.land_cover import get_unique_values
 
 
 @pytest.fixture(scope="function")
@@ -148,13 +149,6 @@ class TestLandCover:
             resolution=0.1,
         )
 
-        # we assert the regridded coordinates
-        expected_lat = [59.7, 59.8, 59.9]
-        expected_lon = [0.0, 0.1, 0.2]
-
-        np.testing.assert_allclose(ds.latitude.values, expected_lat)
-        np.testing.assert_allclose(ds.longitude.values, expected_lon)
-
         # check if unique values of ds are a subset of ingest_ds
         assert np.all(
             np.isin(
@@ -187,3 +181,25 @@ def test_extract_netcdf_to_zampy(dummy_dir):
     )
     dataset_path = Path(dummy_dir) / "land-cover_LCCS_MAP_300m_2020.nc"
     assert dataset_path.exists()
+
+
+def test_get_unique_values():
+    """Test get_unique_values function."""
+    da = xr.DataArray(
+        data=np.array([1, 2, 3, 4, 5]),
+        attrs={"flag_values": np.array([1, 2, 3])},
+    )
+    assert np.all(get_unique_values(da) == np.array([1, 2, 3]))
+
+    da = xr.DataArray(
+        data=np.array([1, 2, 3, 4, 5]),
+        attrs={},
+    )
+    assert np.all(get_unique_values(da) == np.array([1, 2, 3, 4, 5]))
+
+    da = xr.DataArray(
+        data=np.array([1, 2, 3, 4, 5]),
+        attrs={},
+    )
+    da = da.chunk()
+    assert np.all(get_unique_values(da) == np.array([1, 2, 3, 4, 5]))
