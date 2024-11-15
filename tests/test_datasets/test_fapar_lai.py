@@ -115,7 +115,7 @@ class TestFaparLAI:
 
         # we assert the regridded coordinates
         expected_lat = [59.7, 59.8, 59.9]
-        expected_lon = [0. , 0.1, 0.2]
+        expected_lon = [0.0 , 0.1, 0.2]
 
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)
