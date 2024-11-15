@@ -87,9 +87,7 @@ class TestFaparLAI:
         """Test ingest function."""
 
         lai_dataset = FaparLAI()
-        lai_dataset.ingest(
-            download_dir=data_folder, ingest_dir=dummy_dir
-        )
+        lai_dataset.ingest(download_dir=data_folder, ingest_dir=dummy_dir)
 
         ds = xr.open_mfdataset((dummy_dir / "fapar-lai").glob("*.nc"))
         assert isinstance(ds, xr.Dataset)
@@ -101,9 +99,7 @@ class TestFaparLAI:
         variable = ["leaf_area_index"]
 
         lai_dataset = FaparLAI()
-        lai_dataset.ingest(
-            download_dir=data_folder, ingest_dir=dummy_dir
-        )
+        lai_dataset.ingest(download_dir=data_folder, ingest_dir=dummy_dir)
 
         ds = lai_dataset.load(
             ingest_dir=dummy_dir,
@@ -115,7 +111,7 @@ class TestFaparLAI:
 
         # we assert the regridded coordinates
         expected_lat = [59.7, 59.8, 59.9]
-        expected_lon = [0.0 , 0.1, 0.2]
+        expected_lon = [0.0, 0.1, 0.2]
 
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)

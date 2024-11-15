@@ -17,15 +17,17 @@ TEST_DATA_NAME = {
         "era5_surface_pressure_2020-1.nc",
         "era5_surface_solar_radiation_downwards_2020-1.nc",
         "era5_surface_thermal_radiation_downwards_2020-1.nc",
-        ],
+    ],
     "era5-land": [
         "era5-land_dewpoint_temperature_2020-1.nc",
-        "era5-land_air_temperature_2020-1.nc"],
+        "era5-land_air_temperature_2020-1.nc",
+    ],
     "eth-canopy-height": "ETH_GlobalCanopyHeight_10m_2020_N51E003_Map.tif",
     "fapar-lai": "satellite-lai-fapar_2020-1.zip",
     "land-cover": "land-cover_LCCS_MAP_300m_2020.zip",
     "prism-dem-90": "Copernicus_DSM_30_N50_00_E000_00.tar",
 }
+
 
 def _subset_ncfile(input_file, output_file):
     ds = xr.open_dataset(input_file)
@@ -38,24 +40,21 @@ def _subset_ncfile(input_file, output_file):
 
 
 def _subset_tiffile(input_file, output_file):
-    da = xr.open_dataarray(
-        input_file, engine="rasterio", chunks={"x": 200, "y": 200}
-        )
+    da = xr.open_dataarray(input_file, engine="rasterio", chunks={"x": 200, "y": 200})
     subset = da.isel(
         x=slice(0, min(4, da.x.size)),
         y=slice(0, min(4, da.y.size)),
     )
     subset.rio.to_raster(output_file)
 
+
 def _subset_zipfile_include_ncfiles(input_file, output_dir):
-    format = input_file.suffix.lstrip('.')
+    format = input_file.suffix.lstrip(".")
     zip_file_name = input_file.stem
     temp_dir = output_dir / zip_file_name
     temp_dir.mkdir(parents=True, exist_ok=True)
 
-    shutil.unpack_archive(
-        input_file, extract_dir=output_dir, format=format
-        )
+    shutil.unpack_archive(input_file, extract_dir=output_dir, format=format)
     ncfiles = output_dir.glob("*.nc")
 
     for ncfile in ncfiles:
@@ -82,7 +81,7 @@ def _subset_zipfile_include_ncfiles(input_file, output_dir):
 
 
 def _subset_tarfile_include_tiffiles(input_file, output_dir):
-    format = input_file.suffix.lstrip('.')
+    format = input_file.suffix.lstrip(".")
     zip_file_name = input_file.stem
     temp_dir = output_dir / zip_file_name
     temp_dir.mkdir(parents=True, exist_ok=True)

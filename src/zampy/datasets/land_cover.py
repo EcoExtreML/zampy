@@ -153,7 +153,7 @@ class LandCover:
             else:
                 # Convert to Dask array if not already
                 if not isinstance(da.data, da.Array):
-                    dask_array = da.from_array(da.values, chunks='auto')
+                    dask_array = da.from_array(da.values, chunks="auto")
                 else:
                     dask_array = da.data
                 # Use Dask's unique function
@@ -256,7 +256,7 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
             else:
                 # Convert to Dask array if not already
                 if not isinstance(da.data, da.Array):
-                    dask_array = da.from_array(da.values, chunks='auto')
+                    dask_array = da.from_array(da.values, chunks="auto")
                 else:
                     dask_array = da.data
                 # Use Dask's unique function

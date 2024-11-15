@@ -88,8 +88,8 @@ class TestPrismDEM:
         )
 
         # we assert the regridded coordinates
-        expected_lat = [59.7 , 59.95]
-        expected_lon = [0.0  , 0.25]
+        expected_lat = [59.7, 59.95]
+        expected_lon = [0.0, 0.25]
 
         np.testing.assert_allclose(ds["latitude"].values, expected_lat)
         np.testing.assert_allclose(ds["longitude"].values, expected_lon)

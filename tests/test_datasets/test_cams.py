@@ -118,7 +118,7 @@ class TestCAMS:
 
         # we assert the regridded coordinates
         expected_lat = [57.5, 58.5, 59.5]
-        expected_lon = [0., 1., 2.]
+        expected_lon = [0.0, 1.0, 2.0]
 
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)
