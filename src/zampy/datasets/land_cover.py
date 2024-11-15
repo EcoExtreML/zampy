@@ -151,11 +151,18 @@ class LandCover:
             if "flag_values" in da.attrs:
                 regrid_values = da.attrs["flag_values"]
             else:
-                regrid_values = np.unique(da.values)
+                # Convert to Dask array if not already
+                if not isinstance(da.data, da.Array):
+                    dask_array = da.from_array(da.values, chunks='auto')
+                else:
+                    dask_array = da.data
+                # Use Dask's unique function
+                regrid_values = da.unique(dask_array).compute()
 
             da_regrid = da.regrid.most_common(grid, values=regrid_values)
 
             # make sure dtype is the same
+            # in the xarray_regrid> v0.4.0, this might not be necessary
             ds_regrid[variable] = da_regrid.astype(da.dtype)
 
         return xr.Dataset(ds_regrid)
@@ -247,7 +254,13 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
             if "flag_values" in da.attrs:
                 regrid_values = da.attrs["flag_values"]
             else:
-                regrid_values = np.unique(da.values)
+                # Convert to Dask array if not already
+                if not isinstance(da.data, da.Array):
+                    dask_array = da.from_array(da.values, chunks='auto')
+                else:
+                    dask_array = da.data
+                # Use Dask's unique function
+                regrid_values = da.unique(dask_array).compute()
 
             da_regrid = da.regrid.most_common(target_dataset, values=regrid_values)
 

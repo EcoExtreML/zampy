@@ -113,7 +113,7 @@ class TestLandCover:
 
         # we assert the regridded coordinates
         expected_lat = [59.7, 59.8, 59.9]
-        expected_lon = [0. , 0.1, 0.2]
+        expected_lon = [0.0 , 0.1, 0.2]
 
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)
@@ -123,6 +123,43 @@ class TestLandCover:
             np.isin(
                 np.unique(ds.land_cover.values),
                 ingest_ds["land_cover"].attrs["flag_values"],
+            )
+        )
+
+    def test_land_cover_without_flag_values(self, dummy_dir):
+        """Test load function."""
+        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-01-04"))
+        bbox = SpatialBounds(60.0, 0.3, 59.7, 0.0)
+        variable = ["land_cover"]
+
+        ingest_ds, land_cover_dataset = self.ingest_dummy_data(dummy_dir)
+
+        # store unique values
+        unique_values = ingest_ds["land_cover"].attrs["flag_values"]
+
+        # remove flag_values
+        ingest_ds["land_cover"].attrs.pop("flag_values")
+
+        ds = land_cover_dataset.load(
+            ingest_dir=Path(dummy_dir),
+            time_bounds=times,
+            spatial_bounds=bbox,
+            variable_names=variable,
+            resolution=0.1,
+        )
+
+        # we assert the regridded coordinates
+        expected_lat = [59.7, 59.8, 59.9]
+        expected_lon = [0.0 , 0.1, 0.2]
+
+        np.testing.assert_allclose(ds.latitude.values, expected_lat)
+        np.testing.assert_allclose(ds.longitude.values, expected_lon)
+
+        # check if unique values of ds are a subset of ingest_ds
+        assert np.all(
+            np.isin(
+                np.unique(ds.land_cover.values),
+                unique_values,
             )
         )
 
