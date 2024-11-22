@@ -150,7 +150,7 @@ class FaparLAI:  # noqa: D101
         variable_names: list[str],
     ) -> xr.Dataset:
         files = list((ingest_dir / self.name).glob("*.nc"))
-        ds = xr.open_mfdataset(files, parallel=True)
+        ds = xr.open_mfdataset(files)  # see issue 65
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
 
         grid = xarray_regrid.create_regridding_dataset(
