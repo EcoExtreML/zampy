@@ -90,19 +90,19 @@ class TestERA5:
         """Ingest dummy tif data to nc for other tests."""
         era5_dataset = ERA5()
         era5_dataset.ingest(download_dir=data_folder, ingest_dir=Path(temp_dir))
-        ds = xr.load_dataset(
+
+        return era5_dataset
+
+    def test_ingest(self, dummy_dir):
+        """Test ingest function."""
+        _ = self.ingest_dummy_data(dummy_dir)
+        ds = xr.open_dataset(
             Path(
-                temp_dir,
+                dummy_dir,
                 "era5",
                 "era5_northward_component_of_wind_2020-1.nc",
             )
         )
-
-        return ds, era5_dataset
-
-    def test_ingest(self, dummy_dir):
-        """Test ingest function."""
-        ds, _ = self.ingest_dummy_data(dummy_dir)
         assert isinstance(ds, xr.Dataset)
 
     def test_load(self, dummy_dir):
@@ -111,8 +111,7 @@ class TestERA5:
         bbox = SpatialBounds(60.0, 0.3, 59.7, 0.0)
         variable = ["northward_component_of_wind"]
 
-        era5_dataset = ERA5()
-        era5_dataset.ingest(download_dir=data_folder, ingest_dir=Path(dummy_dir))
+        era5_dataset = self.ingest_dummy_data(dummy_dir)
 
         ds = era5_dataset.load(
             ingest_dir=Path(dummy_dir),
@@ -134,6 +133,6 @@ class TestERA5:
 
     def test_convert(self, dummy_dir):
         """Test convert function."""
-        _, era5_dataset = self.ingest_dummy_data(dummy_dir)
+        era5_dataset = self.ingest_dummy_data(dummy_dir)
         era5_dataset.convert(ingest_dir=Path(dummy_dir), convention="ALMA")
         # TODO: finish this test when the function is complete.

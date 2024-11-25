@@ -55,25 +55,25 @@ class TestPrismDEM:
         """Ingest dummy tif data to nc for other tests."""
         prism_dem_dataset = prism_dem.PrismDEM90()
         prism_dem_dataset.ingest(download_dir=data_folder, ingest_dir=Path(temp_dir))
-        ds = xr.load_dataset(
+
+        return prism_dem_dataset
+
+    def test_ingest(self, dummy_dir):
+        """Test ingest function."""
+        _ = self.ingest_dummy_data(dummy_dir)
+        ds = xr.open_dataset(
             Path(
-                temp_dir,
+                dummy_dir,
                 "prism-dem-90",
                 "Copernicus_DSM_30_N50_00_E000_00.nc",
             )
         )
 
-        return ds, prism_dem_dataset
-
-    def test_ingest(self, dummy_dir):
-        """Test ingest function."""
-        ds, _ = self.ingest_dummy_data(dummy_dir)
-
         assert isinstance(ds, xr.Dataset)
 
     def test_load(self, dummy_dir):
         """Test load function."""
-        _, prism_dem_dataset = self.ingest_dummy_data(dummy_dir)
+        prism_dem_dataset = self.ingest_dummy_data(dummy_dir)
 
         times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-01-04"))
         bbox = SpatialBounds(60.0, 0.3, 59.7, 0.0)
@@ -96,6 +96,6 @@ class TestPrismDEM:
 
     def test_convert(self, dummy_dir):
         """Test convert function."""
-        _, prism_dem_dataset = self.ingest_dummy_data(dummy_dir)
+        prism_dem_dataset = self.ingest_dummy_data(dummy_dir)
         prism_dem_dataset.convert(ingest_dir=Path(dummy_dir), convention="ALMA")
         # TODO: finish this test when the function is complete.

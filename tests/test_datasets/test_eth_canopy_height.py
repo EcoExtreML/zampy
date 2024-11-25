@@ -57,25 +57,25 @@ class TestEthCanopyHeight:
         canopy_height_dataset.ingest(
             download_dir=data_folder, ingest_dir=Path(temp_dir)
         )
-        ds = xr.load_dataset(
+
+        return canopy_height_dataset
+
+    def test_ingest(self, dummy_dir):
+        """Test ingest function."""
+        _ = self.ingest_dummy_data(dummy_dir)
+        ds = xr.open_dataset(
             Path(
-                temp_dir,
+                dummy_dir,
                 "eth-canopy-height",
                 "ETH_GlobalCanopyHeight_10m_2020_N51E003_Map.nc",
             )
         )
 
-        return ds, canopy_height_dataset
-
-    def test_ingest(self, dummy_dir):
-        """Test ingest function."""
-        ds, _ = self.ingest_dummy_data(dummy_dir)
-
         assert isinstance(ds, xr.Dataset)
 
     def test_load(self, dummy_dir):
         """Test load function."""
-        _, canopy_height_dataset = self.ingest_dummy_data(dummy_dir)
+        canopy_height_dataset = self.ingest_dummy_data(dummy_dir)
 
         times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-01-04"))
         bbox = SpatialBounds(60.0, 0.3, 59.7, 0.0)
@@ -98,7 +98,7 @@ class TestEthCanopyHeight:
 
     def test_convert(self, dummy_dir):
         """Test convert function."""
-        _, canopy_height_dataset = self.ingest_dummy_data(dummy_dir)
+        canopy_height_dataset = self.ingest_dummy_data(dummy_dir)
         canopy_height_dataset.convert(ingest_dir=Path(dummy_dir), convention="ALMA")
         # TODO: finish this test when the function is complete.
 
@@ -168,7 +168,7 @@ def test_convert_tiff_to_netcdf(dummy_dir):
         file=dummy_data,
     )
 
-    ds = xr.load_dataset(
+    ds = xr.open_dataset(
         Path(dummy_dir, "ETH_GlobalCanopyHeight_10m_2020_N51E003_Map.nc")
     )
     assert isinstance(ds, xr.Dataset)

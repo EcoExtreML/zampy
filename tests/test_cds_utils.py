@@ -189,7 +189,7 @@ def test_convert_to_zampy(dummy_dir):
         overwrite=True,
     )
 
-    ds = xr.load_dataset(Path(dummy_dir, "era5_northward_component_of_wind_2020-1.nc"))
+    ds = xr.open_dataset(Path(dummy_dir, "era5_northward_component_of_wind_2020-1.nc"))
 
     assert list(ds.data_vars)[0] == "northward_component_of_wind"
 
@@ -215,7 +215,7 @@ class TestParser:
             "surface_solar_radiation_downwards": "ssrd",
         }
         for variable in variables:
-            ds_original = xr.load_dataset(
+            ds_original = xr.open_dataset(
                 data_folder / "era5" / f"era5_{variable}_2020-1.nc"
             )
             ds = cds_utils.parse_nc_file(
@@ -232,7 +232,7 @@ class TestParser:
 
     def test_parse_nc_file_precipitation(self):
         """Test parsing netcdf file function with precipitation."""
-        ds_original = xr.load_dataset(
+        ds_original = xr.open_dataset(
             data_folder / "era5" / "era5_total_precipitation_2020-1.nc"
         )
         ds = cds_utils.parse_nc_file(

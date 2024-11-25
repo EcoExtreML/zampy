@@ -79,7 +79,7 @@ class TestLandCover:
         """Ingest dummy zip data to nc for other tests."""
         land_cover_dataset = LandCover()
         land_cover_dataset.ingest(download_dir=data_folder, ingest_dir=Path(temp_dir))
-        ds = xr.load_dataset(
+        ds = xr.open_dataset(
             Path(
                 temp_dir,
                 "land-cover",
