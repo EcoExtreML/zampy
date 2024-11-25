@@ -6,12 +6,12 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 import xarray as xr
+from tests import ALL_DAYS
+from tests import ALL_HOURS
+from tests import data_folder
 from zampy.datasets.catalog import ERA5
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
-from . import ALL_DAYS
-from . import ALL_HOURS
-from . import data_folder
 
 
 @pytest.fixture(scope="function")
@@ -38,8 +38,8 @@ class TestERA5:
         """Test download functionality.
         Here we mock the downloading and save property file to a fake path.
         """
-        times = TimeBounds(np.datetime64("2010-01-01"), np.datetime64("2010-01-31"))
-        bbox = SpatialBounds(54, 56, 1, 3)
+        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-02-15"))
+        bbox = SpatialBounds(60, 10, 50, 0)
         variable = ["eastward_component_of_wind"]
         cds_var_names = ["10m_u_component_of_wind"]
         download_dir = Path(dummy_dir, "download")
@@ -62,7 +62,7 @@ class TestERA5:
                 {
                     "product_type": "reanalysis",
                     "variable": cds_var_names,
-                    "year": "2010",
+                    "year": "2020",
                     "month": "1",
                     # fmt: off
                     "day": ALL_DAYS,
@@ -90,46 +90,49 @@ class TestERA5:
         """Ingest dummy tif data to nc for other tests."""
         era5_dataset = ERA5()
         era5_dataset.ingest(download_dir=data_folder, ingest_dir=Path(temp_dir))
-        ds = xr.load_dataset(
-            Path(
-                temp_dir,
-                "era5",
-                "era5_northward_component_of_wind_1996-1.nc",
-            )
-        )
 
-        return ds, era5_dataset
+        return era5_dataset
 
     def test_ingest(self, dummy_dir):
         """Test ingest function."""
-        ds, _ = self.ingest_dummy_data(dummy_dir)
+        _ = self.ingest_dummy_data(dummy_dir)
+        ds = xr.open_dataset(
+            Path(
+                dummy_dir,
+                "era5",
+                "era5_northward_component_of_wind_2020-1.nc",
+            )
+        )
         assert isinstance(ds, xr.Dataset)
 
-    def test_load(self):
+    def test_load(self, dummy_dir):
         """Test load function."""
-        times = TimeBounds(np.datetime64("1996-01-01"), np.datetime64("1996-01-02"))
-        bbox = SpatialBounds(39, -107, 37, -109)
+        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-01-04"))
+        bbox = SpatialBounds(60.0, 0.3, 59.7, 0.0)
         variable = ["northward_component_of_wind"]
 
-        era5_dataset = ERA5()
+        era5_dataset = self.ingest_dummy_data(dummy_dir)
 
         ds = era5_dataset.load(
-            ingest_dir=Path(data_folder),
+            ingest_dir=Path(dummy_dir),
             time_bounds=times,
             spatial_bounds=bbox,
             variable_names=variable,
-            resolution=1.0,
+            resolution=0.1,
         )
 
         # we assert the regridded coordinates
-        expected_lat = [37.0, 38.0, 39.0]
-        expected_lon = [-109.0, -108.0, -107.0]
+        expected_lat = [59.7, 59.8, 59.9]
+        expected_lon = [0.0, 0.1, 0.2]
 
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)
 
+        # check if valid_time not in the dataset
+        assert "valid_time" not in ds.dims
+
     def test_convert(self, dummy_dir):
         """Test convert function."""
-        _, era5_dataset = self.ingest_dummy_data(dummy_dir)
+        era5_dataset = self.ingest_dummy_data(dummy_dir)
         era5_dataset.convert(ingest_dir=Path(dummy_dir), convention="ALMA")
         # TODO: finish this test when the function is complete.

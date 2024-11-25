@@ -1,0 +1,16 @@
+{
+    "start_time": "2020-01-01",
+    "end_time": "2020-02-15",
+    "north": 60,
+    "east": 10,
+    "south": 50,
+    "west": 0,
+    "variable_names": [
+        "total_precipitation",
+        "surface_thermal_radiation_downwards",
+        "surface_solar_radiation_downwards",
+        "surface_pressure",
+        "eastward_component_of_wind",
+        "northward_component_of_wind"
+    ]
+}

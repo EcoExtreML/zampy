@@ -150,8 +150,7 @@ class FaparLAI:  # noqa: D101
         variable_names: list[str],
     ) -> xr.Dataset:
         files = list((ingest_dir / self.name).glob("*.nc"))
-
-        ds = xr.open_mfdataset(files, parallel=True)
+        ds = xr.open_mfdataset(files)  # see issue 65
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
 
         grid = xarray_regrid.create_regridding_dataset(
@@ -223,7 +222,7 @@ def download_fapar_lai(
         "format": "zip",
         "variable": "lai",
         "horizontal_resolution": "1km",
-        "product_version": "V3",
+        "product_version": "v3",
         "satellite": "spot" if year < 2014 else "proba",
         "sensor": "vgt",
         "month": f"{month:0>2}",

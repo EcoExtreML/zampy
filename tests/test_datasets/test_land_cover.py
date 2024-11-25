@@ -7,10 +7,11 @@ import numpy as np
 import pytest
 import xarray as xr
 import zampy.datasets.land_cover
+from tests import data_folder
 from zampy.datasets.catalog import LandCover
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
-from . import data_folder
+from zampy.datasets.land_cover import get_unique_values
 
 
 @pytest.fixture(scope="function")
@@ -37,8 +38,8 @@ class TestLandCover:
         """Test download functionality.
         Here we mock the downloading and save property file to a fake path.
         """
-        times = TimeBounds(np.datetime64("1996-01-01"), np.datetime64("1996-12-31"))
-        bbox = SpatialBounds(54, 56, 1, 3)
+        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-01-31"))
+        bbox = SpatialBounds(60, 10, 50, 0)
         variable = ["land_cover"]
         download_dir = Path(dummy_dir, "download")
 
@@ -60,8 +61,9 @@ class TestLandCover:
                 {
                     "variable": "all",
                     "format": "zip",
-                    "year": "1996",
-                    "version": "v2.0.7cds",
+                    "year": "2020",
+                    "version": "v2_1_1",
+                    "area": [60, 0, 50, 10],
                 },
             )
 
@@ -77,11 +79,11 @@ class TestLandCover:
         """Ingest dummy zip data to nc for other tests."""
         land_cover_dataset = LandCover()
         land_cover_dataset.ingest(download_dir=data_folder, ingest_dir=Path(temp_dir))
-        ds = xr.load_dataset(
+        ds = xr.open_dataset(
             Path(
                 temp_dir,
                 "land-cover",
-                "land-cover_LCCS_MAP_300m_1996.nc",
+                "land-cover_LCCS_MAP_300m_2020.nc",
             )
         )
 
@@ -96,26 +98,64 @@ class TestLandCover:
     @pytest.mark.slow
     def test_load(self, dummy_dir):
         """Test load function."""
-        times = TimeBounds(np.datetime64("1996-01-01"), np.datetime64("1996-12-31"))
-        bbox = SpatialBounds(39, -107, 37, -109)
+        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-01-04"))
+        bbox = SpatialBounds(60.0, 0.3, 59.7, 0.0)
         variable = ["land_cover"]
 
-        _, land_cover_dataset = self.ingest_dummy_data(dummy_dir)
+        ingest_ds, land_cover_dataset = self.ingest_dummy_data(dummy_dir)
 
         ds = land_cover_dataset.load(
             ingest_dir=Path(dummy_dir),
             time_bounds=times,
             spatial_bounds=bbox,
             variable_names=variable,
-            resolution=1.0,
+            resolution=0.1,
         )
 
         # we assert the regridded coordinates
-        expected_lat = [37.0, 38.0, 39.0]
-        expected_lon = [-109.0, -108.0, -107.0]
+        expected_lat = [59.7, 59.8, 59.9]
+        expected_lon = [0.0, 0.1, 0.2]
 
         np.testing.assert_allclose(ds.latitude.values, expected_lat)
         np.testing.assert_allclose(ds.longitude.values, expected_lon)
+
+        # check if unique values of ds are a subset of ingest_ds
+        assert np.all(
+            np.isin(
+                np.unique(ds.land_cover.values),
+                ingest_ds["land_cover"].attrs["flag_values"],
+            )
+        )
+
+    def test_land_cover_without_flag_values(self, dummy_dir):
+        """Test load function."""
+        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-01-04"))
+        bbox = SpatialBounds(60.0, 0.3, 59.7, 0.0)
+        variable = ["land_cover"]
+
+        ingest_ds, land_cover_dataset = self.ingest_dummy_data(dummy_dir)
+
+        # store unique values
+        unique_values = ingest_ds["land_cover"].attrs["flag_values"]
+
+        # remove flag_values
+        ingest_ds["land_cover"].attrs.pop("flag_values")
+
+        ds = land_cover_dataset.load(
+            ingest_dir=Path(dummy_dir),
+            time_bounds=times,
+            spatial_bounds=bbox,
+            variable_names=variable,
+            resolution=0.1,
+        )
+
+        # check if unique values of ds are a subset of ingest_ds
+        assert np.all(
+            np.isin(
+                np.unique(ds.land_cover.values),
+                unique_values,
+            )
+        )
 
     @pytest.mark.slow
     def test_convert(self, dummy_dir):
@@ -128,7 +168,7 @@ class TestLandCover:
 @pytest.mark.slow
 def test_unzip_raw_to_netcdf():
     ds = zampy.datasets.land_cover.extract_netcdf_to_zampy(
-        data_folder / "land-cover/land-cover_LCCS_MAP_300m_1996.zip"
+        data_folder / "land-cover/land-cover_LCCS_MAP_300m_2020.zip"
     )
     assert isinstance(ds, xr.Dataset)
 
@@ -137,7 +177,29 @@ def test_unzip_raw_to_netcdf():
 def test_extract_netcdf_to_zampy(dummy_dir):
     zampy.datasets.land_cover.unzip_raw_to_netcdf(
         Path(dummy_dir),
-        data_folder / "land-cover/land-cover_LCCS_MAP_300m_1996.zip",
+        data_folder / "land-cover/land-cover_LCCS_MAP_300m_2020.zip",
     )
-    dataset_path = Path(dummy_dir) / "land-cover_LCCS_MAP_300m_1996.nc"
+    dataset_path = Path(dummy_dir) / "land-cover_LCCS_MAP_300m_2020.nc"
     assert dataset_path.exists()
+
+
+def test_get_unique_values():
+    """Test get_unique_values function."""
+    da = xr.DataArray(
+        data=np.array([1, 2, 3, 4, 5]),
+        attrs={"flag_values": np.array([1, 2, 3])},
+    )
+    assert np.all(get_unique_values(da) == np.array([1, 2, 3]))
+
+    da = xr.DataArray(
+        data=np.array([1, 2, 3, 4, 5]),
+        attrs={},
+    )
+    assert np.all(get_unique_values(da) == np.array([1, 2, 3, 4, 5]))
+
+    da = xr.DataArray(
+        data=np.array([1, 2, 3, 4, 5]),
+        attrs={},
+    )
+    da = da.chunk()
+    assert np.all(get_unique_values(da) == np.array([1, 2, 3, 4, 5]))

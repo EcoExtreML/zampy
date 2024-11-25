@@ -243,7 +243,8 @@ def convert_tiff_to_netcdf(
         ds = parse_tiff_file(file, sd_file)
 
         # Coarsen the data to be 1/100 deg resolution instead of 1/12000
-        ds = ds.coarsen({"latitude": 120, "longitude": 120}).mean()  # type: ignore
+        if len(ds.latitude) >= 120 and len(ds.longitude) >= 120:
+            ds = ds.coarsen({"latitude": 120, "longitude": 120}).mean()  # type: ignore
         ds = ds.compute()
         ds = ds.interpolate_na(dim="longitude", limit=1)
         ds = ds.interpolate_na(dim="latitude", limit=1)

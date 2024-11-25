@@ -6,10 +6,10 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 import xarray as xr
+from tests import data_folder
 from zampy.datasets import prism_dem
 from zampy.datasets.dataset_protocol import SpatialBounds
 from zampy.datasets.dataset_protocol import TimeBounds
-from . import data_folder
 
 
 @pytest.fixture(scope="function")
@@ -27,8 +27,8 @@ class TestPrismDEM:
 
         Here we mock the downloading and save property file to a fake path.
         """
-        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-12-31"))
-        bbox = SpatialBounds(54, 5, 53, 4)
+        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-01-31"))
+        bbox = SpatialBounds(60, 10, 50, 0)
         variable = ["elevation"]
         download_dir = Path(dummy_dir, "download")
 
@@ -55,28 +55,28 @@ class TestPrismDEM:
         """Ingest dummy tif data to nc for other tests."""
         prism_dem_dataset = prism_dem.PrismDEM90()
         prism_dem_dataset.ingest(download_dir=data_folder, ingest_dir=Path(temp_dir))
-        ds = xr.load_dataset(
-            Path(
-                temp_dir,
-                "prism-dem-90",
-                "Copernicus_DSM_30_N53_00_E004_00.nc",
-            )
-        )
 
-        return ds, prism_dem_dataset
+        return prism_dem_dataset
 
     def test_ingest(self, dummy_dir):
         """Test ingest function."""
-        ds, _ = self.ingest_dummy_data(dummy_dir)
+        _ = self.ingest_dummy_data(dummy_dir)
+        ds = xr.open_dataset(
+            Path(
+                dummy_dir,
+                "prism-dem-90",
+                "Copernicus_DSM_30_N50_00_E000_00.nc",
+            )
+        )
 
         assert isinstance(ds, xr.Dataset)
 
     def test_load(self, dummy_dir):
         """Test load function."""
-        _, prism_dem_dataset = self.ingest_dummy_data(dummy_dir)
+        prism_dem_dataset = self.ingest_dummy_data(dummy_dir)
 
-        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-12-31"))
-        bbox = SpatialBounds(54, 5, 53, 4)
+        times = TimeBounds(np.datetime64("2020-01-01"), np.datetime64("2020-01-04"))
+        bbox = SpatialBounds(60.0, 0.3, 59.7, 0.0)
         variable = ["elevation"]
 
         ds = prism_dem_dataset.load(
@@ -88,14 +88,14 @@ class TestPrismDEM:
         )
 
         # we assert the regridded coordinates
-        expected_lat = [53.00, 53.25, 53.50, 53.75, 54.0]
-        expected_lon = [4.00, 4.25, 4.50, 4.75, 5.0]
+        expected_lat = [59.7, 59.95]
+        expected_lon = [0.0, 0.25]
 
         np.testing.assert_allclose(ds["latitude"].values, expected_lat)
         np.testing.assert_allclose(ds["longitude"].values, expected_lon)
 
     def test_convert(self, dummy_dir):
         """Test convert function."""
-        _, prism_dem_dataset = self.ingest_dummy_data(dummy_dir)
+        prism_dem_dataset = self.ingest_dummy_data(dummy_dir)
         prism_dem_dataset.convert(ingest_dir=Path(dummy_dir), convention="ALMA")
         # TODO: finish this test when the function is complete.

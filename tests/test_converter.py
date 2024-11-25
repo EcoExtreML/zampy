@@ -4,10 +4,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 import xarray as xr
-from test_datasets import data_folder
 from zampy.datasets import converter
 from zampy.datasets.catalog import EthCanopyHeight
 from zampy.datasets.eth_canopy_height import parse_tiff_file
+from . import data_folder
 
 
 path_dummy_data = data_folder / "eth-canopy-height"

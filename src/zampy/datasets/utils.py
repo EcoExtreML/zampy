@@ -43,10 +43,13 @@ def download_url(url: str, fpath: Path, overwrite: bool) -> None:
         print(f"File '{fpath.name}' already exists, skipping...")
 
 
-def get_url_size(url: str) -> int:
+def get_url_size(url: str) -> int | None:
     """Return the size (bytes) of a given URL."""
     response = requests.head(url)
-    return int(response.headers["Content-Length"])
+    content_length = response.headers.get("Content-Length")
+    if content_length:
+        return int(content_length)
+    return None
 
 
 def get_file_size(fpath: Path) -> int:
