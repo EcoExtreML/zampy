@@ -53,7 +53,7 @@ dependencies = [
   "numpy",
   "pandas",
   "matplotlib",
-  "xarray",
+  "xarray[io]",
   "scipy",  # required for xarray.interpolate
   "rioxarray",  # required for TIFF files
   "tqdm",

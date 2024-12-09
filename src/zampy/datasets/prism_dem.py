@@ -144,7 +144,7 @@ class PrismDEM:
             """Remove overlapping coordinates on the edges."""
             return ds.isel(latitude=slice(None, -1), longitude=slice(None, -1))
 
-        ds = xr.open_mfdataset(files, preprocess=preproc)
+        ds = xr.open_mfdataset(files, preprocess=preproc, engine="h5netcdf")
 
         grid = xarray_regrid.create_regridding_dataset(
             utils.make_grid(spatial_bounds, resolution)
@@ -168,7 +168,7 @@ class PrismDEM:
         for file in data_files:
             # start conversion process
             print(f"Start processing file `{file.name}`.")
-            ds = xr.open_dataset(file)
+            ds = xr.open_dataset(file, engine="h5netcdf")
             ds = converter.convert(ds, dataset=self, convention=convention)
 
         return True
@@ -216,6 +216,7 @@ def convert_raw_dem_to_netcdf(
         ds.to_netcdf(
             path=ncfile,
             encoding=ds.encoding,
+            engine="h5netcdf",
         )
 
 

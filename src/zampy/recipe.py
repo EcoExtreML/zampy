@@ -162,7 +162,9 @@ class RecipeManager:
             time_end = str(self.timebounds.end.astype("datetime64[Y]"))
             # e.g. "era5_2010-2020.nc"
             fname = f"{dataset_name.lower()}_{time_start}-{time_end}.nc"
-            ds.to_netcdf(path=self.data_dir / fname, encoding=encoding)
+            ds.to_netcdf(
+                path=self.data_dir / fname, encoding=encoding, engine="h5netcdf"
+            )
             del ds
 
         print(

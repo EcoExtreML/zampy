@@ -89,7 +89,9 @@ class TestFaparLAI:
         lai_dataset = FaparLAI()
         lai_dataset.ingest(download_dir=data_folder, ingest_dir=dummy_dir)
 
-        ds = xr.open_mfdataset((dummy_dir / "fapar-lai").glob("*.nc"))
+        ds = xr.open_mfdataset(
+            (dummy_dir / "fapar-lai").glob("*.nc"), engine="h5netcdf"
+        )
         assert isinstance(ds, xr.Dataset)
 
     def test_load(self, dummy_dir):
