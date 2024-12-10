@@ -47,13 +47,14 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
+  "h5netcdf",  # see issue 65
   "requests",
   "pyyaml",
   "netcdf4",
   "numpy",
   "pandas",
   "matplotlib",
-  "xarray[io]",
+  "xarray",
   "scipy",  # required for xarray.interpolate
   "rioxarray",  # required for TIFF files
   "tqdm",
