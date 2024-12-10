@@ -119,7 +119,9 @@ class ECMWFDataset:  # noqa: D101
             if var in variable_names:
                 files += (ingest_dir / self.name).glob(f"{self.name}_{var}*.nc")
 
-        ds = xr.open_mfdataset(files, chunks={"latitude": 200, "longitude": 200})
+        ds = xr.open_mfdataset(
+            files, chunks={"latitude": 200, "longitude": 200}, engine="h5netcdf"
+        )
 
         # rename valid_time to time
         if "valid_time" in ds.dims:
@@ -152,7 +154,7 @@ class ECMWFDataset:  # noqa: D101
         for file in data_files:
             # start conversion process
             print(f"Start processing file `{file.name}`.")
-            ds = xr.open_dataset(file, chunks={"x": 50, "y": 50})
+            ds = xr.open_dataset(file, chunks={"x": 50, "y": 50}, engine="h5netcdf")
             ds = converter.convert(ds, dataset=self, convention=convention)
             # TODO: support derived variables
             # TODO: other calculations

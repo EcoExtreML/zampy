@@ -150,7 +150,7 @@ class FaparLAI:  # noqa: D101
         variable_names: list[str],
     ) -> xr.Dataset:
         files = list((ingest_dir / self.name).glob("*.nc"))
-        ds = xr.open_mfdataset(files)  # see issue 65
+        ds = xr.open_mfdataset(files, engine="h5netcdf")  # see issue 65
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
 
         grid = xarray_regrid.create_regridding_dataset(
@@ -175,7 +175,9 @@ class FaparLAI:  # noqa: D101
         for file in data_files:
             # start conversion process
             print(f"Start processing file `{file.name}`.")
-            ds = xr.open_dataset(file, chunks={"latitude": 2000, "longitude": 2000})
+            ds = xr.open_dataset(
+                file, chunks={"latitude": 2000, "longitude": 2000}, engine="h5netcdf"
+            )
             ds = converter.convert(ds, dataset=self, convention=convention)
 
         return True
@@ -248,7 +250,9 @@ def download_fapar_lai(
 def ingest_ncfile(ncfile: Path, ingest_folder: Path) -> None:
     """Ingest the 'raw' netCDF file to the Zampy standard format."""
     print(f"Converting file {ncfile.name}...")
-    ds = xr.open_dataset(ncfile, decode_times=False, chunks={"lat": 5000, "lon": 5000})
+    ds = xr.open_dataset(
+        ncfile, decode_times=False, chunks={"lat": 5000, "lon": 5000}, engine="h5netcdf"
+    )
     ds = ds.rename(
         {
             "LAI": "leaf_area_index",
@@ -260,6 +264,7 @@ def ingest_ncfile(ncfile: Path, ingest_folder: Path) -> None:
     ds[["leaf_area_index"]].to_netcdf(
         path=ingest_folder / ncfile.name,
         encoding={"leaf_area_index": {"zlib": True, "complevel": 3}},
+        engine="h5netcdf",
     )
     ds.close()  # explicitly close to release file to system (for Windows)
 

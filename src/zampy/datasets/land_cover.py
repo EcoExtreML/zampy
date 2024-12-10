@@ -136,7 +136,9 @@ class LandCover:
                 )
                 raise ValueError(msg)
         files = list((ingest_dir / self.name).glob(f"{self.name}_*.nc"))
-        ds = xr.open_mfdataset(files, chunks={"latitude": 200, "longitude": 200})
+        ds = xr.open_mfdataset(
+            files, chunks={"latitude": 200, "longitude": 200}, engine="h5netcdf"
+        )
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
 
         grid = xarray_regrid.create_regridding_dataset(
@@ -173,7 +175,7 @@ class LandCover:
 
         for file in data_files:
             print(f"Start processing file `{file.name}`.")
-            ds = xr.open_dataset(file)
+            ds = xr.open_dataset(file, engine="h5netcdf")
             ds = converter.convert(ds, dataset=self, convention=convention)
 
         return True
@@ -197,7 +199,7 @@ def unzip_raw_to_netcdf(
         print(f"File '{ncfile.name}' already exists, skipping...")
     else:
         ds = extract_netcdf_to_zampy(file)
-        ds.to_netcdf(path=ncfile)
+        ds.to_netcdf(path=ncfile, engine="h5netcdf")
 
 
 def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
@@ -220,7 +222,7 @@ def extract_netcdf_to_zampy(file: Path) -> xr.Dataset:
             zip_object.extract(zipped_file_name, path=unzip_folder)
 
         # only keep land cover class variable
-        with xr.open_dataset(unzip_folder / zipped_file_name) as ds:
+        with xr.open_dataset(unzip_folder / zipped_file_name, engine="h5netcdf") as ds:
             var_list = list(ds.data_vars)
             raw_variable = "lccs_class"
             var_list.remove(raw_variable)

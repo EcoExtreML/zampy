@@ -135,7 +135,9 @@ class EthCanopyHeight:  # noqa: D101
         if self.variable_names[1] in variable_names:
             files += (ingest_dir / self.name).glob("*Map_SD.nc")
 
-        ds = xr.open_mfdataset(files, chunks={"latitude": 2000, "longitude": 2000})
+        ds = xr.open_mfdataset(
+            files, chunks={"latitude": 2000, "longitude": 2000}, engine="h5netcdf"
+        )
         ds = ds.sel(time=slice(time_bounds.start, time_bounds.end))
 
         grid = xarray_regrid.create_regridding_dataset(
@@ -159,7 +161,7 @@ class EthCanopyHeight:  # noqa: D101
         for file in data_files:
             # start conversion process
             print(f"Start processing file `{file.name}`.")
-            ds = xr.open_dataset(file, chunks={"x": 2000, "y": 2000})
+            ds = xr.open_dataset(file, chunks={"x": 2000, "y": 2000}, engine="h5netcdf")
             ds = converter.convert(ds, dataset=self, convention=convention)
             # TODO: support derived variables
             # TODO: other calculations
@@ -249,10 +251,7 @@ def convert_tiff_to_netcdf(
         ds = ds.interpolate_na(dim="longitude", limit=1)
         ds = ds.interpolate_na(dim="latitude", limit=1)
 
-        ds.to_netcdf(
-            path=ncfile,
-            encoding=ds.encoding,
-        )
+        ds.to_netcdf(path=ncfile, encoding=ds.encoding, engine="h5netcdf")
 
 
 def parse_tiff_file(file: Path, sd_file: bool = False) -> xr.Dataset:

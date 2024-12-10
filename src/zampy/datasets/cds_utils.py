@@ -391,7 +391,7 @@ def convert_to_zampy(
         ds = parse_nc_file(file)
         # Rename the vswl data:
         ncfile = Path(str(ncfile).replace("volumetric_soil_water", "soil_moisture"))
-        ds.to_netcdf(path=ncfile)
+        ds.to_netcdf(path=ncfile, engine="h5netcdf")
 
 
 var_reference_ecmwf_to_zampy = {
@@ -444,7 +444,7 @@ def parse_nc_file(file: Path) -> xr.Dataset:
         CF/Zampy formatted xarray Dataset
     """
     # Open chunked: will be dask array -> file writing can be parallelized.
-    ds = xr.open_dataset(file, chunks={"x": 50, "y": 50})
+    ds = xr.open_dataset(file, chunks={"x": 50, "y": 50}, engine="h5netcdf")
 
     for variable in ds.variables:
         if variable in var_reference_ecmwf_to_zampy:

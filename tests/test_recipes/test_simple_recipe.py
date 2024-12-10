@@ -48,7 +48,9 @@ def test_recipe(tmp_path: Path, mocker):
 
         rm.run()
 
-        ds = xr.open_mfdataset(str(tmp_path / "output" / "era5_recipe" / "*.nc"))
+        ds = xr.open_mfdataset(
+            str(tmp_path / "output" / "era5_recipe" / "*.nc"), engine="h5netcdf"
+        )
         assert all(var in ds.data_vars for var in ["Psurf", "Wind_N"])
         # Check if time frequency is correct
         assert ds.time.diff("time").min() == np.timedelta64(1, "h")
@@ -85,7 +87,9 @@ def test_recipe_with_lower_frequency(tmp_path: Path, mocker):
 
         rm.run()
 
-        ds = xr.open_mfdataset(str(tmp_path / "output" / "era5_recipe" / "*.nc"))
+        ds = xr.open_mfdataset(
+            str(tmp_path / "output" / "era5_recipe" / "*.nc"), engine="h5netcdf"
+        )
         # check the lenght of the time dimension, mean values are used
         assert len(ds.time) == 4
 
@@ -121,7 +125,9 @@ def test_recipe_with_higher_frequency(tmp_path: Path, mocker):
 
         rm.run()
 
-        ds = xr.open_mfdataset(str(tmp_path / "output" / "era5_recipe" / "*.nc"))
+        ds = xr.open_mfdataset(
+            str(tmp_path / "output" / "era5_recipe" / "*.nc"), engine="h5netcdf"
+        )
         # check the lenght of the time dimension, data is interpolated
         assert len(ds.time) == 47
 
@@ -156,7 +162,9 @@ def test_recipe_with_two_time_values(tmp_path: Path, mocker):
 
         rm.run()
 
-        ds = xr.open_mfdataset(str(tmp_path / "output" / "era5_recipe" / "*.nc"))
+        ds = xr.open_mfdataset(
+            str(tmp_path / "output" / "era5_recipe" / "*.nc"), engine="h5netcdf"
+        )
         # check the lenght of the time dimension
         assert len(ds.time) == 2
 
@@ -191,7 +199,9 @@ def test_recipe_with_one_time_values(tmp_path: Path, mocker):
 
         rm.run()
 
-        ds = xr.open_mfdataset(str(tmp_path / "output" / "era5_recipe" / "*.nc"))
+        ds = xr.open_mfdataset(
+            str(tmp_path / "output" / "era5_recipe" / "*.nc"), engine="h5netcdf"
+        )
         # check the lenght of the time dimension, should not do interpolation or
         # extrapolation in time
         assert len(ds.time) == 1

@@ -47,6 +47,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
+  "h5netcdf",  # see issue 65
   "requests",
   "pyyaml",
   "netcdf4",
